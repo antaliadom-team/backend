@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Images, Flat
+from .models import Images, Estate
 
 
 # class ImagesLine(admin.TabularInline):
@@ -10,5 +10,5 @@ from .models import Images, Flat
 # @admin.register(Flat)
 # class FlatAdmin(admin.ModelAdmin):
 #     inlines = [ImagesLine, ]
-admin.site.register(Flat)
+admin.site.register(Estate)
 admin.site.register(Images)

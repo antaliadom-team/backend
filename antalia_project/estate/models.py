@@ -9,7 +9,7 @@ TYPE_CHOICES = ((1, 'Участок'), (2, 'Студия'), (3, 'Квартир�
 ROOM_CHOICES = ((1, 0), (2, 1), (3, 2), (4, 3), (5, 4))
 
 
-class Flat(models.Model):
+class Estate(models.Model):
     title = models.CharField(max_length=250)
     price = models.IntegerField()
     area = models.IntegerField()
@@ -24,7 +24,7 @@ class Flat(models.Model):
 
 
 class Images(models.Model):
-    flat = models.ForeignKey(Flat, on_delete=models.CASCADE,
+    flat = models.ForeignKey(Estate, on_delete=models.CASCADE,
                              related_name='img')
     image = models.ImageField(
         upload_to='estate/images/', verbose_name='Фото', null=True, blank=True)
@@ -35,7 +35,7 @@ class Rent(models.Model):
     area = models.CharField(max_length=50, choices=AREA_CHOICES)
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     room = models.IntegerField(choices=ROOM_CHOICES)
-    flat = models.ForeignKey(Flat, on_delete=models.CASCADE,
+    flat = models.ForeignKey(Estate, on_delete=models.CASCADE,
                              related_name='rent')
 
 
@@ -45,5 +45,5 @@ class Buy(models.Model):
     area = models.CharField(max_length=50, choices=AREA_CHOICES)
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     room = models.IntegerField(choices=ROOM_CHOICES)
-    flat = models.ForeignKey(Flat, on_delete=models.CASCADE,
+    flat = models.ForeignKey(Estate, on_delete=models.CASCADE,
                              related_name='buy')

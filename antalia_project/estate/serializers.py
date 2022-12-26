@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Flat, Buy, Rent, Images
+from .models import Estate, Buy, Rent, Images
 
 
 class ImagesSerializer(serializers.ModelSerializer):
@@ -8,7 +8,7 @@ class ImagesSerializer(serializers.ModelSerializer):
         fields = ('__all__')
 
 
-class FlatSerializer(serializers.ModelSerializer):
+class EstateSerializer(serializers.ModelSerializer):
     img = ImagesSerializer(many=True, read_only=True)
     uploaded_images = serializers.ListField(
         child=serializers.ImageField(max_length=1000000,
@@ -18,13 +18,13 @@ class FlatSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Flat
+        model = Estate
         fields = ('id', 'title', 'price', 'area', 'floor', 'year', 'desc',
                   'img', 'uploaded_images',)
 
     def create(self, validated_data):
         uploaded_images = validated_data.pop('uploaded_images')
-        flat = Flat.objects.create(**validated_data)
+        flat = Estate.objects.create(**validated_data)
         for image in uploaded_images:
             new_flat = Images.objects.create(flat=flat, image=image)
         return flat
