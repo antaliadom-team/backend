@@ -17,7 +17,7 @@ class Flat(models.Model):
     year = models.IntegerField()
     desc = models.TextField()
     image = models.ImageField(
-        upload_to='flats/images/', null=True, blank=True, default='')
+        upload_to='estate/images/', null=True, blank=True, default='')
 
     def __str__(self):
         return self.title
@@ -27,7 +27,7 @@ class Images(models.Model):
     flat = models.ForeignKey(Flat, on_delete=models.CASCADE,
                              related_name='img')
     image = models.ImageField(
-        upload_to='flats/images/', verbose_name='Фото', null=True, blank=True)
+        upload_to='estate/images/', verbose_name='Фото', null=True, blank=True)
 
 
 class Rent(models.Model):

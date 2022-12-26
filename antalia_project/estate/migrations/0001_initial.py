@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('floor', models.IntegerField()),
                 ('year', models.IntegerField()),
                 ('desc', models.TextField()),
-                ('image', models.ImageField(blank=True, default='', null=True, upload_to='flats/images/')),
+                ('image', models.ImageField(blank=True, default='', null=True, upload_to='estate/images/')),
             ],
         ),
         migrations.CreateModel(
@@ -33,15 +33,15 @@ class Migration(migrations.Migration):
                 ('area', models.CharField(choices=[(1, 'Анталия'), (2, 'Стамбул'), (3, 'Северный Кипр')], max_length=50)),
                 ('type', models.CharField(choices=[(1, 'Участок'), (2, 'Студия'), (3, 'Квартира'), (4, 'Вилла')], max_length=50)),
                 ('room', models.IntegerField(choices=[(1, 0), (2, 1), (3, 2), (4, 3), (5, 4)])),
-                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rent', to='flats.flat')),
+                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rent', to='estate.flat')),
             ],
         ),
         migrations.CreateModel(
             name='Images',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='flats/images/', verbose_name='Фото')),
-                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='img', to='flats.flat')),
+                ('image', models.ImageField(blank=True, null=True, upload_to='estate/images/', verbose_name='Фото')),
+                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='img', to='estate.flat')),
             ],
         ),
         migrations.CreateModel(
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                 ('area', models.CharField(choices=[(1, 'Анталия'), (2, 'Стамбул'), (3, 'Северный Кипр')], max_length=50)),
                 ('type', models.CharField(choices=[(1, 'Участок'), (2, 'Студия'), (3, 'Квартира'), (4, 'Вилла')], max_length=50)),
                 ('room', models.IntegerField(choices=[(1, 0), (2, 1), (3, 2), (4, 3), (5, 4)])),
-                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='buy', to='flats.flat')),
+                ('flat', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='buy', to='estate.flat')),
             ],
         ),
     ]
