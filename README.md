@@ -5,6 +5,10 @@
  - [Роман](https://github.com/spaut33)
  - [Дмитрий](https://github.com/kultmet)
  - [Павел](https://github.com/pencool)
+ 
+## Диаграмма и описание моделей
+
+ - https://dbdiagram.io/d/63a97dc77d39e42284e788a0
 
 ## Как приступить к разработке?
 
