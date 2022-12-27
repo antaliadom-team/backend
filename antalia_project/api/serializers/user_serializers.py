@@ -1,7 +1,12 @@
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
+from django.contrib.auth import get_user_model
+
+from djoser.serializers import UserSerializer  as DjoserUserSerializer
 
 from users.models import CustomUser
+
+User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -44,3 +49,23 @@ class TokenSerializer(serializers.Serializer):
                 'Такого пользователя нет.'
             )
         return data
+
+
+class MyDjoserSerializer(DjoserUserSerializer):
+    agreement = serializers.BooleanField()
+
+    class Meta:
+        fields = (
+            'id',
+            'email',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'password',
+            'agreement',
+            'role',
+        )
+        model = User
+    
+    # def validated_data(self):
+    #     return 

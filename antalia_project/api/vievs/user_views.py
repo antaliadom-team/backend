@@ -1,4 +1,4 @@
-
+from django.contrib.auth import get_user_model
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,8 +6,12 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import UserSerializer, TokenSerializer
+from djoser.views import UserViewSet as DjoserViewSet
+
+from ..serializers.user_serializers import UserSerializer,TokenSerializer, MyDjoserSerializer
 from users.models import CustomUser
+
+User = get_user_model()
 
 
 @api_view(http_method_names=['POST', ])
@@ -21,7 +25,7 @@ def create_user(request):
 
 @permission_classes(permission_classes=(IsAuthenticated,))
 @api_view(http_method_names=['GET', 'PATCH'])
-def php(request):
+def profile(request):
     """Personal Home Page."""
     # users = CustomUser.objects.all()
     if request.method == 'PATCH':
@@ -47,4 +51,31 @@ def token(request):
     return Response(
         {'access': str(refresh.access_token)}, status=status.HTTP_201_CREATED
     )
+
+class MyDjoserViewSet(DjoserViewSet):
+    serializer_class = MyDjoserSerializer
+    queryset = User.objects.all()
+
+    def reset_password(self, request, args, **kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def activation(self, request,args, kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def resend_activation(self, request, *args, kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def reset_username(self, request, args, **kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def set_username(self, request,args, kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def reset_password_confirm(self, request, *args, kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def reset_username_confirm(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 

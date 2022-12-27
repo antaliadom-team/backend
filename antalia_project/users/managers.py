@@ -2,7 +2,11 @@ from django.contrib.auth.models import BaseUserManager
 from phone_field import PhoneNumber
 
 class UserManager(BaseUserManager):
-    def create_user(self, first_name, last_name, email, phone_number, password=None):
+    """Управляет созданием пользователя."""
+
+    def create_user(self, first_name, last_name,
+            email, agreement, phone_number, password=None,
+            ):
         if not first_name:
             raise ValueError('Users Must Have An first_name')
         if not last_name:
@@ -11,11 +15,15 @@ class UserManager(BaseUserManager):
             raise ValueError('Users Must Have An Email Address')
         if not phone_number:
             raise ValueError('Users Must Have A Phone Number')
+        if agreement != True:
+            raise ValueError('Give me your agreement, stuped bastard!')
         user = self.model(
             email=self.normalize_email(email),
             phone_number=phone_number,
             first_name=first_name,
             last_name=last_name,
+            agreement=agreement
+
         )
         user.set_password(password)
         user.save(using=self._db)
