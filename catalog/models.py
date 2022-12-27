@@ -15,7 +15,7 @@ RENT_SELL_CHOICES = ((1, 'Аренда'), (2, 'Продажа'))
 
 
 class Location(models.Model):
-    """Модель локации"""
+    """Модель локации."""
 
     name = models.CharField(max_length=100)
 
@@ -28,7 +28,7 @@ class Location(models.Model):
 
 
 class PropertyType(models.Model):
-    """Модель типа недвижимости"""
+    """Модель типа недвижимости."""
 
     name = models.CharField(max_length=50)
 
@@ -41,7 +41,7 @@ class PropertyType(models.Model):
 
 
 class Facility(models.Model):
-    """Модель удобств"""
+    """Модель удобств."""
 
     name = models.CharField(max_length=100)
     icon = models.CharField(max_length=100)
@@ -55,21 +55,18 @@ class Facility(models.Model):
 
 
 class RentSell(models.Model):
-    """М2М Модель для аренды/продажи"""
+    """М2М Модель для аренды/продажи."""
 
-    rent_or_sell = models.IntegerField(
-        choices=RENT_SELL_CHOICES,
-        default=1,
-    )
+    rent_or_sell = models.IntegerField(choices=RENT_SELL_CHOICES, default=1)
 
     def __str__(self):
         return self.rent_or_sell
 
 
 class Images(models.Model):
-    """М2М Модель для фотографий объекта"""
+    """М2М Модель для фотографий объекта."""
 
-    image = models.ImageField(upload_to='estate/images/', verbose_name='Фото')
+    image = models.ImageField(upload_to='objects', verbose_name='Фото')
 
     class Meta:
         verbose_name = 'Фотография'
@@ -77,7 +74,7 @@ class Images(models.Model):
 
 
 class Object(models.Model):
-    """Модель объекта"""
+    """Модель объекта."""
 
     MODEL_STRING = (
         '{name:.30} в {location} типа {type} в категории {rent_or_sell}'
@@ -128,9 +125,9 @@ class Object(models.Model):
 
 
 class Favorite(models.Model):
-    """Модель избранного"""
+    """Модель избранного."""
 
-    MODEL_STRING = 'Избранный объект {objects.:30} пользователя {user}'
+    MODEL_STRING = 'Избранный объект {object.:30} пользователя {user}'
 
     object = models.ForeignKey(
         Object, on_delete=models.CASCADE, related_name='favorites'
