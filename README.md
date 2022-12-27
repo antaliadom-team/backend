@@ -6,6 +6,13 @@
  - [Дмитрий](https://github.com/kultmet)
  - [Павел](https://github.com/pencool)
  
+## Используемые технологии
+
+ - Python 3.8
+ - Django 3.2.16
+ - Django Rest Framework
+ - Djoser
+
 ## Диаграмма и описание моделей
 
  - https://dbdiagram.io/d/63a97dc77d39e42284e788a0
