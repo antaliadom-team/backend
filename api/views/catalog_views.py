@@ -1,9 +1,8 @@
 from rest_framework import viewsets
-from .models import Estate, User
+from .models import Object, User
 from .serializers import EstateSerializer
 
 
 class FlatViewSet(viewsets.ModelViewSet):
-    queryset = Estate.objects.all()
+    queryset = Object.objects.all()
     serializer_class = EstateSerializer
-
