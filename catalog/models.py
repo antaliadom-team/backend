@@ -24,7 +24,7 @@ class Location(models.Model):
         verbose_name_plural = 'Локации'
 
     def __str__(self):
-        return self.name
+        return self.name[:15]
 
 
 class PropertyType(models.Model):
@@ -51,7 +51,7 @@ class Facility(models.Model):
         verbose_name_plural = 'Удобства'
 
     def __str__(self):
-        return self.name
+        return self.name[:30]
 
 
 class RentSell(models.Model):
@@ -63,7 +63,7 @@ class RentSell(models.Model):
         return self.rent_or_sell
 
 
-class Images(models.Model):
+class Image(models.Model):
     """М2М Модель для фотографий объекта."""
 
     image = models.ImageField(upload_to='objects', verbose_name='Фото')
@@ -109,7 +109,7 @@ class Object(models.Model):
     )
     facility = models.ManyToManyField(Facility, related_name='objects')
     rent_or_sell = models.ManyToManyField(RentSell, related_name='objects')
-    image = models.ManyToManyField(Images, related_name='objects')
+    image = models.ManyToManyField(Image, related_name='objects')
 
     class Meta:
         verbose_name = 'Объект'
