@@ -63,16 +63,6 @@ class RentSell(models.Model):
         return self.rent_or_sell
 
 
-class Image(models.Model):
-    """М2М Модель для фотографий объекта."""
-
-    image = models.ImageField(upload_to='objects', verbose_name='Фото')
-
-    class Meta:
-        verbose_name = 'Фотография'
-        verbose_name_plural = 'Фотографии'
-
-
 class Object(models.Model):
     """Модель объекта."""
 
@@ -109,7 +99,6 @@ class Object(models.Model):
     )
     facility = models.ManyToManyField(Facility, related_name='objects')
     rent_or_sell = models.ManyToManyField(RentSell, related_name='objects')
-    image = models.ManyToManyField(Image, related_name='objects')
 
     class Meta:
         verbose_name = 'Объект'
@@ -122,6 +111,19 @@ class Object(models.Model):
             type=self.type,
             rent_or_sell=self.rent_or_sell,
         )
+
+
+class Image(models.Model):
+    """1toМ Модель для фотографий объекта."""
+
+    object = models.ForeignKey(
+        Object, on_delete=models.CASCADE, related_name='images'
+    )
+    image = models.ImageField(upload_to='objects', verbose_name='Фото')
+
+    class Meta:
+        verbose_name = 'Фотография'
+        verbose_name_plural = 'Фотографии'
 
 
 class Favorite(models.Model):

@@ -53,11 +53,11 @@ MODEL_FIELDS = [
     [PropertyType, ['name']],
     [Facility, ['name', 'icon']],
     [RentSell, ['rent_or_sell']],
-    [Image, ['image']],
+    [Image, ['object_id', 'image']],
     [Favorite, ['object_id', 'user_id']],
 ]
 
-MODEL_M2M_FIELDS = [[Object, ['facility', 'rent_or_sell', 'image']]]
+MODEL_M2M_FIELDS = [[Object, ['facility', 'rent_or_sell']]]
 
 
 def search_field(fields, attname):
