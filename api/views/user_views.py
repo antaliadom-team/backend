@@ -10,7 +10,7 @@ from djoser.views import UserViewSet as DjoserViewSet
 
 from ..serializers.user_serializers import UserSerializer,TokenSerializer, MyDjoserSerializer
 from users.models import CustomUser
-
+# НУЖНО РАЗОБРАТЬСЯ С ТОКЕНАМИ,ОНИ ПОКА НЕ РАБОТАЮТ!!!!!!!!!!
 User = get_user_model()
 
 

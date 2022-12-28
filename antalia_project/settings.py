@@ -42,12 +42,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework_simplejwt",
     # InstalledOut
     "rest_framework", 
     "djoser",
-    "users"
+    
+    "users.apps.UsersConfig",
     # Local
-    "catalog",
+    'api.apps.ApiConfig',
+    # "catalog.apps.CatalogConfig",
 ]
 
 MIDDLEWARE = [

@@ -51,7 +51,7 @@ class TokenSerializer(serializers.Serializer):
         return data
 
 
-class MyDjoserSerializer(DjoserUserSerializer):
+class MyDjoserSerializer(serializers.ModelSerializer):
     agreement = serializers.BooleanField()
 
     class Meta:
