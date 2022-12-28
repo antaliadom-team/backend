@@ -2,8 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 
-from .vievs.user_views import token, create_user, profile, MyDjoserViewSet #, UserViewSet, 
-
+from api.views.user_views import token, create_user, profile, MyDjoserViewSet
 router = DefaultRouter()
 router.register(r'users', MyDjoserViewSet)
 
