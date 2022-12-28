@@ -18,6 +18,7 @@ class UserManager(BaseUserManager):
         if agreement != True:
             raise ValueError('Give me your agreement, stuped bastard!')
         user = self.model(
+            username=email,
             email=self.normalize_email(email),
             phone_number=phone_number,
             first_name=first_name,
