@@ -76,7 +76,7 @@ class Category(models.Model):
         default=RENT,
         unique=True,
         db_index=True,
-        verbose_name='Имя категории объекта',
+        verbose_name='Категория объекта',
     )
 
     class Meta:
@@ -117,7 +117,7 @@ class Object(models.Model):
         default=TL,
         verbose_name='Валюта',
     )
-    description = models.TextField()
+    description = models.TextField(verbose_name='Описание')
     period = models.CharField(
         max_length=max(len(period) for period, _ in PERIOD_CHOICES),
         choices=PERIOD_CHOICES,
