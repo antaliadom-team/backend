@@ -17,8 +17,8 @@ class StaticPage(models.Model):
         return self.title
 
 
-class TeamMember(models.Model):
-    """Модель участника команды."""
+class Team(models.Model):
+    """Модель команды."""
 
     MODEL_STRING = '{first_name} {last_name} - {position}'
 
