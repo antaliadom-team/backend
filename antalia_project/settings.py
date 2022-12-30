@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     # InstalledOut
     "rest_framework",
     "djoser",
-    # Local
-    "catalog",
+    "api",
 ]
 
 MIDDLEWARE = [
