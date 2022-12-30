@@ -32,3 +32,4 @@ class MyDjoserViewSet(DjoserViewSet):
 
     def reset_username_confirm(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
+

@@ -153,6 +153,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+}
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=5),
     "AUTH_HEADER_TYPES": ("Bearer",),
