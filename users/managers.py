@@ -1,5 +1,5 @@
 from django.contrib.auth.models import BaseUserManager
-from phone_field import PhoneNumber
+
 
 class UserManager(BaseUserManager):
     """Управляет созданием пользователя."""
