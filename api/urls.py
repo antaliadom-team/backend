@@ -14,5 +14,6 @@ urlpatterns = [
     path('users/token/', token, name='token'),
     # path('auth/', include('djoser.urls')),
     # path('auth/', include('djoser.urls.jwt')),
-    path('auth/', include(router.urls))
+    path('auth/', include(router.urls)),
+    path('auth/', include('djoser.urls.jwt')),
 ]
