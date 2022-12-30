@@ -57,7 +57,7 @@ class Facility(models.Model):
     name = models.CharField(
         max_length=100, verbose_name='Название', unique=True
     )
-    icon = models.CharField(max_length=100, verbose_name='Иконка')
+    icon = models.SlugField(max_length=100, verbose_name='Иконка')
 
     class Meta:
         verbose_name = 'Удобство'
