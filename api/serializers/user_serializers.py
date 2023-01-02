@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, ValidationError
 from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 User = get_user_model()
@@ -49,11 +50,27 @@ class MyDjoserSerializer(serializers.ModelSerializer):
             raise ValidationError('Номер слишком короткий!')
         return value
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = get_user_model().EMAIL_FIELD
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['email'] = user.email
+        token['password'] = user.password
+
+        return token
+
+
+
+
 # Делал разделение администратора и CustomUser. Убрал из модели USERNAME_FIELD
 # пытался сделать токен отдельно для CustomUser. Но не находит пользователя.
 class TokenSerializer(serializers.Serializer):# это все не работает.
     """Сериализатор для получения токена."""
-    email = serializers.EmailField(
+    email = serializers.CharField(
         source='username',
         max_length=250,
         write_only=True,
@@ -68,8 +85,10 @@ class TokenSerializer(serializers.Serializer):# это все не работа�
 
 
     def validate(self, data):
+        print(data['username'])
+        print(data['password'])
         # user = get_object_or_404(User, email=data['email'])
-        user = get_object_or_404(User, email=data['username'])
+        user = get_object_or_404(User, username=data['username'])
         
         user_1 = User.objects.filter(
             # email=user.email,

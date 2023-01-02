@@ -7,7 +7,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from djoser.views import UserViewSet as DjoserViewSet
 
-from ..serializers.user_serializers import MyDjoserSerializer, TokenSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from ..serializers.user_serializers import MyDjoserSerializer, TokenSerializer, MyTokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -68,9 +70,10 @@ class MyDjoserViewSet(DjoserViewSet):
 def token(request):
     """Выдает токен авторизации."""
     request_data = {}
+    request_data['email'] = request.data['email']
     request_data['username'] = request.data['email']
     request_data['password'] = request.data['password']
-    # serializer = TokenSerializer(data=request.data)
+    serializer = TokenSerializer(data=request.data)
     serializer = TokenSerializer(data=request_data)
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
@@ -81,17 +84,7 @@ def token(request):
     )
 
 
-# class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     @classmethod
-#     def get_token(cls, user):
-#         token = super().get_token(user)
 
-#         # Add custom claims
-#         token['email'] = user.email
-#         token['username'] = user.email.split('@')[0]
-#         token['password'] = user.password
 
-#         return token
-
-# class MyTokenObtainPairView(TokenObtainPairView):
-#     serializer_class = MyTokenObtainPairSerializer
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
