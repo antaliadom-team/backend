@@ -18,10 +18,11 @@ class CommonUserRequest(AbstractUser):
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     
     # USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('first_name', 'last_name', 'phone_number', 'agreement')
+    REQUIRED_FIELDS = ('email','first_name', 'last_name', 'phone_number', 'agreement')
 
     class Meta:
         abstract = True
+
 
 
 class CustomUser(CommonUserRequest):

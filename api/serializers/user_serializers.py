@@ -1,12 +1,11 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+from rest_framework.validators import UniqueValidator, ValidationError
 from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
 
-# Нужно скопировать поле email в поле username  и возможно отрезать до собачки.
 
 class MyDjoserSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователя."""
@@ -44,12 +43,18 @@ class MyDjoserSerializer(serializers.ModelSerializer):
         validated_data['username'] = validated_data['email']
         user = User.objects.create_user(**validated_data)
         return user
+    
+    def validate_phone_number(self, value):
+        if len(value) < 10:
+            raise ValidationError('Номер слишком короткий!')
+        return value
 
 # Делал разделение администратора и CustomUser. Убрал из модели USERNAME_FIELD
 # пытался сделать токен отдельно для CustomUser. Но не находит пользователя.
 class TokenSerializer(serializers.Serializer):# это все не работает.
     """Сериализатор для получения токена."""
-    username = serializers.EmailField(
+    email = serializers.EmailField(
+        source='username',
         max_length=250,
         write_only=True,
     )
@@ -57,10 +62,10 @@ class TokenSerializer(serializers.Serializer):# это все не работа�
         max_length=255,
         write_only=True
     )
-    # username = serializers.CharField(
-    #     max_length=255,
-    #     write_only=True
-    # )
+
+    class Meta:
+        fields = ('username', 'password')
+
 
     def validate(self, data):
         # user = get_object_or_404(User, email=data['email'])
