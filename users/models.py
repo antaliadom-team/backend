@@ -17,7 +17,7 @@ class CommonUserRequest(AbstractUser):
     phone_number = models.CharField(max_length=14, unique=True, verbose_name='Номер телефона')
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     
-    USERNAME_FIELD = 'email'
+    # USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('first_name', 'last_name', 'phone_number', 'agreement')
 
     class Meta:
@@ -36,3 +36,4 @@ class CustomUser(CommonUserRequest):
     
     def get_full_name(self):
         return f'{self.first_name} {self.last_name}'
+    

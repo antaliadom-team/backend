@@ -29,21 +29,21 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_super_user(self, username, email, password=None):
+    # def create_super_user(self, username, email, password=None):
 
-        if not email:
-            raise ValueError('Users Must Have An Email Address')
-        user = self.model(
-            username=username,
-            email=self.normalize_email(email),
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+    #     if not email:
+    #         raise ValueError('Users Must Have An Email Address')
+    #     user = self.model(
+    #         username=username,
+    #         email=self.normalize_email(email),
+    #     )
+    #     user.set_password(password)
+    #     user.save(using=self._db)
+    #     return user
 
-    def create_superuser(self, first_name, last_name, phote_number, agreement , email, password=None):
+    def create_superuser(self, username, first_name, last_name, phote_number, agreement , email, password=None):
         user = self.create_user(
-            username=email,
+            username=username,
             email=email,
             password=password,
             phote_number=phote_number,
