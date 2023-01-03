@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, ValidationError
 from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, PasswordField
 
 
 User = get_user_model()
@@ -46,19 +46,43 @@ class MyDjoserSerializer(serializers.ModelSerializer):
         return user
     
     def validate_phone_number(self, value):
-        if len(value) < 10:
-            raise ValidationError('Номер слишком короткий!')
+        if value[0] == '+':
+            if len(value) < 12:
+                raise ValidationError('Номер слишком короткий!')
+            self.number_check(value=value, start=1)
+        else:
+            if len(value) < 10:
+                raise ValidationError('Номер слишком короткий!')
+            self.number_check(value=value, start=0)
         return value
+    
+    def number_check(self, value, start):
+        for i in range(start, len(value)):
+                try:
+                    int(value[i])
+                except ValueError:
+                    raise ValidationError(
+                        'Номер телефона должен состоять из чисел.'
+                    )
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = get_user_model().EMAIL_FIELD
+    email_field = get_user_model().EMAIL_FIELD
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields[self.username_field] = serializers.CharField()
+        self.fields['password'] = PasswordField()
+    
 
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
 
         # Add custom claims
-        token['email'] = user.email
+        token['username'] = user.username
+        # token['email'] = user.email
         token['password'] = user.password
 
         return token
@@ -75,7 +99,7 @@ class TokenSerializer(serializers.Serializer):# это все не работа�
         max_length=250,
         write_only=True,
     )
-    password = serializers.CharField(
+    password = PasswordField(
         max_length=255,
         write_only=True
     )

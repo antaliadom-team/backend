@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from djoser.views import UserViewSet as DjoserViewSet
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -87,4 +88,5 @@ def token(request):
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
+    # serializer_class = TokenObtainPairSerializer
     serializer_class = MyTokenObtainPairSerializer

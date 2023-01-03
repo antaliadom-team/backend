@@ -11,6 +11,6 @@ app_name = 'api'
 urlpatterns = [
     path('auth/', include(router.urls)),
     path('auth/', include('djoser.urls.jwt')),
-    path('auth/token/', token, name='token')
+    path('auth/token/', token, name='token'),
     # path('auth/token/', MyTokenObtainPairView.as_view(), name='token'),
 ]
