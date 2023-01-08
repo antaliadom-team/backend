@@ -44,24 +44,41 @@ class MyDjoserSerializer(serializers.ModelSerializer):
     
     
     def create(self, validated_data):
+        """
+        Заполняет поле username полем email.
+        Создает пользователя.
+        """
         validated_data['username'] = validated_data['email']
         user = User.objects.create_user(**validated_data)
         return user
     
     def validate(self, data):
+        """
+        Проверяет, что password_again - password равны.
+        Удаляет из словаря поле password_again
+        """
         super().validate(data)
         if data['password_again'] != data['password']:
-            raise ValidationError('Повторный пароль не совпадает с оригинальным!')
+            raise ValidationError(
+                'Повторный пароль не совпадает с оригинальным!'
+            )
         
         data.pop('password_again', None)
         return data
     
     def validate_password_again(self, value):
+        """Проверяет, что повторный пароль не пустой."""
         if value == '':
-            raise ValidationError('Поле повторный пароль не может быть пустым!')
+            raise ValidationError(
+                'Поле повторный пароль не может быть пустым!'
+            )
         return value
     
     def validate_phone_number(self, value):
+        """
+        Проверяет длину номера телефона и добавляет знак '+',
+        если он отсутстует.
+        """
         if value[0] == '+':
             if len(value) < 12:
                 raise ValidationError('Номер слишком короткий!')
@@ -74,6 +91,7 @@ class MyDjoserSerializer(serializers.ModelSerializer):
         return value
     
     def _number_check(self, value, start):
+        """Проверяет чтоб номер телефона состоял из цифр."""
         for i in range(start, len(value)):
                 try:
                     int(value[i])
