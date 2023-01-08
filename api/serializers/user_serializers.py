@@ -9,7 +9,8 @@ class MyDjoserSerializer(serializers.ModelSerializer):
     agreement = serializers.BooleanField()
     username = serializers.CharField(
         max_length=200,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.all())],
+        write_only=True
     )
     email = serializers.EmailField(
         max_length=200,
@@ -19,9 +20,14 @@ class MyDjoserSerializer(serializers.ModelSerializer):
         max_length=14,
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    password = serializers.CharField(max_length=128, write_only=True)
+    password_again = serializers.CharField(
+        max_length=128,
+        write_only=True,
+        help_text='Введите пароль повторно.'
+    )
 
     class Meta:
-        write_only_fields = ('username',)
         fields = (
             'id',
             'username',
@@ -30,6 +36,7 @@ class MyDjoserSerializer(serializers.ModelSerializer):
             'last_name',
             'phone_number',
             'password',
+            'password_again',
             'agreement',
             'role',
         )
@@ -41,18 +48,32 @@ class MyDjoserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
     
+    def validate(self, data):
+        super().validate(data)
+        if data['password_again'] != data['password']:
+            raise ValidationError('Повторный пароль не совпадает с оригинальным!')
+        
+        data.pop('password_again', None)
+        return data
+    
+    def validate_password_again(self, value):
+        if value == '':
+            raise ValidationError('Поле повторный пароль не может быть пустым!')
+        return value
+    
     def validate_phone_number(self, value):
         if value[0] == '+':
             if len(value) < 12:
                 raise ValidationError('Номер слишком короткий!')
-            self.number_check(value=value, start=1)
+            self._number_check(value=value, start=1)
         else:
             if len(value) < 10:
                 raise ValidationError('Номер слишком короткий!')
-            self.number_check(value=value, start=0)
+            self._number_check(value=value, start=0)
+            return '+' + value 
         return value
     
-    def number_check(self, value, start):
+    def _number_check(self, value, start):
         for i in range(start, len(value)):
                 try:
                     int(value[i])
@@ -60,4 +81,3 @@ class MyDjoserSerializer(serializers.ModelSerializer):
                     raise ValidationError(
                         'Номер телефона должен состоять из чисел.'
                     )
-
