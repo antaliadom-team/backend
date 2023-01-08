@@ -32,11 +32,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'rest_framework_simplejwt',
     # InstalledOut
-    'rest_framework',
     'djoser',
-
     'users.apps.UsersConfig',
     # Local
     'api.apps.ApiConfig',
@@ -108,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 # AUTH_USER_MODEL = 'auth.User'
 AUTH_USER_MODEL = 'users.CustomUser'
+# AUTH_USER_MODEL = 'users.BaseUserModel'
+# AUTHENTICATION_BACKENDS = ['users.backends.EmailorUsernameModelBackend',]
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
 # ACCOUNT_AUTHENTICATION_METHOD = 'email'
 # ACCOUNT_EMAIL_REQUIRED = True
@@ -140,9 +141,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'users.backends.EmailorUsernameModelBackend',
     ],
 }
-
+# from rest_framework_simplejwt.authentication import JWTAuthentication
 DJOSER = {
     'LOGIN_FIELD': 'email',
 }

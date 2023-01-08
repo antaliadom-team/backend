@@ -1,16 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.conf import settings
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import get_object_or_404
-from rest_framework_simplejwt.tokens import RefreshToken
 from djoser.views import UserViewSet as DjoserViewSet
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from rest_framework_simplejwt.views import TokenObtainPairView
-
-from ..serializers.user_serializers import MyDjoserSerializer, TokenSerializer, MyTokenObtainPairSerializer
+from api.serializers.user_serializers import MyDjoserSerializer
 
 User = get_user_model()
 
@@ -63,30 +56,3 @@ class MyDjoserViewSet(DjoserViewSet):
         """Удаление эндпоинта."""
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-# from rest_framework_simplejwt.views import TokenObtainPairView
-
-@api_view(http_method_names=['POST', ])
-def token(request):
-    """Выдает токен авторизации."""
-    request_data = {}
-    request_data['email'] = request.data['email']
-    request_data['username'] = request.data['email']
-    request_data['password'] = request.data['password']
-    serializer = TokenSerializer(data=request.data)
-    serializer = TokenSerializer(data=request_data)
-    serializer.is_valid(raise_exception=True)
-    data = serializer.validated_data
-    user = get_object_or_404(User, **data)
-    refresh = RefreshToken.for_user(user)
-    return Response(
-        {'access': str(refresh.access_token)}, status=status.HTTP_201_CREATED
-    )
-
-
-
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    # serializer_class = TokenObtainPairSerializer
-    serializer_class = MyTokenObtainPairSerializer

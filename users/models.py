@@ -1,8 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .managers import UserManager
-
 ROLE_CHOICE = (
     ('seller', 'seller'),
     ('buyer', 'buyer'),
@@ -17,7 +15,6 @@ class CommonUserRequest(AbstractUser):
     phone_number = models.CharField(max_length=14, unique=True, verbose_name='Номер телефона')
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     
-    # USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('email','first_name', 'last_name', 'phone_number', 'agreement')
 
     class Meta:
@@ -28,9 +25,6 @@ class CommonUserRequest(AbstractUser):
 class CustomUser(CommonUserRequest):
     """Модель пользователя."""
     role = models.CharField(max_length=6, choices=ROLE_CHOICE, default='seller')
-    
-
-    # objects = UserManager()
     
     def __str__(self):
         return self.email

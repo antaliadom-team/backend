@@ -1,12 +1,8 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, ValidationError
-from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, PasswordField
-
 
 User = get_user_model()
-
 
 class MyDjoserSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователя."""
@@ -65,62 +61,3 @@ class MyDjoserSerializer(serializers.ModelSerializer):
                         'Номер телефона должен состоять из чисел.'
                     )
 
-
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    email_field = get_user_model().EMAIL_FIELD
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields[self.username_field] = serializers.CharField()
-        self.fields['password'] = PasswordField()
-    
-
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-
-        # Add custom claims
-        token['username'] = user.username
-        # token['email'] = user.email
-        token['password'] = user.password
-
-        return token
-
-
-
-
-# Делал разделение администратора и CustomUser. Убрал из модели USERNAME_FIELD
-# пытался сделать токен отдельно для CustomUser. Но не находит пользователя.
-class TokenSerializer(serializers.Serializer):# это все не работает.
-    """Сериализатор для получения токена."""
-    email = serializers.CharField(
-        source='username',
-        max_length=250,
-        write_only=True,
-    )
-    password = PasswordField(
-        max_length=255,
-        write_only=True
-    )
-
-    class Meta:
-        fields = ('username', 'password')
-
-
-    def validate(self, data):
-        print(data['username'])
-        print(data['password'])
-        # user = get_object_or_404(User, email=data['email'])
-        user = get_object_or_404(User, username=data['username'])
-        
-        user_1 = User.objects.filter(
-            # email=user.email,
-            email=user.username,
-            password=data['password']
-        ).exists()
-        if not user_1:
-            raise serializers.ValidationError(
-                'Такого пользователя нет.'
-            )
-        return data
