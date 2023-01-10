@@ -1,23 +1,32 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
-STATUS_CHOICES = ((1, 'Новостройка'), (2, 'Вторичное'))
-CURRENCY_CHOICES = (
-    ('USD', 'USD'),
-    ('EUR', 'EUR'),
-    ('TL', 'TL'),
-    ('RUB', 'RUB'),
-)
-PERIOD_CHOICES = ((1, 'День'), (2, 'Месяц'), (3, 'Год'))
-RENT_SELL_CHOICES = ((1, 'Аренда'), (2, 'Продажа'))
+NEW = 'Новостройка'
+SECONDARY = 'Вторичное'
+DAY = 'День'
+MONTH = 'Месяц'
+YEAR = 'Год'
+RENT = 'Аренда'
+SELL = 'Продажа'
+TL = '₺'
+USD = '$'
+EUR = '€'
+RUB = '₽'
+
+STATUS_CHOICES = ((NEW, 'Новостройка'), (SECONDARY, 'Вторичное'))
+CURRENCY_CHOICES = ((TL, '₺'), (USD, '$'), (EUR, '€'), (RUB, '₽'))
+PERIOD_CHOICES = ((DAY, 'День'), (MONTH, 'Месяц'), (YEAR, 'Год'))
+SELL_TYPES = ((RENT, 'Аренда'), (SELL, 'Продажа'))
 
 
 class Location(models.Model):
     """Модель локации."""
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100, verbose_name='Название', unique=True, db_index=True
+    )
 
     class Meta:
         verbose_name = 'Локация'
@@ -30,7 +39,9 @@ class Location(models.Model):
 class PropertyType(models.Model):
     """Модель типа недвижимости."""
 
-    name = models.CharField(max_length=50)
+    name = models.CharField(
+        max_length=50, verbose_name='Название', unique=True, db_index=True
+    )
 
     class Meta:
         verbose_name = 'Тип недвижимости'
@@ -43,8 +54,10 @@ class PropertyType(models.Model):
 class Facility(models.Model):
     """Модель удобств."""
 
-    name = models.CharField(max_length=100)
-    icon = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100, verbose_name='Название', unique=True
+    )
+    icon = models.SlugField(max_length=100, verbose_name='Иконка')
 
     class Meta:
         verbose_name = 'Удобство'
@@ -54,23 +67,24 @@ class Facility(models.Model):
         return self.name[:30]
 
 
-class RentSell(models.Model):
-    """М2М Модель для аренды/продажи."""
+class Category(models.Model):
+    """Модель для категории объекта (аренда/продажа)."""
 
-    rent_or_sell = models.IntegerField(choices=RENT_SELL_CHOICES, default=1)
-
-    def __str__(self):
-        return self.rent_or_sell
-
-
-class Image(models.Model):
-    """М2М Модель для фотографий объекта."""
-
-    image = models.ImageField(upload_to='objects', verbose_name='Фото')
+    name = models.CharField(
+        max_length=max(len(sell_type) for _, sell_type in SELL_TYPES),
+        choices=SELL_TYPES,
+        default=RENT,
+        unique=True,
+        db_index=True,
+        verbose_name='Категория объекта',
+    )
 
     class Meta:
-        verbose_name = 'Фотография'
-        verbose_name_plural = 'Фотографии'
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+    def __str__(self):
+        return str(self.name)
 
 
 class Object(models.Model):
@@ -80,36 +94,70 @@ class Object(models.Model):
         '{name:.30} в {location} типа {type} в категории {rent_or_sell}'
     )
 
-    title = models.CharField(max_length=200)
-    price = models.IntegerField()
-    area = models.IntegerField()
-    floor = models.IntegerField()
-    total_floors = models.IntegerField()
-    construction_year = models.IntegerField()
-    rooms = models.SmallIntegerField()
-    date_added = models.DateTimeField(auto_now_add=True)
-    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
-    currency = models.CharField(
-        max_length=max(len(currency) for _, currency in CURRENCY_CHOICES),
-        choices=CURRENCY_CHOICES,
+    title = models.CharField(max_length=200, verbose_name='Название')
+    price = models.IntegerField(verbose_name='Цена')
+    area = models.IntegerField(verbose_name='Площадь')
+    floor = models.IntegerField(verbose_name='Этаж')
+    total_floors = models.IntegerField(verbose_name='Этажность')
+    construction_year = models.IntegerField(verbose_name='Год постройки')
+    rooms = models.SmallIntegerField(verbose_name='Количество комнат')
+    date_added = models.DateTimeField(
+        auto_now_add=True, verbose_name='Дата добавления', db_index=True
     )
-    description = models.TextField()
-    period = models.IntegerField(choices=PERIOD_CHOICES, default=1)
+    status = models.CharField(
+        max_length=max(len(status) for status, _ in STATUS_CHOICES),
+        choices=STATUS_CHOICES,
+        default=NEW,
+        verbose_name='Статус',
+        db_index=True,
+    )
+    currency = models.CharField(
+        max_length=max(len(currency) for currency, _ in CURRENCY_CHOICES),
+        choices=CURRENCY_CHOICES,
+        default=TL,
+        verbose_name='Валюта',
+    )
+    description = models.TextField(verbose_name='Описание')
+    period = models.CharField(
+        max_length=max(len(period) for period, _ in PERIOD_CHOICES),
+        choices=PERIOD_CHOICES,
+        default=MONTH,
+        verbose_name='Период',
+    )
     location = models.ForeignKey(
-        Location, on_delete=models.SET_NULL, null=True, related_name='objects'
+        Location,
+        verbose_name='Локация',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='objects',
+        db_index=True,
     )
     type = models.ForeignKey(
         PropertyType,
         on_delete=models.SET_NULL,
         null=True,
+        verbose_name='Тип недвижимости',
+        db_index=True,
         related_name='objects',
     )
     owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='objects'
+        User,
+        on_delete=models.CASCADE,
+        related_name='objects',
+        db_index=True,
+        verbose_name='Владелец',
     )
-    facility = models.ManyToManyField(Facility, related_name='objects')
-    rent_or_sell = models.ManyToManyField(RentSell, related_name='objects')
-    image = models.ManyToManyField(Image, related_name='objects')
+    facility = models.ManyToManyField(
+        Facility, related_name='objects', verbose_name='Удобства'
+    )
+    category = models.ForeignKey(
+        Category,
+        related_name='objects',
+        on_delete=models.SET_NULL,
+        null=True,
+        db_index=True,
+        verbose_name='Категория',
+    )
 
     class Meta:
         verbose_name = 'Объект'
@@ -120,8 +168,32 @@ class Object(models.Model):
             name=self.title,
             location=self.location,
             type=self.type,
-            rent_or_sell=self.rent_or_sell,
+            rent_or_sell=self.category,
         )
+
+
+class Image(models.Model):
+    """1toМ Модель для фотографий объекта."""
+
+    object = models.ForeignKey(
+        Object,
+        on_delete=models.CASCADE,
+        related_name='images',
+        db_index=True,
+        verbose_name='Объект',
+    )
+    image = models.ImageField(upload_to='objects', verbose_name='Фото')
+
+    class Meta:
+        verbose_name = 'Фотография'
+        verbose_name_plural = 'Фотографии'
+
+    def save(self, *args, **kwargs):
+        # TODO: вынести в настройки, тоже самое в админке:
+        if Image.objects.filter(object=self.object).count() >= 6:
+            return  # Не сохраняем, если уже 6 фото
+        else:
+            super(Image, self).save(*args, **kwargs)
 
 
 class Favorite(models.Model):
@@ -130,12 +202,24 @@ class Favorite(models.Model):
     MODEL_STRING = 'Избранный объект {object.:30} пользователя {user}'
 
     object = models.ForeignKey(
-        Object, on_delete=models.CASCADE, related_name='favorites'
+        Object,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Объект',
+        db_index=True,
     )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='favorites'
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+        verbose_name='Пользователь',
+        db_index=True,
     )
-    date_added = models.DateTimeField(auto_now_add=True)
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+
+    class Meta:
+        verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
 
     def __str__(self):
         return self.MODEL_STRING.format(

@@ -116,7 +116,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Europe/Istanbul'
 
 USE_I18N = True
 
