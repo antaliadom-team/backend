@@ -33,8 +33,27 @@ class CustomUser(CommonUserRequest):
         return f'{self.first_name} {self.last_name}'
 
 
-class Order(CommonUserRequest):
+class Order(models.Model):
     """Модель заявки."""
-    pass
+    user = models.ForeignKey(
+        CustomUser, blank=True, null=True, related_name='orders'
+    )
+    real_estate = models.ForeignKey(
+        'RealEstate', blank=True, null=True, related_name='orders'
+    )
+    email = models.EmailField(unique=True, verbose_name='Электронная почта')
+    first_name = models.CharField(max_length=200, verbose_name='Имя')
+    last_name = models.CharField(max_length=200, verbose_name='Фамилия')
+    phone_number = models.CharField(
+        max_length=14, unique=True, verbose_name='Номер телефона'
+    )
+    # location = models.ForeignKey(location, )
+    # rooms = 
+    # comment = 
+    # agreement = models.BooleanField(verbose_name='Согласие', default=False)
+    # confirmation_code =
+    # confitmed =
+    # date_added =
+
 
     
