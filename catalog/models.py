@@ -87,7 +87,7 @@ class Category(models.Model):
         return str(self.name)
 
 
-class Object(models.Model):
+class RealEstate(models.Model):
     """Модель объекта."""
 
     MODEL_STRING = (
@@ -176,7 +176,7 @@ class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
 
     object = models.ForeignKey(
-        Object,
+        RealEstate,
         on_delete=models.CASCADE,
         related_name='images',
         db_index=True,
@@ -202,7 +202,7 @@ class Favorite(models.Model):
     MODEL_STRING = 'Избранный объект {object.:30} пользователя {user}'
 
     object = models.ForeignKey(
-        Object,
+        RealEstate,
         on_delete=models.CASCADE,
         related_name='favorites',
         verbose_name='Объект',
