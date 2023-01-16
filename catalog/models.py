@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+# from users.models import CustomUser as User
 User = get_user_model()
 
 NEW = 'Новостройка'
@@ -140,13 +141,13 @@ class RealEstate(models.Model):
         db_index=True,
         related_name='objects',
     )
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='objects',
-        db_index=True,
-        verbose_name='Владелец',
-    )
+    # owner = models.ForeignKey(
+    #     User,
+    #     on_delete=models.CASCADE,
+    #     related_name='objects',
+    #     db_index=True,
+    #     verbose_name='Владелец',
+    # )
     facility = models.ManyToManyField(
         Facility, related_name='objects', verbose_name='Удобства'
     )
@@ -225,3 +226,89 @@ class Favorite(models.Model):
         return self.MODEL_STRING.format(
             object=self.object, user=self.user.get_username()
         )
+
+
+class Order(models.Model):
+    """Модель заявки."""
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        verbose_name='Аренда/Покупка'
+    )
+    location = models.ForeignKey(
+        Location,
+        related_name='orders',
+        on_delete=models.SET_NULL,
+        verbose_name='Локация',
+        blank=True,
+        null=True
+    )
+    property_type = models.ForeignKey(
+        PropertyType,
+        on_delete=models.SET_NULL,
+        verbose_name='Тип недвижимости',
+        related_name='orders',
+        blank=True,
+        null=True
+    )
+    rooms = models.SmallIntegerField(
+        default=1,
+        # max_length=4,
+        verbose_name='Колличество комнат',
+        blank=True,
+        null=True
+    )
+    first_name = models.CharField(
+        max_length=30,
+        verbose_name='Ваше имя'
+    )
+    last_name = models.CharField(
+        max_length=30,
+        verbose_name='Фамилия',
+    )
+    phone_number = models.CharField(
+        max_length=13,
+        unique=True,
+        verbose_name='Номер телефона'
+    )
+    email = models.EmailField(
+        unique=True,
+        verbose_name='Электронная почта'
+    )
+    comment = models.TextField(
+        verbose_name='Коментарии',
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    agreement = models.BooleanField(
+        verbose_name='Согласие',
+        default=False
+    )
+    date_added = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User,
+        blank=True,
+        null=True,
+        related_name='orders',
+        on_delete=models.SET_NULL
+    )
+    real_estate = models.ForeignKey(
+        RealEstate,
+        blank=True,
+        null=True,
+        related_name='orders',
+        on_delete=models.CASCADE
+    )
+    # confirmation_code = models.CharField(
+    #     max_length=32,
+    #     verbose_name='Код подтверждения.'
+    # )
+    # confitmed = models.BooleanField(
+    #     verbose_name='Подтверждение',
+    #     default=False
+    # )
+    
+
+    
+

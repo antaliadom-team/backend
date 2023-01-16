@@ -2,6 +2,9 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, ValidationError
 from django.contrib.auth import get_user_model
 
+# from users.models import Order
+# from users.models import CustomUser as User
+
 User = get_user_model()
 
 class MyDjoserSerializer(serializers.ModelSerializer):

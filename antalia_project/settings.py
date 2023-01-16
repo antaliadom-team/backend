@@ -3,6 +3,8 @@ from datetime import timedelta
 
 from pathlib import Path
 
+# from users.models import CustomUser
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -33,13 +35,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework_simplejwt',
     # InstalledOut
     'djoser',
-    'users.apps.UsersConfig',
-    # Local
+    'catalog.apps.CatalogConfig',
     'api.apps.ApiConfig',
-    # 'catalog.apps.CatalogConfig',
+    'users.apps.UsersConfig',
+    
+    'rest_framework_simplejwt',
+
 ]
 
 MIDDLEWARE = [
@@ -105,8 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-# AUTH_USER_MODEL = 'auth.User'
+# AUTH_USER_MODEL = 'users.User'
 AUTH_USER_MODEL = 'users.CustomUser'
+# AUTH_USER_MODEL = CustomUser
 # AUTH_USER_MODEL = 'users.BaseUserModel'
 # AUTHENTICATION_BACKENDS = ['users.backends.EmailorUsernameModelBackend',]
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = 'email'
@@ -116,7 +120,7 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 LANGUAGE_CODE = 'ru-ru'
 
-TIME_ZONE = 'Europe/Istanbul'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

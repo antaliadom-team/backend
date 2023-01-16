@@ -5,7 +5,7 @@ from catalog.models import (
     Location,
     PropertyType,
     Facility,
-    Object
+    RealEstate,
 )
 # TODO: дополнить фикстурами из моделей юзера
 # from users.models import BuyerRequest
@@ -44,7 +44,7 @@ def facility2():
 @pytest.fixture
 def object1(user, facility1, property_type_villa, location):
 
-    recipe = Object.objects.create(
+    recipe = RealEstate.objects.create(
         name='Тестовый объект 1'
     )
     recipe.facility.add(facility1)

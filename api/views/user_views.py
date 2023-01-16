@@ -1,15 +1,22 @@
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
-from djoser.views import UserViewSet as DjoserViewSet
+from rest_framework.decorators import api_view
+from djoser.views import UserViewSet# as DjoserViewSet
+from django.conf import settings
 
 from api.serializers.user_serializers import MyDjoserSerializer
 
+# from users.models import CustomUser as User
+
 User = get_user_model()
 
-class MyDjoserViewSet(DjoserViewSet):
+class MyDjoserViewSet(UserViewSet):
     """Для пользователя."""
     queryset = User.objects.all()
+    # def get_queryset(self):
+    #     return User.objects.filter(id=self.request.user.id )
+
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = MyDjoserSerializer

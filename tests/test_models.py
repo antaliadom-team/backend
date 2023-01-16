@@ -7,8 +7,8 @@ from catalog.models import (
     Location,
     PropertyType,
     Facility,
-    Object,
-    RentSell,
+    RealEstate,
+    # RentSell,
     Image,
 )
 
@@ -30,7 +30,7 @@ MODEL_FIELDS = [
         ],
     ],
     [
-        Object,
+        RealEstate,
         [
             'title',
             'price',
@@ -52,12 +52,12 @@ MODEL_FIELDS = [
     [Location, ['name']],
     [PropertyType, ['name']],
     [Facility, ['name', 'icon']],
-    [RentSell, ['rent_or_sell']],
+    # [RentSell, ['rent_or_sell']],
     [Image, ['object_id', 'image']],
     [Favorite, ['object_id', 'user_id']],
 ]
 
-MODEL_M2M_FIELDS = [[Object, ['facility', 'rent_or_sell']]]
+MODEL_M2M_FIELDS = [[RealEstate, ['facility', 'rent_or_sell']]]
 
 
 def search_field(fields, attname):
@@ -163,7 +163,7 @@ class TestModels:
 
     def test_model_object_str(self, property_type_apartment, location):
         """Тест метода __str__ для модели Object"""
-        model_name = Object.objects.create(
+        model_name = RealEstate.objects.create(
             name='a' * 100,
             type=property_type_apartment,
             location=location,
