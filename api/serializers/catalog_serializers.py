@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Object, Images
+from catalog.models import RealEstate, Image, Order
 
 
 class ImagesSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Images
+        model = Image
         fields = "__all__"
 
 
@@ -18,7 +18,7 @@ class EstateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = Object
+        model = RealEstate
         fields = (
             "id",
             "title",
@@ -44,7 +44,20 @@ class EstateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         uploaded_images = validated_data.pop("uploaded_images")
-        flat = Object.objects.create(**validated_data)
+        flat = RealEstate.objects.create(**validated_data)
         for image in uploaded_images:
-            new_flat = Images.objects.create(flat=flat, image=image)
+            new_flat = Image.objects.create(flat=flat, image=image)
         return flat
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'user', 'real_estate',
+            'email', 'first_name',
+            'last_name', 'phone_number',
+            'location', 'rooms',
+            'comment', 'agreement',
+            'confirmation_code', 'confitmed'
+        )
+        model = Order
