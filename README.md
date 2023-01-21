@@ -31,12 +31,19 @@
      python -m pip install --upgrade pip
      pip install -r requirements.txt
      ```
+  5. В папке backend cоздать файл .env по шаблону:
+     ```
+     SECRET_KEY=zbx06u%n5dj6^k1%&edv9t7lv-gg2_poq^gb4o75+_(412k0f+
+     ALLOWED_HOSTS="127.0.0.1 localhost backend"
+     DEBUG=True
+     CORS_WHITELIST="http://localhost:3000 http://localhost:8080"
+     ```
   5. Применить миграции
      ```
      python manage.py migrate
      ```
   6. Перейти в ветку разраработки `git checkout dev`
-  7. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api-catalouge`
+  7. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api-catalog`
   8. Запушить изменения с коммитом "добавляет эндпоинт каталога"
   9. Радоваться что всё прошло успешно :tada:
 
