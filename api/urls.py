@@ -1,16 +1,18 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import include, path
+from rest_framework import routers
 
-from api.views.user_views import MyDjoserViewSet
+from api.views.user_views import UserViewSet
 from api.views.catalog_views import order
-
-router = DefaultRouter()
-router.register(r'users', MyDjoserViewSet, basename='users')
 
 app_name = 'api'
 
+router = routers.DefaultRouter()
+router.register('users', UserViewSet, basename='users')
+
+auth = [path('auth/', include('djoser.urls.jwt'))]
+
 urlpatterns = [
-    path('auth/', include(router.urls)),
-    path('auth/', include('djoser.urls.jwt')),
+    path('', include(auth)),
     path('order/', order, name='order'),
+    path('', include(router.urls)),
 ]

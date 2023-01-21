@@ -61,7 +61,7 @@ class ImageInline(admin.TabularInline):
 
 
 @admin.register(RealEstate)
-class ObjectAdmin(admin.ModelAdmin):
+class RealEstateAdmin(admin.ModelAdmin):
     """Админка объекта."""
 
     fields = (
@@ -105,6 +105,6 @@ class ObjectAdmin(admin.ModelAdmin):
 class FavoriteAdmin(admin.ModelAdmin):
     """Админка избранного."""
 
-    list_display = ('object', 'user')
-    list_display_links = ('object',)
-    search_fields = ('object__name', 'user__username')
+    list_display = ('real_estate', 'user')
+    list_display_links = ('real_estate',)
+    search_fields = ('real_estate__name', 'user__username')
