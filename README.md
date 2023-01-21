@@ -33,7 +33,7 @@
      ```
   5. В папке backend cоздать файл .env по шаблону:
      ```
-     SECRET_KEY=zbx06u%n5dj6^k1%&edv9t7lv-gg2_poq^gb4o75+_(412k0f+
+     SECRET_KEY=some-random-secret-django-key
      ALLOWED_HOSTS="127.0.0.1 localhost backend"
      DEBUG=True
      CORS_WHITELIST="http://localhost:3000 http://localhost:8080"
