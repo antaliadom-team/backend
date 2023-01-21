@@ -1,12 +1,9 @@
 from django.contrib import admin, auth
-from django.contrib.auth.admin import UserAdmin
 
-from .models import CustomUser
-
-# User = auth.get_user_model()
+User = auth.get_user_model()
 
 
-@admin.register(CustomUser)
+@admin.register(User)
 class AdminUser(admin.ModelAdmin):
 
     list_display = (
@@ -18,7 +15,3 @@ class AdminUser(admin.ModelAdmin):
         'email',
         'password',
     )
-
-# admin.site.register(CustomUser, AdminUser)
-
-

@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-# from users.models import CustomUser as User
 User = get_user_model()
 
 NEW = 'Новостройка'
@@ -130,7 +129,7 @@ class RealEstate(models.Model):
         verbose_name='Локация',
         on_delete=models.SET_NULL,
         null=True,
-        related_name='objects',
+        related_name='real_estate',
         db_index=True,
     )
     type = models.ForeignKey(
@@ -139,21 +138,21 @@ class RealEstate(models.Model):
         null=True,
         verbose_name='Тип недвижимости',
         db_index=True,
-        related_name='objects',
+        related_name='real_estate',
     )
-    # owner = models.ForeignKey(
-    #     User,
-    #     on_delete=models.CASCADE,
-    #     related_name='objects',
-    #     db_index=True,
-    #     verbose_name='Владелец',
-    # )
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='real_estate',
+        db_index=True,
+        verbose_name='Владелец',
+    )
     facility = models.ManyToManyField(
-        Facility, related_name='objects', verbose_name='Удобства'
+        Facility, related_name='real_estate', verbose_name='Удобства'
     )
     category = models.ForeignKey(
         Category,
-        related_name='objects',
+        related_name='real_estate',
         on_delete=models.SET_NULL,
         null=True,
         db_index=True,
@@ -176,14 +175,14 @@ class RealEstate(models.Model):
 class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
 
-    object = models.ForeignKey(
+    real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
         related_name='images',
         db_index=True,
         verbose_name='Объект',
     )
-    image = models.ImageField(upload_to='objects', verbose_name='Фото')
+    image = models.ImageField(upload_to='real_estate', verbose_name='Фото')
 
     class Meta:
         verbose_name = 'Фотография'
@@ -191,7 +190,7 @@ class Image(models.Model):
 
     def save(self, *args, **kwargs):
         # TODO: вынести в настройки, тоже самое в админке:
-        if Image.objects.filter(object=self.object).count() >= 6:
+        if Image.objects.filter(real_estate=self.real_estate).count() >= 6:
             return  # Не сохраняем, если уже 6 фото
         else:
             super(Image, self).save(*args, **kwargs)
@@ -200,9 +199,9 @@ class Image(models.Model):
 class Favorite(models.Model):
     """Модель избранного."""
 
-    MODEL_STRING = 'Избранный объект {object.:30} пользователя {user}'
+    MODEL_STRING = 'Избранный объект {real_estate.:30} пользователя {user}'
 
-    object = models.ForeignKey(
+    real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
         related_name='favorites',
@@ -224,7 +223,7 @@ class Favorite(models.Model):
 
     def __str__(self):
         return self.MODEL_STRING.format(
-            object=self.object, user=self.user.get_username()
+            real_estate=self.real_estate, user=self.user.get_username()
         )
 
 
@@ -260,7 +259,7 @@ class Order(models.Model):
     )
     first_name = models.CharField(
         max_length=30,
-        verbose_name='Ваше имя'
+        verbose_name='Имя'
     )
     last_name = models.CharField(
         max_length=30,
@@ -291,7 +290,7 @@ class Order(models.Model):
         blank=True,
         null=True,
         related_name='orders',
-        on_delete=models.SET_NULL
+        on_delete=models.CASCADE
     )
     real_estate = models.ForeignKey(
         RealEstate,
@@ -300,15 +299,14 @@ class Order(models.Model):
         related_name='orders',
         on_delete=models.CASCADE
     )
-    # confirmation_code = models.CharField(
-    #     max_length=32,
-    #     verbose_name='Код подтверждения.'
-    # )
-    # confitmed = models.BooleanField(
-    #     verbose_name='Подтверждение',
-    #     default=False
-    # )
-    
-
-    
-
+    confirmation_code = models.CharField(
+        max_length=32,
+        verbose_name='Код подтверждения.'
+    )
+    confirmed = models.BooleanField(
+        verbose_name='Подтверждение',
+        default=False
+    )
+    class Meta:
+        verbose_name = 'Заявка'
+        verbose_name_plural = 'Заявки'
