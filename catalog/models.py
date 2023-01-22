@@ -27,6 +27,7 @@ class Location(models.Model):
     name = models.CharField(
         max_length=100, verbose_name='Название', unique=True, db_index=True
     )
+    slug = models.SlugField(max_length=100, verbose_name='Слаг', unique=True)
 
     class Meta:
         verbose_name = 'Локация'
@@ -229,10 +230,9 @@ class Favorite(models.Model):
 
 class Order(models.Model):
     """Модель заявки."""
+
     category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        verbose_name='Аренда/Покупка'
+        Category, on_delete=models.CASCADE, verbose_name='Аренда/Покупка'
     )
     location = models.ForeignKey(
         Location,
@@ -240,7 +240,7 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         verbose_name='Локация',
         blank=True,
-        null=True
+        null=True,
     )
     property_type = models.ForeignKey(
         PropertyType,
@@ -248,65 +248,47 @@ class Order(models.Model):
         verbose_name='Тип недвижимости',
         related_name='orders',
         blank=True,
-        null=True
+        null=True,
     )
     rooms = models.SmallIntegerField(
         default=1,
         # max_length=4,
         verbose_name='Колличество комнат',
         blank=True,
-        null=True
-    )
-    first_name = models.CharField(
-        max_length=30,
-        verbose_name='Имя'
-    )
-    last_name = models.CharField(
-        max_length=30,
-        verbose_name='Фамилия',
-    )
-    phone_number = models.CharField(
-        max_length=13,
-        unique=True,
-        verbose_name='Номер телефона'
-    )
-    email = models.EmailField(
-        unique=True,
-        verbose_name='Электронная почта'
-    )
-    comment = models.TextField(
-        verbose_name='Коментарии',
-        max_length=200,
-        blank=True,
         null=True,
     )
-    agreement = models.BooleanField(
-        verbose_name='Согласие',
-        default=False
+    first_name = models.CharField(max_length=30, verbose_name='Имя')
+    last_name = models.CharField(max_length=30, verbose_name='Фамилия')
+    phone_number = models.CharField(
+        max_length=13, unique=True, verbose_name='Номер телефона'
     )
+    email = models.EmailField(unique=True, verbose_name='Электронная почта')
+    comment = models.TextField(
+        verbose_name='Коментарии', max_length=200, blank=True, null=True
+    )
+    agreement = models.BooleanField(verbose_name='Согласие', default=False)
     date_added = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
         User,
         blank=True,
         null=True,
         related_name='orders',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     real_estate = models.ForeignKey(
         RealEstate,
         blank=True,
         null=True,
         related_name='orders',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     confirmation_code = models.CharField(
-        max_length=32,
-        verbose_name='Код подтверждения.'
+        max_length=32, verbose_name='Код подтверждения.'
     )
     confirmed = models.BooleanField(
-        verbose_name='Подтверждение',
-        default=False
+        verbose_name='Подтверждение', default=False
     )
+
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
