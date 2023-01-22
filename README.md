@@ -33,6 +33,8 @@
      ```
   5. В папке backend cоздать файл .env по шаблону:
      ```
+     EMAIL_HOST_USER=antalyadom@telfia.com
+     EMAIL_HOST_PASSWORD=<Пароль спрашивайте в дискорде>
      SECRET_KEY=some-random-secret-django-key
      ALLOWED_HOSTS="127.0.0.1 localhost backend"
      DEBUG=True
