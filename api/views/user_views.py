@@ -6,6 +6,8 @@ from rest_framework.response import Response
 class UserViewSet(DjoserUsers):
     """Пользователи на основе Djoser."""
 
+    http_method_names = ('get', 'post', 'put', 'patch', 'head')
+
     # Методы принудительно отключены для соответствия ТЗ
     #
     def reset_password(self, request, *args, **kwargs):

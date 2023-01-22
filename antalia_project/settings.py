@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',  # shell_plus --ipython
+    'drf_yasg',
     'corsheaders',
     'djoser',
     'users',
@@ -141,9 +142,13 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'SEND_ACTIVATION_EMAIL': False,
     'HIDE_USERS': True,
+    'USER_CREATE_PASSWORD_RETYPE': True,
+    'SET_PASSWORD_RETYPE': True,
+    'TOKEN_MODEL': None,
     'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-        'user': ['rest_framework.permissions.IsAuthenticated'],
+        'user': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user_create': ['rest_framework.permissions.AllowAny'],
+        'user_list': ['djoser.permissions.CurrentUserOrAdmin'],
     },
     'SERIALIZERS': {
         'user': 'api.serializers.user_serializers.UserSerializer',
@@ -151,3 +156,24 @@ DJOSER = {
         'user_create': 'api.serializers.user_serializers.RegisterUserSerializer',
     },
 }
+
+# swagger
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'JWT [Bearer {JWT}]': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
+
+# В файле .env хранятся имя юзера и пароль приложения
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_REPLY_TO = 'antalyadom@telfia.com'
