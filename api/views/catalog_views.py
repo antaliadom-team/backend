@@ -1,16 +1,25 @@
 from django.contrib.auth import get_user_model
-from rest_framework import status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework import status, viewsets, permissions
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 
+from api.mixins import FavoriteMixin
 from api.serializers.catalog_serializers import (
     CategorySerializer,
     FacilitySerializer,
     LocationSerializer,
     OrderSerializer,
     PropertyTypeSerializer,
+    RealEstateSerializer,
 )
-from catalog.models import Category, Facility, Location, PropertyType
+from catalog.models import (
+    Category,
+    Facility,
+    Location,
+    PropertyType,
+    RealEstate,
+    Favorite,
+)
 
 User = get_user_model()
 
@@ -59,3 +68,23 @@ class FacilityViewSet(viewsets.ModelViewSet):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
     lookup_field = 'name'
+
+
+class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
+    """Каталог недвижимости"""
+
+    http_method_names = ('get',)
+    queryset = RealEstate.objects.all()
+    serializer_class = RealEstateSerializer
+
+    @action(
+        methods=('post', 'delete'),
+        detail=True,
+        permission_classes=(permissions.IsAuthenticated,),
+    )
+    def favorite(self, request, pk=None):
+        # Добавление объекта в избранное
+        if request.method == 'POST':
+            return self.add_object(request, pk=pk, model=Favorite)
+        # Удаление объекта из избранного
+        return self.delete_object(request, pk=pk, model=Favorite)

@@ -7,6 +7,7 @@ from api.views.catalog_views import (
     FacilityViewSet,
     LocationViewSet,
     PropertyTypeViewSet,
+    RealEstateViewSet,
     order,
 )
 from api.views.user_views import UserViewSet
@@ -19,6 +20,7 @@ router.register('locations', LocationViewSet, basename='locations')
 router.register('categories', CategoryViewSet, basename='categories')
 router.register('types', PropertyTypeViewSet, basename='types')
 router.register('facilities', FacilityViewSet, basename='facilities')
+router.register('objects', RealEstateViewSet, basename='realestate')
 router.register('static_pages', StaticPageViewSet, basename='static_pages')
 router.register('team', TeamViewSet, basename='team')
 
