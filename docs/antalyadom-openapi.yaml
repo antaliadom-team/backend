@@ -1,0 +1,908 @@
+swagger: '2.0'
+info:
+  title: AntalyaDom API
+  description: AntalyaDom REST API
+  version: v1
+schemes:
+  - http
+basePath: /api
+consumes:
+  - application/json
+produces:
+  - application/json
+securityDefinitions:
+  'JWT [Bearer {JWT}]':
+    type: apiKey
+    name: Authorization
+    in: header
+security:
+  - 'JWT [Bearer {JWT}]': []
+paths:
+  /api/auth/jwt/create/:
+    post:
+      operationId: auth_jwt_create_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenObtainPair'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenObtainPair'
+      tags:
+        - auth
+      security: []
+    parameters: []
+  /api/auth/jwt/refresh/:
+    post:
+      operationId: auth_jwt_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      tags:
+        - auth
+    parameters: []
+  /api/auth/jwt/verify/:
+    post:
+      operationId: auth_jwt_verify_create
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TokenVerify'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/TokenVerify'
+      tags:
+        - auth
+    parameters: []
+  /api/objects/categories/:
+    get:
+      operationId: Список категорий
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Category'
+          examples:
+            - - id: rent
+                name: Аренда
+              - id: sell
+                name: Продажа
+      tags:
+        - categories
+    parameters: []
+  '/api/objects/categories/{id}/':
+    get:
+      operationId: Получение категории
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Category'
+        '404':
+          $ref: '#/responses/NotFound'
+      tags:
+        - categories
+      security: []
+    parameters:
+      - type: string
+        name: id
+        in: path
+        description: Уникальный идентификатор категории
+        required: true
+  /api/objects/facilities/:
+    get:
+      operationId: facilities_list
+      description: Удобства
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Facility'
+      tags:
+        - facilities
+    parameters: []
+  '/api/objects/facilities/{id}/':
+    get:
+      operationId: facilities_read
+      description: Удобства
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Facility'
+      tags:
+        - facilities
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+        description: Уникальный идентификатор удобства
+  /api/objects/locations/:
+    get:
+      operationId: locations_list
+      description: Локация
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Location'
+      tags:
+        - locations
+    parameters: []
+  '/api/objects/locations/{slug}/':
+    get:
+      operationId: locations_read
+      description: Локация
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Location'
+      tags:
+        - locations
+      security: []
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        type: string
+        format: slug
+        pattern: '^[-a-zA-Z0-9_]+$'
+  /api/objects/:
+    get:
+      operationId: Каталог недвижимости
+      description: 'Страница доступна всем пользователям. Доступна фильтрация по избранному, локации, категории, типу, количеству комнат.'
+      parameters:
+        - type: string
+          in: query
+          name: page
+          description: Номер страницы.
+        - type: string
+          in: query
+          name: limit
+          description: Количество объектов на странице.
+        - type: integer
+          in: query
+          name: is_favorited
+          enum:
+            - 0
+            - 1
+          description: 'Показывать только объекты, находящиеся в списке избранного.'
+        - type: integer
+          in: query
+          name: location
+          description: Показывать объекты только из локации с указанным id.
+        - type: string
+          in: query
+          name: category
+          description: Показывать объекты только из категории с указанным id.
+        - type: string
+          in: query
+          name: rooms
+          description: Показывать объекты только из с указанным id.
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+                description: Общее количество объектов
+              next:
+                type: string
+                format: uri
+                description: Ссылка на следующую страницу
+              previous:
+                type: string
+                format: uri
+                description: Ссылка на предыдущую страницу
+              results:
+                $ref: '#/definitions/RealEstate'
+      tags:
+        - objects
+      security: []
+    parameters: []
+  '/api/objects/{id}/':
+    get:
+      operationId: objects_read
+      description: Каталог недвижимости
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/RealEstate'
+      tags:
+        - objects
+    parameters:
+      - name: id
+        in: path
+        description: A unique integer value identifying this Объект.
+        required: true
+        type: integer
+  /api/objects/order/:
+    post:
+      operationId: order_create
+      description: ''
+      parameters: []
+      responses:
+        '201':
+          description: ''
+      tags:
+        - order
+    parameters: []
+  /api/static_pages/:
+    get:
+      operationId: static_pages_list
+      description: Получение и вывод статических страниц.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - static_pages
+    parameters: []
+  '/api/static_pages/{id}/':
+    get:
+      operationId: static_pages_read
+      description: Получение и вывод статических страниц.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - static_pages
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /api/static_pages/team/:
+    get:
+      operationId: team_list
+      description: Получение и вывод команды.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - team
+    parameters: []
+  '/api/static_pages/team/{id}/':
+    get:
+      operationId: team_read
+      description: Получение и вывод команды.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - team
+    parameters:
+      - name: id
+        in: path
+        required: true
+        type: string
+  /api/objects/types/:
+    get:
+      operationId: types_list
+      description: Тип недвижимости
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PropertyType'
+      tags:
+        - types
+    parameters: []
+  '/api/objects/types/{name}/':
+    get:
+      operationId: types_read
+      description: Тип недвижимости
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/PropertyType'
+      tags:
+        - types
+    parameters:
+      - name: name
+        in: path
+        required: true
+        type: string
+  /api/users/:
+    get:
+      operationId: users_list
+      description: Пользователи на основе Djoser.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+      tags:
+        - users
+    post:
+      operationId: users_create
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreatePasswordRetype'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/UserCreatePasswordRetype'
+      tags:
+        - users
+    parameters: []
+  /api/users/me/:
+    get:
+      operationId: users_me_read
+      description: Пользователи на основе Djoser.
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+      tags:
+        - users
+    put:
+      operationId: users_me_update
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - users
+    patch:
+      operationId: users_me_partial_update
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - users
+    parameters: []
+  /api/users/set_password/:
+    post:
+      operationId: users_set_password
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SetPasswordRetype'
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/SetPasswordRetype'
+      tags:
+        - users
+    parameters: []
+  '/api/users/{id}/':
+    get:
+      operationId: Профиль пользователя
+      description: 'Пользователи на основе Djoser. Для авторизованных юзеров, любой запрос кроме своего id возвращает 404, а иначе данные текущего пользователя.'
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+        '404':
+          $ref: '#/responses/NotFound'
+      tags:
+        - users
+    put:
+      operationId: users_update
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - users
+    patch:
+      operationId: users_partial_update
+      description: Пользователи на основе Djoser.
+      parameters:
+        - name: data
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/User'
+      tags:
+        - users
+    parameters:
+      - name: id
+        in: path
+        description: Уникальный идентификатор пользователя
+        required: true
+        type: string
+definitions:
+  TokenObtainPair:
+    required:
+      - username
+      - password
+    type: object
+    properties:
+      username:
+        title: Username
+        type: string
+        minLength: 1
+      password:
+        title: Password
+        type: string
+        minLength: 1
+  TokenRefresh:
+    required:
+      - refresh
+    type: object
+    properties:
+      refresh:
+        title: Refresh
+        type: string
+        minLength: 1
+      access:
+        title: Access
+        type: string
+        readOnly: true
+  TokenVerify:
+    required:
+      - token
+    type: object
+    properties:
+      token:
+        title: Token
+        type: string
+        minLength: 1
+  Category:
+    type: object
+    properties:
+      id:
+        title: Категория объекта
+        type: string
+        enum:
+          - rent
+          - sell
+      name:
+        type: string
+        enum:
+          - Аренда
+          - Продажа
+    description: Модель категорий
+  Facility:
+    type: object
+    description: Модель Удобств
+    properties:
+      id:
+        type: integer
+        description: Уникальный идентификатор удобства
+        example: 1
+        readOnly: true
+      name:
+        title: Название
+        type: string
+        maxLength: 100
+        minLength: 1
+        description: Название удобства
+        example: Кондиционер
+      icon:
+        title: Иконка
+        type: string
+        format: slug
+        pattern: '^[-a-zA-Z0-9_]+$'
+        maxLength: 100
+        minLength: 1
+        description: Имя иконки
+        example: air-conditioner-32x32.svg
+    required:
+      - name
+      - icon
+  Location:
+    type: object
+    description: Модель локаций
+    properties:
+      id:
+        type: integer
+        description: Уникальный идентификатор локации
+        example: 1
+        readOnly: true
+      name:
+        title: Название
+        type: string
+        maxLength: 100
+        minLength: 1
+        example: Анталия
+        description: Имя локации
+      slug:
+        title: Слаг
+        type: string
+        format: slug
+        pattern: '^[-a-zA-Z0-9_]+$'
+        maxLength: 100
+        minLength: 1
+        example: antalya
+        description: Слаг
+    required:
+      - name
+      - slug
+  Image:
+    type: object
+    description: Модель изображений объекта
+    properties:
+      id:
+        title: ID
+        type: integer
+        description: Уникальный идентификатор изображения
+        example: 1
+        readOnly: true
+      image:
+        title: Фото
+        type: string
+        format: uri
+        description: URL изображения
+        example: 'http://example.org/images/1.jpg'
+        readOnly: true
+  RealEstate:
+    type: object
+    description: Модель объекта
+    properties:
+      id:
+        type: integer
+        description: Уникальный идентификатор объекта недвижимости
+        readOnly: true
+      title:
+        title: Название
+        type: string
+        maxLength: 200
+        minLength: 1
+        description: Название
+      price:
+        title: Цена
+        type: integer
+        description: Цена
+        example: 1000000
+      currency:
+        title: Валюта
+        type: string
+        enum:
+          - ₺
+          - $
+          - €
+          - ₽
+        description: Валюта
+      period:
+        title: Период
+        type: string
+        enum:
+          - День
+          - Месяц
+          - Год
+        description: Период аренды
+      location:
+        title: Локация
+        type: integer
+        example: 1
+        description: Уникальный идентификатор локации
+      category:
+        title: Категория
+        description: Категория недвижимости
+        type: integer
+        example: 1
+      type:
+        title: Тип недвижимости
+        description: Тип недвижимости
+        example: 1
+        type: integer
+      rooms:
+        title: Количество комнат
+        type: integer
+        description: Количество комнат
+      area:
+        title: Площадь
+        type: integer
+        description: 'Площадь, м2'
+      floor:
+        title: Этаж
+        type: integer
+        description: Этаж
+      total_floors:
+        title: Этажность
+        type: integer
+        description: Этажность (всего этажей)
+      construction_year:
+        title: Год постройки
+        type: integer
+        description: Год постройки
+        minimum: 1900
+      status:
+        title: Статус
+        type: string
+        enum:
+          - Новостройка
+          - Вторичное
+        description: Статус
+      description:
+        title: Описание
+        type: string
+        minLength: 1
+        description: Подробное описание
+      facilities:
+        type: array
+        items:
+          $ref: '#/definitions/Facility'
+        readOnly: true
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+        readOnly: true
+      is_favorited:
+        title: Is favorited
+        type: string
+        default: false
+        description: Добавлен ли объект в избранное у текущего пользователя
+        readOnly: true
+    required:
+      - title
+      - price
+      - rooms
+      - area
+      - floor
+      - total_floors
+      - construction_year
+      - description
+  PropertyType:
+    type: object
+    description: Модель типа объекта
+    properties:
+      id:
+        type: integer
+        description: Уникальный идентификатор типа
+      name:
+        title: Название
+        type: string
+        maxLength: 50
+        minLength: 1
+        description: Название типа объекта недвижимости
+        example: Квартира
+    required:
+      - name
+  User:
+    type: object
+    description: Модель пользователя
+    properties:
+      id:
+        title: ID
+        type: integer
+        description: Уникальный идентификатор
+        readOnly: true
+      email:
+        title: Электронная почта
+        type: string
+        format: email
+        maxLength: 50
+        minLength: 1
+        description: Адрес электронной почты
+      first_name:
+        title: Имя
+        type: string
+        maxLength: 30
+        minLength: 1
+        description: Имя
+      last_name:
+        title: Фамилия
+        type: string
+        maxLength: 30
+        minLength: 1
+        description: Фамилия
+      phone:
+        type: string
+        pattern: '^\+?[0-9]{10-13}$'
+        description: Номер телефона
+      agreement:
+        type: boolean
+        default: false
+        description: Согласие с пользовательским соглашением
+    required:
+      - email
+      - first_name
+      - last_name
+      - phone
+      - agreement
+  UserCreatePasswordRetype:
+    type: object
+    description: Проверка пароля при создании юзера
+    properties:
+      id:
+        title: ID
+        type: integer
+        description: Уникальный идентификатор пользователя
+        readOnly: true
+      email:
+        title: Электронная почта
+        type: string
+        format: email
+        maxLength: 200
+        minLength: 1
+        description: Электронная почта
+      password:
+        title: Password
+        type: string
+        minLength: 1
+        description: Пароль
+      re_password:
+        title: Re password
+        type: string
+        minLength: 1
+        description: Повторный пароль
+    required:
+      - email
+      - password
+      - re_password
+  SetPasswordRetype:
+    type: object
+    description: Прорверка пароля при сбросе
+    properties:
+      new_password:
+        title: New password
+        type: string
+        minLength: 1
+        description: Новый пароль
+      re_new_password:
+        title: Re new password
+        type: string
+        minLength: 1
+        description: Повторный новый пароль
+      current_password:
+        title: Current password
+        type: string
+        minLength: 1
+        description: Текущий пароль
+    required:
+      - new_password
+      - re_new_password
+      - current_password
+  AuthenticationError:
+    description: Пользователь не авторизован
+    type: object
+    properties:
+      detail:
+        description: Описание ошибки
+        example: Учетные данные не были предоставлены.
+        type: string
+  PermissionDenied:
+    description: Недостаточно прав
+    type: object
+    properties:
+      detail:
+        description: Описание ошибки
+        example: У вас недостаточно прав для выполнения данного действия.
+        type: string
+  NotFound:
+    description: Объект не найден
+    type: object
+    properties:
+      detail:
+        description: Описание ошибки
+        example: Страница не найдена.
+        type: string
+responses:
+  ValidationError:
+    description: Ошибки валидации в стандартном формате DRF
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/ValidationError'
+  NestedValidationError:
+    description: 'Ошибки валидации в стандартном формате DRF, в том числе с внутренними элементами.'
+    content:
+      application/json:
+        schema:
+          oneOf:
+            - $ref: '#/components/schemas/NestedValidationError'
+            - $ref: '#/components/schemas/ValidationError'
+  AuthenticationError:
+    description: Пользователь не авторизован
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/AuthenticationError'
+  PermissionDenied:
+    description: Недостаточно прав
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/PermissionDenied'
+  NotFound:
+    description: Объект не найден
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/NotFound'
