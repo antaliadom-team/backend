@@ -1,5 +1,7 @@
 from django.contrib.admin.widgets import AdminFileWidget
 from django.utils.safestring import mark_safe
+from users.models import User
+from django.core import mail
 
 class AdminImageWidget(AdminFileWidget):
     """Поле для картинки в админке с превьюшкой"""
@@ -17,3 +19,12 @@ class AdminImageWidget(AdminFileWidget):
             )
         output.append(super().render(name, value, attrs, **kwargs))
         return mark_safe(u''.join(output))
+
+
+def send_order_emails(user):
+    mail.send_mail(subject='Подтверждение заявки.',
+                   message=f'Здравствуйте {user.get_full_name()}.'
+                           f' Ваша заявка была принята в работу, '
+                           f'скоро с вами свяжется сотрудник нашего агентства.',
+                   from_email='antalyadom@telfia.com',
+                   recipient_list=(user.email,))

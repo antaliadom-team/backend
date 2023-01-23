@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import models
 
 User = get_user_model()
@@ -25,9 +26,11 @@ class Location(models.Model):
     """Модель локации."""
 
     name = models.CharField(
-        max_length=100, verbose_name='Название', unique=True, db_index=True
+        max_length=settings.LONG_NAMES_LENGTH, verbose_name='Название',
+        unique=True, db_index=True
     )
-    slug = models.SlugField(max_length=100, verbose_name='Слаг', unique=True)
+    slug = models.SlugField(max_length=settings.SLUG_LENGTH,
+                            verbose_name='Слаг', unique=True)
 
     class Meta:
         verbose_name = 'Локация'
@@ -41,7 +44,8 @@ class PropertyType(models.Model):
     """Модель типа недвижимости."""
 
     name = models.CharField(
-        max_length=50, verbose_name='Название', unique=True, db_index=True
+        max_length=settings.PROPERTY_MAX_LENGTH, verbose_name='Название',
+        unique=True, db_index=True
     )
 
     class Meta:
@@ -56,9 +60,11 @@ class Facility(models.Model):
     """Модель удобств."""
 
     name = models.CharField(
-        max_length=100, verbose_name='Название', unique=True
+        max_length=settings.LONG_NAMES_LENGTH, verbose_name='Название',
+        unique=True
     )
-    icon = models.SlugField(max_length=100, verbose_name='Иконка')
+    icon = models.SlugField(max_length=settings.ICON_SLUG,
+                            verbose_name='Иконка')
 
     class Meta:
         verbose_name = 'Удобство'
@@ -95,7 +101,8 @@ class RealEstate(models.Model):
         '{name:.30} в {location} типа {type} в категории {rent_or_sell}'
     )
 
-    title = models.CharField(max_length=200, verbose_name='Название')
+    title = models.CharField(max_length=settings.ESTATE_TITLE_LENGTH,
+                             verbose_name='Название')
     price = models.IntegerField(verbose_name='Цена')
     area = models.IntegerField(verbose_name='Площадь')
     floor = models.IntegerField(verbose_name='Этаж')
@@ -253,19 +260,22 @@ class Order(models.Model):
     rooms = models.SmallIntegerField(
         default=1,
         # max_length=4,
-        verbose_name='Колличество комнат',
+        verbose_name='Количество комнат',
         blank=True,
         null=True,
     )
-    first_name = models.CharField(max_length=30, verbose_name='Имя')
-    last_name = models.CharField(max_length=30, verbose_name='Фамилия')
+    first_name = models.CharField(max_length=settings.NAMES_LENGTH,
+                                  verbose_name='Имя')
+    last_name = models.CharField(max_length=settings.NAMES_LENGTH,
+                                 verbose_name='Фамилия')
     phone_number = models.CharField(
-        max_length=13, unique=True, verbose_name='Номер телефона'
-    )
-    email = models.EmailField(unique=True, verbose_name='Электронная почта')
+        max_length=settings.PHONE_LENGTH, unique=True,
+        verbose_name='Номер телефона')
+    email = models.EmailField(unique=True, verbose_name='Электронная почта',
+                              max_length=settings.EMAIL_LENGTH)
     comment = models.TextField(
-        verbose_name='Коментарии', max_length=200, blank=True, null=True
-    )
+        verbose_name='Комментарии', max_length=settings.COMMENT_LENGTH,
+        blank=True, null=True)
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     date_added = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
@@ -283,7 +293,7 @@ class Order(models.Model):
         on_delete=models.CASCADE,
     )
     confirmation_code = models.CharField(
-        max_length=32, verbose_name='Код подтверждения.'
+        max_length=settings.CONF_CODE_LENGTH, verbose_name='Код подтверждения.'
     )
     confirmed = models.BooleanField(
         verbose_name='Подтверждение', default=False
