@@ -21,20 +21,33 @@
 
   1. Клонировать репозиторий `git clone https://github.com/antaliadom-team/backend.git`
   2. Перейти в папку с проектом  `cd backend`
-  2. Создать и активировать виртуальное окружение
+  3. Создать и активировать виртуальное окружение
      ```
      python -m venv .venv
      source env/bin/activate
      ```
-  3. Установить зависимости
+  4. Установить зависимости
      ```
      python -m pip install --upgrade pip
      pip install -r requirements.txt
      ```
-  4. Перейти в ветку разраработки `git checkout dev`
-  5. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api-catalouge`
-  6. Запушить изменения с коммитом "добавляет эндпоинт каталога"
-  7. Радоваться что всё прошло успешно :tada:
+  5. В папке backend cоздать файл .env по шаблону:
+     ```
+     EMAIL_HOST_USER=antalyadom@telfia.com
+     EMAIL_HOST_PASSWORD=<Пароль спрашивайте в дискорде>
+     SECRET_KEY=some-random-secret-django-key
+     ALLOWED_HOSTS="127.0.0.1 localhost backend"
+     DEBUG=True
+     CORS_WHITELIST="http://localhost:3000 http://localhost:8080"
+     ```
+  5. Применить миграции
+     ```
+     python manage.py migrate
+     ```
+  6. Перейти в ветку разраработки `git checkout dev`
+  7. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api-catalog`
+  8. Запушить изменения с коммитом "добавляет эндпоинт каталога"
+  9. Радоваться что всё прошло успешно :tada:
 
 ## Несколько требований к проекту
 
