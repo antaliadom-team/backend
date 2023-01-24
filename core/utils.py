@@ -28,3 +28,9 @@ def send_order_emails(user):
                            f'скоро с вами свяжется сотрудник нашего агентства.',
                    from_email='antalyadom@telfia.com',
                    recipient_list=(user.email,))
+    for admin in User.objects.filter(is_staff=True).values(
+            'first_name', 'last_name', 'email').distinct():
+        mail.send_mail(subject='Новая заявка.',
+                       message=f'Поступила заявка от {user.get_full_name()}.',
+                       from_email='antalyadom@telfia.com',
+                       recipient_list=(admin['email'],))

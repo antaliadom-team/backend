@@ -191,6 +191,5 @@ PROPERTY_MAX_LENGTH = 50
 ICON_SLUG = 100
 COMMENT_LENGTH = 200
 CONF_CODE_LENGTH = 32
+PASSWORD_LENGTH = 128
 
-
-ADMINS = [()] #список админов для mail_admins() в формате ('name', 'email')

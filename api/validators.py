@@ -30,9 +30,10 @@ def _number_check(self, value, start):
 
 def regex_check_number(number): #возможно одна проверка будет удобнее
     """Проверка валидности номера телефона"""
-    pattern = (
-        r'[+]?[0-9]?[\(-]?[0-9]{3}[\)-]?[-]?[0-9]{3}[-]?[0-9]{2}[-]?[0-9]{2}')
+    pattern = r'^[+]?[0-9]{10,13}$'
     match = re.fullmatch(pattern, number)
     if not match:
         raise ValidationError('Некорректный номер')
-    return '+' + re.sub(r'[+\(\)-]', '', match.string)
+    if match.string.startswith('+'):
+        return match.string
+    return '+' + match.string
