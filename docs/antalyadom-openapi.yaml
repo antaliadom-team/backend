@@ -593,8 +593,9 @@ paths:
         <p><b>В текущей реализации фактически копия эндпоинта /api/users/me/</b></p>
         <p>Текущий пользователь. Эндпоинт доступен только для авторизованных пользователей. Возвращает атрибуты текущего авторизованного пользователя.</p>
       parameters:
-        - type: string
-          in: query
+        - type: integer
+          in: path
+          required: true
           name: id
           description: Уникальный идентификатор пользователя.
       responses:
@@ -610,7 +611,7 @@ paths:
         - Пользователи
       summary: Профиль пользователя
     put:
-      operationId: Обновление пользователя
+      operationId: update_user
       description: |-
         <p><b>В текущей реализации фактически копия эндпоинта /api/users/me/</b></p>
         <p>Текущий пользователь. Эндпоинт доступен только для авторизованных пользователей. Позволяет изменять имя, фамилию и телефон текущего авторизованного пользователя. В случае успешного обновления данных возвращает статус-код 200.</p>
@@ -622,7 +623,8 @@ paths:
             $ref: '#/definitions/CustomUserUpdate'
           description: ''
         - type: string
-          in: query
+          in: path
+          required: true
           name: id
           description: Уникальный идентификатор пользователя.
       responses:
@@ -637,7 +639,7 @@ paths:
       tags:
         - Пользователи
     patch:
-      operationId: Частичное обновление пользователя
+      operationId: partly_update_user
       description: |-
         <p><b>В текущей реализации фактически копия эндпоинта /api/users/me/</b></p>
         <p>Текущий пользователь. Эндпоинт доступен только для авторизованных пользователей. Позволяет изменять имя, фамилию и телефон текущего авторизованного пользователя. В случае успешного обновления данных возвращает статус-код 200.</p>
@@ -648,7 +650,8 @@ paths:
           schema:
             $ref: '#/definitions/CustomUserUpdate'
         - type: string
-          in: query
+          in: path
+          required: true
           name: id
           description: Уникальный идентификатор пользователя.
       responses:
@@ -1195,7 +1198,7 @@ definitions:
       phone:
         type: string
         description: Телефон
-        pattern: '^+?[0-9]{10,13}$'
+        pattern: '^\+?[0-9]{10,13}$'
         example: '+79876543210'
       email:
         type: string
@@ -1255,7 +1258,7 @@ definitions:
       phone:
         type: string
         description: Телефон
-        pattern: '^+?[0-9]{10,13}$'
+        pattern: '^\+?[0-9]{10,13}$'
         example: '+79876543210'
       email:
         type: string
@@ -1364,44 +1367,22 @@ definitions:
 responses:
   ValidationError:
     description: Ошибки валидации в стандартном формате DRF
-    content:
-      application/json:
-        schema:
-          $ref: '#/components/schemas/ValidationError'
     schema:
       $ref: '#/definitions/ValidationError'
   AuthenticationError:
     description: Пользователь не авторизован
-    content:
-      application/json:
-        schema:
-          $ref: '#/components/schemas/AuthenticationError'
     schema:
       $ref: '#/definitions/AuthenticationError'
   PermissionDenied:
     description: Недостаточно прав
-    content:
-      application/json:
-        schema:
-          $ref: '#/components/schemas/PermissionDenied'
     schema:
       $ref: '#/definitions/PermissionDenied'
   NotFound:
     description: Объект не найден
-    content:
-      application/json:
-        schema:
-          $ref: '#/components/schemas/NotFound'
     schema:
       $ref: '#/definitions/NotFound'
   InvalidToken:
     description: Передан невалидный токен
-    content:
-      application/json:
-        schema:
-          properties:
-            id:
-              type: string
     schema:
       $ref: '#/definitions/InvalidToken'
 host: antalyadom.telfia.com
