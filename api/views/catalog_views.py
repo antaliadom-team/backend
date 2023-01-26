@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
+from core.utils import send_order_emails
 
 from api.mixins import FavoriteMixin
 from api.serializers.catalog_serializers import (
@@ -29,6 +30,7 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
+    send_order_emails(request.user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

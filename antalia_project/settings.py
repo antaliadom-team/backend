@@ -177,3 +177,25 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
+EMAIL_ADMIN_MESSAGE = 'Поступила заявка от {admin_full_name}.'
+EMAIL_USER_MESSAGE = 'Здравствуйте {user_full_name}.' \
+                     'Ваша заявка была принята в работу,' \
+                     'скоро с вами свяжется сотрудник нашего агентства.'
+EMAIL_HTML_MESSAGE_ADMIN = '' #можно прикрутить HTML
+EMAIL_HTML_MESSAGE_USER = '' #можно прикрутить HTML
+
+#Константы для моделей
+EMAIL_LENGTH = 50
+USER_ROLE_LENGTH = 6
+PHONE_LENGTH = 14
+NAMES_LENGTH = 30
+LONG_NAMES_LENGTH = 100
+ESTATE_TITLE_LENGTH = 200
+SLUG_LENGTH = 100
+LONG_SLUG_LENGTH = 255
+PROPERTY_MAX_LENGTH = 50
+ICON_SLUG = 100
+COMMENT_LENGTH = 200
+CONF_CODE_LENGTH = 32
+PASSWORD_LENGTH = 128
+

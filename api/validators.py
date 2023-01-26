@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+import re
 
 
 def phone_number_validator(self, value):
@@ -25,3 +26,14 @@ def _number_check(self, value, start):
             int(value[i])
         except ValueError:
             raise ValidationError('Номер телефона должен состоять из чисел.')
+
+
+def regex_check_number(number): #возможно одна проверка будет удобнее
+    """Проверка валидности номера телефона"""
+    pattern = r'^[+]?[0-9]{10,13}$'
+    match = re.fullmatch(pattern, number)
+    if not match:
+        raise ValidationError('Некорректный номер')
+    if match.string.startswith('+'):
+        return match.string
+    return f'+{match.string}'

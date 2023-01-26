@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model, password_validation
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.conf import settings
 from rest_framework import serializers
 
 User = get_user_model()
@@ -19,9 +20,9 @@ class RegisterUserSerializer(BaseUserSerializer):
 
     password_confirmation = serializers.CharField(
         # TODO: вынести max-length в settings
-        max_length=128, write_only=True, help_text='Введите пароль повторно.'
-    )
-    phone_number = serializers.CharField(max_length=14)
+        max_length=settings.PASSWORD_LENGTH,
+        write_only=True, help_text='Введите пароль повторно.')
+    phone_number = serializers.CharField(max_length=settings.PHONE_LENGTH)
     agreement = serializers.BooleanField()
 
     def validate(self, data):
