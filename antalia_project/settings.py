@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'users',
     'catalog',
     'about',
-    'api'
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -159,13 +159,13 @@ DJOSER = {
 
 # swagger
 SWAGGER_SETTINGS = {
-   'SECURITY_DEFINITIONS': {
-      'JWT [Bearer {JWT}]': {
+    'SECURITY_DEFINITIONS': {
+        'JWT [Bearer {JWT}]': {
             'type': 'apiKey',
             'name': 'Authorization',
-            'in': 'header'
-      }
-   }
+            'in': 'header',
+        }
+    }
 }
 
 # В файле .env хранятся имя юзера и пароль приложения
@@ -178,13 +178,14 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
 EMAIL_ADMIN_MESSAGE = 'Поступила заявка от {admin_full_name}.'
-EMAIL_USER_MESSAGE = 'Здравствуйте {user_full_name}.' \
-                     'Ваша заявка была принята в работу,' \
-                     'скоро с вами свяжется сотрудник нашего агентства.'
-EMAIL_HTML_MESSAGE_ADMIN = '' #можно прикрутить HTML
-EMAIL_HTML_MESSAGE_USER = '' #можно прикрутить HTML
+EMAIL_USER_MESSAGE = (
+    'Здравствуйте {user_full_name}. Ваша заявка была принята в работу,'
+    'скоро с вами свяжется сотрудник нашего агентства.'
+)
+EMAIL_HTML_MESSAGE_ADMIN = ''  # можно прикрутить HTML
+EMAIL_HTML_MESSAGE_USER = ''  # можно прикрутить HTML
 
-#Константы для моделей
+# Константы для моделей
 EMAIL_LENGTH = 50
 USER_ROLE_LENGTH = 6
 PHONE_LENGTH = 14
@@ -198,4 +199,3 @@ ICON_SLUG = 100
 COMMENT_LENGTH = 200
 CONF_CODE_LENGTH = 32
 PASSWORD_LENGTH = 128
-
