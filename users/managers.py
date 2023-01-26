@@ -4,9 +4,15 @@ from django.contrib.auth.models import BaseUserManager
 class UserManager(BaseUserManager):
     """Управляет созданием пользователя."""
 
-    def create_user(self, first_name, last_name,
-            email, agreement, phone_number, password=None,
-            ):
+    def create_user(
+        self,
+        first_name,
+        last_name,
+        email,
+        agreement,
+        phone_number,
+        password=None,
+    ):
         if not first_name:
             raise ValueError('Users Must Have An first_name')
         if not last_name:
@@ -15,7 +21,7 @@ class UserManager(BaseUserManager):
             raise ValueError('Users Must Have An Email Address')
         if not phone_number:
             raise ValueError('Users Must Have A Phone Number')
-        if agreement != True:
+        if agreement is not True:
             raise ValueError('Give me your agreement, stuped bastard!')
         user = self.model(
             username=email,
@@ -23,7 +29,7 @@ class UserManager(BaseUserManager):
             phone_number=phone_number,
             first_name=first_name,
             last_name=last_name,
-            agreement=agreement
+            agreement=agreement,
         )
         user.set_password(password)
         user.save(using=self._db)
@@ -41,7 +47,16 @@ class UserManager(BaseUserManager):
     #     user.save(using=self._db)
     #     return user
 
-    def create_superuser(self, username, first_name, last_name, phote_number, agreement , email, password=None):
+    def create_superuser(
+        self,
+        username,
+        first_name,
+        last_name,
+        phote_number,
+        agreement,
+        email,
+        password=None,
+    ):
         user = self.create_user(
             username=username,
             email=email,

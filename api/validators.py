@@ -28,7 +28,7 @@ def _number_check(self, value, start):
             raise ValidationError('Номер телефона должен состоять из чисел.')
 
 
-def regex_check_number(number): #возможно одна проверка будет удобнее
+def regex_check_number(number):  # возможно одна проверка будет удобнее
     """Проверка валидности номера телефона"""
     pattern = r'^[+]?[0-9]{10,13}$'
     match = re.fullmatch(pattern, number)
