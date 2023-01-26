@@ -36,4 +36,4 @@ def regex_check_number(number): #возможно одна проверка бу
         raise ValidationError('Некорректный номер')
     if match.string.startswith('+'):
         return match.string
-    return '+' + match.string
+    return f'+{match.string}'
