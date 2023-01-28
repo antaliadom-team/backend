@@ -5,24 +5,34 @@ class APITestBase:
         'users_detail': '/api/users/{user_id}/',
         'users_me': '/api/users/me/',
         'set_password': '/api/users/set_password/',
-        'reset_password': '/api/users/reset_password/',
-        'reset_password_confirm': '/api/users/reset_password_confirm/',
-
-        # TODO: уточнить после того, как определимся какие будут токены
-        'get_token': '/api/auth/token/login/',
-        'delete_token': '/api/auth/token/logout/',
-        # Objects
-        'object_list': '/api/catalog/',
-        'object_detail': '/api/catalog/{object_id}/',
+        # Auth
+        'get_token': '/api/auth/jwt/create/',
+        'refresh_token': '/api/auth/jwt/refresh/',
+        'verify_token': '/api/auth/jwt/verify/',
+        'logout': '/api/auth/jwt/logout/',
+        # Real Estate
+        'real_estate_list': '/api/objects/',
+        'real_estate_detail': '/api/objects/{object_id}/',
+        # Real Estate Types
+        'real_estate_type_list': '/api/objects/types/',
+        'real_estate_type_detail': '/api/objects/types/{type_id}/',
+        # Real Estate Locations
+        'location_list': '/api/objects/locations/',
+        'location_detail': '/api/objects/locations/{location_id}/',
+        # Real Estate Facilities
+        'facility_list': '/api/objects/facilities/',
+        'facility_detail': '/api/objects/facilities/{facility_id}/',
+        # Real Estate Categories
+        'category_list': '/api/objects/categories/',
+        'category_detail': '/api/objects/categories/{category_id}/',
         # Requests
-        'buyer_request': '/api/catalog/requests/',
-        'object_to_request': '/api/catalog/{object_id}/request/',
-        # Favorites
-        'favorites': '/api/catalog/{object_id}/favorite/',
+        'order_general': '/api/objects/requests/',
+        'real_estate_order': '/api/objects/{object_id}/order/',
         # Static pages
         'static_page_list': '/api/static_pages/',
-        'static_page': '/api/static_pages/{slug}/',
+        'static_page': '/api/static_pages/{id}/',
         'team': '/api/static_pages/team/',
+        'team_member': '/api/static_pages/team/{id}/',
     }
 
     def assert_fields(self, fields_required, response, *args, **kwargs):

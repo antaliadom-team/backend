@@ -26,26 +26,31 @@ class Location(models.Model):
     """Модель локации."""
 
     name = models.CharField(
-        max_length=settings.LONG_NAMES_LENGTH, verbose_name='Название',
-        unique=True, db_index=True
+        max_length=settings.LONG_NAMES_LENGTH,
+        verbose_name='Название',
+        unique=True,
+        db_index=True,
     )
-    slug = models.SlugField(max_length=settings.SLUG_LENGTH,
-                            verbose_name='Слаг', unique=True)
+    slug = models.SlugField(
+        max_length=settings.SLUG_LENGTH, verbose_name='Слаг', unique=True
+    )
 
     class Meta:
         verbose_name = 'Локация'
         verbose_name_plural = 'Локации'
 
     def __str__(self):
-        return self.name[:15]
+        return self.name[:30]
 
 
 class PropertyType(models.Model):
     """Модель типа недвижимости."""
 
     name = models.CharField(
-        max_length=settings.PROPERTY_MAX_LENGTH, verbose_name='Название',
-        unique=True, db_index=True
+        max_length=settings.PROPERTY_MAX_LENGTH,
+        verbose_name='Название',
+        unique=True,
+        db_index=True,
     )
 
     class Meta:
@@ -60,11 +65,13 @@ class Facility(models.Model):
     """Модель удобств."""
 
     name = models.CharField(
-        max_length=settings.LONG_NAMES_LENGTH, verbose_name='Название',
-        unique=True
+        max_length=settings.LONG_NAMES_LENGTH,
+        verbose_name='Название',
+        unique=True,
     )
-    icon = models.SlugField(max_length=settings.ICON_SLUG,
-                            verbose_name='Иконка')
+    icon = models.SlugField(
+        max_length=settings.ICON_SLUG, verbose_name='Иконка'
+    )
 
     class Meta:
         verbose_name = 'Удобство'
@@ -97,18 +104,23 @@ class Category(models.Model):
 class RealEstate(models.Model):
     """Модель объекта."""
 
-    MODEL_STRING = (
-        '{name:.30} в {location} типа {type} в категории {rent_or_sell}'
-    )
+    MODEL_STRING = '{name:.30} в {location} типа {type} в категории {category}'
 
-    title = models.CharField(max_length=settings.ESTATE_TITLE_LENGTH,
-                             verbose_name='Название')
+    title = models.CharField(
+        max_length=settings.ESTATE_TITLE_LENGTH, verbose_name='Название'
+    )
     price = models.IntegerField(verbose_name='Цена')
     area = models.IntegerField(verbose_name='Площадь')
-    floor = models.IntegerField(verbose_name='Этаж')
-    total_floors = models.IntegerField(verbose_name='Этажность')
-    construction_year = models.IntegerField(verbose_name='Год постройки')
-    rooms = models.SmallIntegerField(verbose_name='Количество комнат')
+    floor = models.IntegerField(verbose_name='Этаж', null=True, blank=True)
+    total_floors = models.IntegerField(
+        verbose_name='Этажность', null=True, blank=True
+    )
+    construction_year = models.IntegerField(
+        verbose_name='Год постройки', null=True, blank=True
+    )
+    rooms = models.SmallIntegerField(
+        verbose_name='Количество комнат', null=True, blank=True
+    )
     date_added = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата добавления', db_index=True
     )
@@ -154,6 +166,7 @@ class RealEstate(models.Model):
         related_name='real_estate',
         db_index=True,
         verbose_name='Владелец',
+        null=True,
     )
     facility = models.ManyToManyField(
         Facility, related_name='real_estate', verbose_name='Удобства'
@@ -176,7 +189,7 @@ class RealEstate(models.Model):
             name=self.title,
             location=self.location,
             type=self.type,
-            rent_or_sell=self.category,
+            category=self.category,
         )
 
 
@@ -207,8 +220,6 @@ class Image(models.Model):
 class Favorite(models.Model):
     """Модель избранного."""
 
-    MODEL_STRING = 'Избранный объект {real_estate.:30} пользователя {user}'
-
     real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
@@ -228,10 +239,17 @@ class Favorite(models.Model):
     class Meta:
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'real_estate'],
+                name='Unique real estate with user',
+            )
+        ]
 
     def __str__(self):
-        return self.MODEL_STRING.format(
-            real_estate=self.real_estate, user=self.user.get_username()
+        return (
+            f'Избранный объект {self.real_estate.title} '
+            f'пользователя {self.user.get_username()}'
         )
 
 
@@ -264,18 +282,28 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    first_name = models.CharField(max_length=settings.NAMES_LENGTH,
-                                  verbose_name='Имя')
-    last_name = models.CharField(max_length=settings.NAMES_LENGTH,
-                                 verbose_name='Фамилия')
+    first_name = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Имя'
+    )
+    last_name = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
+    )
     phone_number = models.CharField(
-        max_length=settings.PHONE_LENGTH, unique=True,
-        verbose_name='Номер телефона')
-    email = models.EmailField(unique=True, verbose_name='Электронная почта',
-                              max_length=settings.EMAIL_LENGTH)
+        max_length=settings.PHONE_LENGTH,
+        unique=True,
+        verbose_name='Номер телефона',
+    )
+    email = models.EmailField(
+        unique=True,
+        verbose_name='Электронная почта',
+        max_length=settings.EMAIL_LENGTH,
+    )
     comment = models.TextField(
-        verbose_name='Комментарии', max_length=settings.COMMENT_LENGTH,
-        blank=True, null=True)
+        verbose_name='Комментарии',
+        max_length=settings.COMMENT_LENGTH,
+        blank=True,
+        null=True,
+    )
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     date_added = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(

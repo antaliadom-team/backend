@@ -5,35 +5,35 @@ from django.contrib.auth import get_user_model
 @pytest.fixture
 def user(django_user_model):
     return django_user_model.objects.create_user(
-        username='test_user', email='test.user@fake.mail', password='123456Qq'
+        email='test.user@fake.mail',
+        password='12345Qq',
     )
 
 
 @pytest.fixture
 def another_user(django_user_model):
     return django_user_model.objects.create_user(
-        username='another_test_user',
         email='another.test.user@fake.mail',
-        password='123456Qq',
+        password='12345Qq',
     )
 
 
 @pytest.fixture
 def admin(django_user_model):
     return django_user_model.objects.create_user(
-        username='test_admin',
         email='test.admin@fake.mail',
-        password='123456Qq',
+        password='12345Qq',
         is_superuser=True,
     )
 
 
 @pytest.fixture
 def token_admin(admin):
-    from rest_framework.authtoken.models import Token
+    from rest_framework_simplejwt.tokens import RefreshToken
 
-    token = Token.objects.create(user_id=admin.id)
-    return {'access': str(token)}
+    refresh = RefreshToken.for_user(admin)
+
+    return {'refresh': str(refresh), 'access': str(refresh.access_token)}
 
 
 @pytest.fixture
@@ -41,16 +41,16 @@ def admin_client(token_admin):
     from rest_framework.test import APIClient
 
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token_admin["access"]}')
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_admin["access"]}')
     return client
 
 
 @pytest.fixture
 def token_user(user):
-    from rest_framework.authtoken.models import Token
+    from rest_framework_simplejwt.tokens import RefreshToken
 
-    token = Token.objects.create(user_id=user.id)
-    return {'access': str(token)}
+    refresh = RefreshToken.for_user(user)
+    return {'refresh': str(refresh), 'access': str(refresh.access_token)}
 
 
 @pytest.fixture
@@ -58,8 +58,15 @@ def user_client(token_user):
     from rest_framework.test import APIClient
 
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token_user["access"]}')
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_user["access"]}')
     return client
+
+
+@pytest.fixture
+def client():
+    from rest_framework.test import APIClient
+
+    return APIClient()
 
 
 @pytest.fixture(

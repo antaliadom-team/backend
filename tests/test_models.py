@@ -2,14 +2,16 @@ import pytest
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 
+from about.models import StaticPage, Team
 from catalog.models import (
     Favorite,
     Location,
     PropertyType,
     Facility,
     RealEstate,
-    # RentSell,
     Image,
+    Order,
+    Category,
 )
 
 
@@ -23,7 +25,7 @@ MODEL_FIELDS = [
             'first_name',
             'last_name',
             'password',
-            'phone',
+            'phone_number',
             'email',
             'agreement',
             'role',
@@ -49,15 +51,46 @@ MODEL_FIELDS = [
             'owner_id',
         ],
     ],
+    [
+        Order,
+        [
+            'category_id',
+            'location_id',
+            'property_type_id',
+            'rooms',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'email',
+            'comment',
+            'agreement',
+            'date_added',
+            'real_estate_id',
+        ],
+    ],
+    [Category, ['name']],
     [Location, ['name']],
     [PropertyType, ['name']],
     [Facility, ['name', 'icon']],
-    # [RentSell, ['rent_or_sell']],
-    [Image, ['object_id', 'image']],
-    [Favorite, ['object_id', 'user_id']],
+    [Image, ['real_estate_id', 'image']],
+    [Favorite, ['real_estate_id', 'user_id']],
+    [StaticPage, ['title', 'content', 'slug', 'is_active']],
+    [
+        Team,
+        [
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+            'position',
+            'photo',
+            'date_added',
+            'is_active',
+        ],
+    ],
 ]
 
-MODEL_M2M_FIELDS = [[RealEstate, ['facility', 'rent_or_sell']]]
+MODEL_M2M_FIELDS = [[RealEstate, ['facility']]]
 
 
 def search_field(fields, attname):
@@ -108,7 +141,7 @@ class TestModels:
     def test_favorite_constraints(self, favorite, object1, user):
         """Test model Favorite constraints"""
         with pytest.raises(IntegrityError):
-            Favorite.objects.create(object=object1, user=user)
+            Favorite.objects.create(real_estate=object1, user=user)
 
     @pytest.mark.parametrize(
         argnames=['model_name', 'test_fields'], argvalues=MODEL_FIELDS
@@ -122,21 +155,12 @@ class TestModels:
                 field is not None
             ), f'Поле {test_field} не найдено в модели {model_name}'
 
-    def test_is_admin_method(self, user, admin):
-        """Тест атрибута is_admin модели User"""
-        assert (
-            user.is_admin is False
-        ), 'Обычный юзер не должен обладать свойством is_admin'
-        assert (
-            admin.is_admin is True
-        ), 'Админ с правами админа должен обладать свойством is_admin'
-
     def test_model_location_str(self):
         """Тест метода __str__ для модели Location"""
         model_name = Location.objects.create(name='a' * 100)
         assert (
-            str(model_name) == 'a' * 15
-        ), 'Имя модели Location должно содержать 15 символов'
+            str(model_name) == 'a' * 30
+        ), 'Имя модели Location должно содержать 30 символов'
 
     def test_model_property_type_str(self):
         """Тест метода __str__ для модели PropertyType"""
@@ -155,22 +179,47 @@ class TestModels:
 
     def test_model_favorite_str(self, user, object1):
         """Тест метода __str__ для модели Favorite"""
-        favorite = Favorite.objects.create(object=object1, user=user)
-        assert (
-            str(favorite)
-            == f'Избранный объект Тестовый объект 1 пользователя test_user'
+        favorite = Favorite.objects.create(real_estate=object1, user=user)
+        assert str(favorite) == (
+            f'Избранный объект Тестовый объект 1 пользователя '
+            f'test.user@fake.mail'
         )
 
-    def test_model_object_str(self, property_type_apartment, location):
-        """Тест метода __str__ для модели Object"""
+    def test_model_real_estate_str(
+        self, property_type_apartment, location, category1
+    ):
+        """Тест метода __str__ для модели RealEstate"""
         model_name = RealEstate.objects.create(
-            name='a' * 100,
+            title='a' * 100,
             type=property_type_apartment,
             location=location,
-            rent_or_sell=1,
+            category=category1,
+            price=100000,
+            area=100,
         )
         assert (
             str(model_name)
             == 'a' * 30
             + ' в Тестовая локация типа Квартира в категории Аренда'
-        ), 'Имя модели Object некорректно'
+        ), 'Имя модели RealEstate некорректно'
+
+    def test_model_category_str(self):
+        """Тест метода __str__ для модели Category"""
+        model_name = Category.objects.create(name='a' * 50)
+        assert (
+            str(model_name) == 'a' * 50
+        ), 'Имя модели Category должно содержать все 50 символов'
+
+    def test_model_staticpage_str(self):
+        """Тест метода __str__ для модели StaticPages"""
+        model_name = StaticPage.objects.create(title='a' * 50)
+        assert (
+            str(model_name) == 'a' * 50
+        ), 'Имя модели StaticPages должно содержать все 50 символов'
+
+    def test_model_team_str(self, team_member1):
+        """Тест метода __str__ для модели Team"""
+        model_name = team_member1.__str__()
+        assert (
+            model_name
+        ), 'Имя1 Фамилия1 - Должность1'

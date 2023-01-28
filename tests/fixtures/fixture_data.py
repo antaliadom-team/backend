@@ -1,12 +1,15 @@
 import pytest
 
+from about.models import Team
 from catalog.models import (
     Favorite,
     Location,
     PropertyType,
     Facility,
     RealEstate,
+    Category,
 )
+
 # TODO: дополнить фикстурами из моделей юзера
 # from users.models import BuyerRequest
 
@@ -42,18 +45,28 @@ def facility2():
 
 
 @pytest.fixture
-def object1(user, facility1, property_type_villa, location):
+def category1():
+    return Category.objects.create(name='Аренда')
 
-    recipe = RealEstate.objects.create(
-        name='Тестовый объект 1'
+
+@pytest.fixture
+def object1(user, facility1, property_type_villa, location, category1):
+
+    real_estate = RealEstate.objects.create(
+        title='Тестовый объект 1',
+        type=property_type_villa,
+        location=location,
+        category=category1,
+        price=1000000,
+        area=100,
     )
-    recipe.facility.add(facility1)
-    return recipe
+    real_estate.facility.add(facility1)
+    return real_estate
 
 
 @pytest.fixture
 def favorite(user, object1):
-    return Favorite.objects.create(object=object1, user=user)
+    return Favorite.objects.create(real_estate=object1, user=user)
 
 
 @pytest.fixture
@@ -62,4 +75,15 @@ def image_str():
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYA'
         'AAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg'
         '=='
+    )
+
+@pytest.fixture
+def team_member1(image_str):
+    return Team.objects.create(
+        position='Должность1',
+        phone='+79999999999',
+        email='team1@fake.mail',
+        first_name='Имя1',
+        last_name='Фамилия1',
+        photo=image_str,
     )
