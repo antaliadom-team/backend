@@ -5,7 +5,7 @@ from django.utils.version import get_version
 BASE_DIR = Path(__file__).resolve().parent.parent
 APP_DIRS = ['api', 'about', 'users', 'catalog']
 
-assert get_version() > '3.0.0', 'Пожалуйста, используйте версию Django > 3.0.0'
+assert get_version() > '3.2.0', 'Пожалуйста, используйте версию Django > 3.2.0'
 
 for app_dir in APP_DIRS:
     if not Path(BASE_DIR / app_dir).is_dir():

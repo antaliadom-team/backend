@@ -18,7 +18,7 @@ class BaseUserSerializer(serializers.ModelSerializer):
 class RegisterUserSerializer(BaseUserSerializer):
     """Сериализатор создания пользователей."""
 
-    password_confirmation = serializers.CharField(
+    re_password = serializers.CharField(
         # TODO: вынести max-length в settings
         max_length=settings.PASSWORD_LENGTH,
         write_only=True, help_text='Введите пароль повторно.')
@@ -29,12 +29,12 @@ class RegisterUserSerializer(BaseUserSerializer):
         """Проверяет, что password_confirmation - password равны."""
         # TODO: По-моему такой метод есть в djoser, надо посмотреть
         super().validate(data)
-        if data['password_confirmation'] != data['password']:
+        if data['re_password'] != data['password']:
             raise ValidationError(
                 'Повторный пароль не совпадает с оригинальным!'
             )
 
-        data.pop('password_confirmation', None)
+        data.pop('re_password', None)
         data.pop('password', None)
         return data
 
@@ -52,7 +52,6 @@ class RegisterUserSerializer(BaseUserSerializer):
     def create(self, validated_data):
         with transaction.atomic():
             user = User(
-                username=self.initial_data['email'],
                 first_name=self.initial_data['first_name'],
                 last_name=self.initial_data['last_name'],
                 email=self.initial_data['email'],
@@ -64,7 +63,7 @@ class RegisterUserSerializer(BaseUserSerializer):
     class Meta(BaseUserSerializer.Meta):
         fields = BaseUserSerializer.Meta.fields + (
             'password',
-            'password_confirmation',
+            're_password',
             'phone_number',
             'agreement',
         )
