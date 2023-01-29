@@ -29,8 +29,8 @@ class TestJWT(APITestBase):
             == 'No active account found with the given credentials'
         ), 'Ошибка в получении токена с неверным паролем'
 
-    def test_get_token_wrong_username(self, user, user_client):
-        """Test get token with wrong username"""
+    def test_get_token_wrong_email(self, user, user_client):
+        """Test get token with wrong email"""
         response = user_client.post(
             self.urls['get_token'],
             data={'email': 'wrong_username@fake.mail', 'password': '12345Qq'},
@@ -40,8 +40,8 @@ class TestJWT(APITestBase):
             'No active account found with the given credentials'
         ), 'Ошибка в получении токена с неверным емейлом пользователя'
 
-    def test_get_token_wrong_username_and_password(self, user_client):
-        """Test get token with wrong username and password"""
+    def test_get_token_wrong_email_and_password(self, user_client):
+        """Test get token with wrong email and password"""
         response = user_client.post(
             self.urls['get_token'],
             data={
@@ -74,7 +74,7 @@ class TestJWT(APITestBase):
             'Обязательное поле.'
         ), 'Ошибка в получении токена без пароля'
 
-    def test_jwt_verify_valid_request_data(self, client, user):
+    def test_jwt_verify__valid_request_data(self, client, user):
         url = self.urls['verify_token']
         valid_data = {'email': user.email, 'password': '12345Qq'}
         response = client.post(self.urls['get_token'], data=valid_data)
