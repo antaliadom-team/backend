@@ -1,5 +1,7 @@
 import pytest
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from about.models import StaticPage, Team
@@ -21,7 +23,6 @@ MODEL_FIELDS = [
     [
         User,
         [
-            'username',
             'first_name',
             'last_name',
             'password',
@@ -220,6 +221,13 @@ class TestModels:
     def test_model_team_str(self, team_member1):
         """Тест метода __str__ для модели Team"""
         model_name = team_member1.__str__()
+        assert model_name, 'Имя1 Фамилия1 - Должность1'
+
+    def test_model_image_limit(self, object1):
+        """Тест количества изображений для модели RealEstate"""
+        for i in range(1, settings.IMAGE_LIMIT + 1):
+            Image.objects.create(real_estate=object1, image=f'image{i}.jpg')
         assert (
-            model_name
-        ), 'Имя1 Фамилия1 - Должность1'
+            Image.objects.filter(real_estate=object1).count()
+            == settings.IMAGE_LIMIT
+        ), 'Максимальное количество изображений для объекта недвижимости'
