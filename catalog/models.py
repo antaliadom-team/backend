@@ -210,8 +210,10 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
 
     def save(self, *args, **kwargs):
-        # TODO: вынести в настройки, тоже самое в админке:
-        if Image.objects.filter(real_estate=self.real_estate).count() >= 6:
+        if (
+            Image.objects.filter(real_estate=self.real_estate).count()
+            >= settings.IMAGE_LIMIT
+        ):
             return  # Не сохраняем, если уже 6 фото
         else:
             super(Image, self).save(*args, **kwargs)
