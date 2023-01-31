@@ -9,7 +9,7 @@ class APITestBase:
         'get_token': '/api/auth/jwt/create/',
         'refresh_token': '/api/auth/jwt/refresh/',
         'verify_token': '/api/auth/jwt/verify/',
-        'logout': '/api/auth/jwt/logout/',
+        # 'logout': '/api/auth/jwt/logout/',
         # Real Estate
         'real_estate_list': '/api/objects/',
         'real_estate_detail': '/api/objects/{object_id}/',
@@ -26,13 +26,13 @@ class APITestBase:
         'category_list': '/api/objects/categories/',
         'category_detail': '/api/objects/categories/{category_id}/',
         # Requests
-        'order_general': '/api/objects/requests/',
+        'order_general': '/api/objects/order/',
         'real_estate_order': '/api/objects/{object_id}/order/',
         # Static pages
         'static_page_list': '/api/static_pages/',
-        'static_page': '/api/static_pages/{id}/',
+        'static_page': '/api/static_pages/{static_id}/',
         'team': '/api/static_pages/team/',
-        'team_member': '/api/static_pages/team/{id}/',
+        'team_member': '/api/static_pages/team/{member_id}/',
     }
 
     def assert_fields(self, fields_required, response, *args, **kwargs):

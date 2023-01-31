@@ -27,9 +27,22 @@ User = get_user_model()
 
 @api_view(http_method_names=['POST'])
 def order(request):
+    """Заявка общая"""
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
+    # TODO (#42): Отправка писем от анонимных юзеров
+    send_order_emails(request.user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(http_method_names=['POST'])
+def real_estate_order(request):
+    """Заявка на конкретный объект недвижимости"""
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    # TODO (#42): Отправка писем от зареганных юзеров
     send_order_emails(request.user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -51,7 +64,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    lookup_field = 'name'
+    lookup_field = 'id'
 
 
 class PropertyTypeViewSet(viewsets.ModelViewSet):
@@ -60,7 +73,7 @@ class PropertyTypeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = PropertyType.objects.all()
     serializer_class = PropertyTypeSerializer
-    lookup_field = 'name'
+    lookup_field = 'id'
 
 
 class FacilityViewSet(viewsets.ModelViewSet):
@@ -69,7 +82,7 @@ class FacilityViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
-    lookup_field = 'name'
+    lookup_field = 'id'
 
 
 class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
