@@ -17,4 +17,5 @@ for app_dir in APP_DIRS:
 pytest_plugins = [
     'tests.fixtures.fixture_users',
     'tests.fixtures.fixture_data',
+    'tests.fixtures.fixture_conf',
 ]

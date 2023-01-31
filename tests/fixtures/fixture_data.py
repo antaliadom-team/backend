@@ -1,6 +1,6 @@
 import pytest
 
-from about.models import Team
+from about.models import Team, StaticPage
 from catalog.models import (
     Favorite,
     Location,
@@ -16,12 +16,16 @@ from catalog.models import (
 
 @pytest.fixture
 def location():
-    return Location.objects.create(name='Тестовая локация')
+    return Location.objects.create(
+        name='Тестовая локация', slug='test-location'
+    )
 
 
 @pytest.fixture
 def location2():
-    return Location.objects.create(name='Другая тестовая локация')
+    return Location.objects.create(
+        name='Другая тестовая локация', slug='another-test-location'
+    )
 
 
 @pytest.fixture
@@ -76,6 +80,14 @@ def image_str():
         'AAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg'
         '=='
     )
+
+
+@pytest.fixture
+def static_page():
+    return StaticPage.objects.create(
+        title='Тестовая страница', content='Тестовый контент', slug='test-page'
+    )
+
 
 @pytest.fixture
 def team_member1(image_str):
