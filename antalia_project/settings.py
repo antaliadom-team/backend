@@ -13,7 +13,6 @@ SECRET_KEY = os.getenv('SECRET_KEY', default='django-secret-key')
 DEBUG = os.getenv('DEBUG', default=False) == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split()
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -64,7 +63,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'antalia_project.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.sqlite3'),
@@ -80,7 +78,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
     },
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 7, }
+    },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
     },
@@ -178,10 +179,34 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
-EMAIL_ADMIN_MESSAGE = 'Поступила заявка от {admin_full_name}.'
+EMAIL_ADMIN_MESSAGE = (
+    'Поступила заявка от {user_full_name}.'
+    'Были предоставлены следующие данные:'
+    'Имя: {first_name}'
+    'Фамилия: {last_name}'
+    'Электронная почта: {email}'
+    'Тип сделки: {category}'
+    'Локация: {location}'
+    'Тип недвижимости: {property_type}'
+    'Количество комнат: {rooms}'
+    'Номер для связи: {phone_number}'
+    'Дата подачи заявки: {date_added}'
+    'Комментарий: {comment}'
+)
 EMAIL_USER_MESSAGE = (
     'Здравствуйте {user_full_name}. Ваша заявка была принята в работу,'
     'скоро с вами свяжется сотрудник нашего агентства.'
+    'По вашей заявке были приняты следующие данные:'
+    'Имя: {first_name}'
+    'Фамилия: {last_name}'
+    'Электронная почта: {email}'
+    'Тип сделки: {category}'
+    'Локация: {location}'
+    'Тип недвижимости: {property_type}'
+    'Количество комнат: {rooms}'
+    'Номер для связи: {phone_number}'
+    'Дата подачи заявки: {date_added}'
+    'Комментарий: {comment}'
 )
 EMAIL_HTML_MESSAGE_ADMIN = ''  # можно прикрутить HTML
 EMAIL_HTML_MESSAGE_USER = ''  # можно прикрутить HTML

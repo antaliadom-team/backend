@@ -33,8 +33,7 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    # TODO (#42): Отправка писем от анонимных юзеров
-    # send_order_emails(user=None, data=serializer.data)
+    send_order_emails(user=None, data=serializer.data)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -44,8 +43,7 @@ def real_estate_order(request):
     serializer = RealEstateOrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    # TODO (#42): Отправка писем от зареганных юзеров
-    # send_order_emails(user=request.user, data=serializer.data)
+    send_order_emails(user=request.user, data=serializer.data)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
