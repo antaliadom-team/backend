@@ -1,7 +1,6 @@
 import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from about.models import StaticPage, Team
@@ -26,7 +25,7 @@ MODEL_FIELDS = [
             'first_name',
             'last_name',
             'password',
-            'phone_number',
+            'phone',
             'email',
             'agreement',
             'role',
@@ -48,7 +47,7 @@ MODEL_FIELDS = [
             'description',
             'period',
             'location_id',
-            'type_id',
+            'property_type_id',
             'owner_id',
         ],
     ],
@@ -61,7 +60,7 @@ MODEL_FIELDS = [
             'rooms',
             'first_name',
             'last_name',
-            'phone_number',
+            'phone',
             'email',
             'comment',
             'agreement',
@@ -192,7 +191,7 @@ class TestModels:
         """Тест метода __str__ для модели RealEstate"""
         model_name = RealEstate.objects.create(
             title='a' * 100,
-            type=property_type_apartment,
+            property_type=property_type_apartment,
             location=location,
             category=category1,
             price=100000,

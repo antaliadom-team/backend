@@ -301,7 +301,7 @@ paths:
           description: 'Показывать объекты только с указанным количеством комнат. Если 4, то показывать все объекты с >= 4 комнат.'
         - type: integer
           in: query
-          name: type
+          name: property_type
           description: Тип недвижимости
       responses:
         '200':
@@ -861,7 +861,7 @@ definitions:
         description: Категория недвижимости
         type: integer
         example: 1
-      type:
+      property_type:
         title: Тип недвижимости
         description: Тип недвижимости
         example: 1
@@ -976,12 +976,9 @@ definitions:
         description: Номер телефона
         example: '+71234567890'
       agreement:
-        type: integer
-        default: 0
+        type: boolean
+        default: true
         description: Согласие с пользовательским соглашением
-        enum:
-          - 0
-          - 1
     required:
       - email
       - first_name
@@ -1016,7 +1013,7 @@ definitions:
         description: Пароль
         example: Qwerty123
         format: password
-      password_retype:
+      re_password:
         type: string
         format: password
         description: Повтор пароля
@@ -1027,18 +1024,15 @@ definitions:
         description: |
           Телефон
       agreement:
-        type: integer
-        enum:
-          - 0
-          - 1
-        default: 1
+        type: boolean
+        default: true
         description: Подтверждение согласия с пользовательским соглашением
     required:
       - email
       - first_name
       - last_name
       - password
-      - password_retype
+      - re_password
       - phone
       - agreement
   CustomUserResponseOnCreate:
@@ -1211,7 +1205,7 @@ definitions:
       location:
         type: integer
         description: Уникальный идентификатор локации
-      type:
+      property_type:
         description: Уникальный идентификатор типа недвижимости
         type: integer
       rooms:
@@ -1222,12 +1216,9 @@ definitions:
         type: string
         description: Комментарии
       agreement:
-        type: integer
+        type: boolean
         description: Соглашение
-        enum:
-          - 0
-          - 1
-        default: 1
+        default: true
     required:
       - first_name
       - last_name
@@ -1269,12 +1260,9 @@ definitions:
         type: string
         description: Комментарии
       agreement:
-        type: integer
+        type: boolean
         description: Соглашение
-        enum:
-          - 0
-          - 1
-        default: 1
+        default: true
     required:
       - first_name
       - last_name
@@ -1354,7 +1342,7 @@ definitions:
       phone:
         type: string
         description: Телефон
-        example: '+7987654321'
+        example: '+79876543210'
       position:
         type: string
         description: Должность

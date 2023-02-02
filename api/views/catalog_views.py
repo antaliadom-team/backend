@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status, viewsets, permissions
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
 from core.utils import send_order_emails
 
@@ -10,6 +10,7 @@ from api.serializers.catalog_serializers import (
     FacilitySerializer,
     LocationSerializer,
     OrderSerializer,
+    RealEstateOrderSerializer,
     PropertyTypeSerializer,
     RealEstateSerializer,
 )
@@ -26,12 +27,12 @@ User = get_user_model()
 
 
 @api_view(http_method_names=['POST'])
+@permission_classes([permissions.AllowAny])
 def order(request):
     """Заявка общая"""
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    # TODO (#42): Отправка писем от анонимных юзеров
     send_order_emails(serializer.data, user=request.user or None)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -39,11 +40,10 @@ def order(request):
 @api_view(http_method_names=['POST'])
 def real_estate_order(request):
     """Заявка на конкретный объект недвижимости"""
-    serializer = OrderSerializer(data=request.data)
+    serializer = RealEstateOrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    # TODO (#42): Отправка писем от зареганных юзеров
-    send_order_emails(request.user)
+    send_order_emails(serializer.data, user=request.user or None)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 

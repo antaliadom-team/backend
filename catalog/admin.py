@@ -20,6 +20,7 @@ class LocationAdmin(admin.ModelAdmin):
     list_display = ('name',)
     list_display_links = ('name',)
     search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
 
 
 @admin.register(PropertyType)
@@ -75,7 +76,7 @@ class RealEstateAdmin(admin.ModelAdmin):
         'rooms',
         'status',
         'description',
-        'type',
+        'property_type',
         'facility',
         'owner',
         'date_added',
@@ -88,17 +89,20 @@ class RealEstateAdmin(admin.ModelAdmin):
         'area',
         'rooms',
         'status',
-        'type',
+        'property_type',
     )
     list_display_links = ('title',)
     search_fields = ('title', 'description')
-    list_filter = ('status', 'location', 'type', )# 'owner'
+    list_filter = ('status', 'location', 'property_type', )# 'owner'
     readonly_fields = ('date_added',)
     inlines = (ImageInline,)
 
     @admin.display(description='Цена')
     def price_with_currency(self, obj):
-        return f'{obj.price}{obj.currency} в {obj.period}'
+        """Вывод цены с валютой (и периодом в случае аренды)."""
+        if obj.category.name == 'Продажа':
+            return f'{obj.price}{obj.currency}'
+        return f'{obj.price}{obj.currency} в {obj.period.lower()}'
 
 
 @admin.register(Favorite)

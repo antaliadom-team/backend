@@ -15,7 +15,7 @@ class TestURLs(APITestBase):
                 url = url.format(
                     user_id=user.id,
                     object_id=object1.id,
-                    type_id=object1.type.id,
+                    property_type_id=object1.property_type.id,
                     location_id=object1.location.slug,
                     facility_id=facility1.id,
                     category_id=object1.category.id,

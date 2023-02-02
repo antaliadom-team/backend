@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.conf import settings
 from rest_framework import serializers
+
+from api.validators import regex_check_number
 
 User = get_user_model()
 
@@ -19,42 +21,53 @@ class RegisterUserSerializer(BaseUserSerializer):
     """Сериализатор создания пользователей."""
 
     re_password = serializers.CharField(
-        # TODO: вынести max-length в settings
         max_length=settings.PASSWORD_LENGTH,
-        write_only=True, help_text='Введите пароль повторно.')
-    phone_number = serializers.CharField(max_length=settings.PHONE_LENGTH)
-    agreement = serializers.BooleanField()
+        write_only=True,
+        help_text='Введите пароль повторно.',
+    )
+    phone = serializers.CharField()
+
+    def validate_phone(self, value):
+        return regex_check_number(value)
+
+    def validate_agreement(self, value):
+        if not value:
+            raise serializers.ValidationError(
+                'Вы должны принять соглашение о конфиденциальности.'
+            )
+        return value
 
     def validate(self, data):
         """Проверяет, что password_confirmation - password равны."""
-        # TODO: По-моему такой метод есть в djoser, надо посмотреть
         super().validate(data)
         if data['re_password'] != data['password']:
             raise ValidationError(
-                'Повторный пароль не совпадает с оригинальным!'
+                {
+                    'password_error': (
+                        'Повторный пароль не совпадает с оригинальным.'
+                    )
+                }
             )
 
         data.pop('re_password', None)
-        data.pop('password', None)
-        return data
-
-    def validate_password(self, data):
-        password = data
-        errors = None
+        password = data.pop('password', None)
+        user = User(**data)
         try:
-            password_validation.validate_password(password=password)
+            password_validation.validate_password(password, user)
         except ValidationError as e:
-            errors = list(e.messages)
-        if errors:
-            raise serializers.ValidationError(errors)
-        return super().validate(data)
+            raise serializers.ValidationError(
+                {'password': serializers.as_serializer_error(e)}
+            )
+        return data
 
     def create(self, validated_data):
         with transaction.atomic():
             user = User(
-                first_name=self.initial_data['first_name'],
-                last_name=self.initial_data['last_name'],
-                email=self.initial_data['email'],
+                first_name=self.validated_data['first_name'],
+                last_name=self.validated_data['last_name'],
+                email=self.validated_data['email'],
+                phone=self.validated_data['phone'],
+                agreement=self.validated_data['agreement'],
             )
             user.set_password(self.initial_data['password'])
             user.save()
@@ -64,7 +77,7 @@ class RegisterUserSerializer(BaseUserSerializer):
         fields = BaseUserSerializer.Meta.fields + (
             'password',
             're_password',
-            'phone_number',
+            'phone',
             'agreement',
         )
         extra_kwargs = {'password': {'write_only': True, 'required': True}}

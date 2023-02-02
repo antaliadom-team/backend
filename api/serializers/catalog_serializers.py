@@ -11,23 +11,39 @@ from catalog.models import (
 )
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class CommonOrderSerializer(serializers.ModelSerializer):
+    """Общий сериализатор для заявок"""
+
     class Meta:
         fields = (
-            'user',
-            'real_estate',
-            'email',
             'first_name',
             'last_name',
-            'phone_number',
-            'location',
-            'rooms',
+            'phone',
+            'email',
             'comment',
             'agreement',
-            'confirmation_code',
-            'confirmed',
         )
         model = Order
+
+    def validate_agreement(self, value):
+        if not value:
+            raise serializers.ValidationError('Вы должны принять соглашение.')
+        return value
+
+
+class OrderSerializer(CommonOrderSerializer):
+    class Meta(CommonOrderSerializer.Meta):
+        fields = CommonOrderSerializer.Meta.fields + (
+            'category',
+            'location',
+            'property_type',
+            'rooms',
+        )
+
+
+class RealEstateOrderSerializer(CommonOrderSerializer):
+    class Meta(CommonOrderSerializer.Meta):
+        fields = CommonOrderSerializer.Meta.fields + ('real_estate',)
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -97,7 +113,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
             'price',
             'location',
             'category',
-            'type',
+            'property_type',
             'rooms',
             'area',
             'total_floors',

@@ -29,9 +29,9 @@ auth = [path('auth/', include('djoser.urls.jwt'))]
 
 urlpatterns = [
     path('', include(auth)),
+    path('objects/order/', order, name='order'),
     path(
         'objects/<int:id>/order/', real_estate_order, name='real_estate_order'
     ),
-    path('objects/order/', order, name='order'),
     path('', include(router.urls)),
 ]
