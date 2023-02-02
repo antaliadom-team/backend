@@ -114,12 +114,9 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              results:
-                type: array
-                items:
-                  $ref: '#/definitions/Category'
+            type: array
+            items:
+              $ref: '#/definitions/Category'
     parameters: []
   '/api/objects/categories/{id}/':
     get:
@@ -155,12 +152,9 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              results:
-                type: array
-                items:
-                  $ref: '#/definitions/Facility'
+            type: array
+            items:
+              $ref: '#/definitions/Facility'
       summary: Получение списка удобств
     parameters: []
   '/api/objects/facilities/{id}/':
@@ -197,12 +191,9 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              results:
-                type: array
-                items:
-                  $ref: '#/definitions/Location'
+            type: array
+            items:
+              $ref: '#/definitions/Location'
       summary: Получение списка локаций
     parameters: []
   '/api/objects/locations/{slug}/':
@@ -228,7 +219,7 @@ paths:
         type: string
         format: slug
         pattern: '^[-a-zA-Z0-9_]+$'
-  /api/objects/types/:
+  /api/objects/property_types/:
     get:
       operationId: types_list
       description: 'Возвращает список типов недвижимости (квартира, участок, дом и т.д.)'
@@ -240,15 +231,12 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              '':
-                type: array
-                items:
-                  $ref: '#/definitions/PropertyType'
+            type: array
+            items:
+              $ref: '#/definitions/PropertyType'
       summary: Получение списка типов
     parameters: []
-  '/api/objects/types/{id}/':
+  '/api/objects/property_types/{id}/':
     get:
       operationId: Тип недвижимости
       description: 'Возвращает имя конкретного типа недвижимости, заданного уникальным идентификатором. Эндпоинт доступен всем пользователям.'
@@ -419,12 +407,9 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              '':
-                type: array
-                items:
-                  $ref: '#/definitions/StaticPagesList'
+            type: array
+            items:
+              $ref: '#/definitions/StaticPagesList'
       summary: Получение списка статических страниц
     parameters: []
   '/api/static_pages/{id}/':
@@ -461,12 +446,9 @@ paths:
         '200':
           description: OK
           schema:
-            type: object
-            properties:
-              '':
-                type: array
-                items:
-                  $ref: '#/definitions/Team'
+            type: array
+            items:
+              $ref: '#/definitions/Team'
       summary: Получение списка участников команды
     parameters: []
   '/api/static_pages/team/{id}/':
