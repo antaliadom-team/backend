@@ -24,7 +24,7 @@ class AdminImageWidget(AdminFileWidget):
         return mark_safe(u''.join(output))
 
 
-def send_order_emails(user, data):
+def send_order_emails(data, user=None, *args, **kwargs):
     """Отправляет уведомление клиенту на почту о приеме заявки и рассылает
      уведомление на почту администраторам о поступлении заявки"""
     admins = User.objects.filter(is_staff=True).values('email').distinct()

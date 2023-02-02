@@ -33,7 +33,7 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(user=None, data=serializer.data)
+    send_order_emails(serializer.data, user=request.user or None)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -43,7 +43,7 @@ def real_estate_order(request):
     serializer = RealEstateOrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(user=request.user, data=serializer.data)
+    send_order_emails(serializer.data, user=request.user or None)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
