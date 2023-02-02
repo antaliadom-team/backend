@@ -117,7 +117,9 @@ paths:
             type: object
             properties:
               results:
-                $ref: '#/definitions/Category'
+                type: array
+                items:
+                  $ref: '#/definitions/Category'
     parameters: []
   '/api/objects/categories/{id}/':
     get:
@@ -156,7 +158,9 @@ paths:
             type: object
             properties:
               results:
-                $ref: '#/definitions/Facility'
+                type: array
+                items:
+                  $ref: '#/definitions/Facility'
       summary: Получение списка удобств
     parameters: []
   '/api/objects/facilities/{id}/':
@@ -196,7 +200,9 @@ paths:
             type: object
             properties:
               results:
-                $ref: '#/definitions/Location'
+                type: array
+                items:
+                  $ref: '#/definitions/Location'
       summary: Получение списка локаций
     parameters: []
   '/api/objects/locations/{slug}/':
@@ -236,8 +242,10 @@ paths:
           schema:
             type: object
             properties:
-              results:
-                $ref: '#/definitions/PropertyType'
+              '':
+                type: array
+                items:
+                  $ref: '#/definitions/PropertyType'
       summary: Получение списка типов
     parameters: []
   '/api/objects/types/{id}/':
@@ -413,8 +421,10 @@ paths:
           schema:
             type: object
             properties:
-              results:
-                $ref: '#/definitions/StaticPagesList'
+              '':
+                type: array
+                items:
+                  $ref: '#/definitions/StaticPagesList'
       summary: Получение списка статических страниц
     parameters: []
   '/api/static_pages/{id}/':
@@ -453,8 +463,10 @@ paths:
           schema:
             type: object
             properties:
-              results:
-                $ref: '#/definitions/Team'
+              '':
+                type: array
+                items:
+                  $ref: '#/definitions/Team'
       summary: Получение списка участников команды
     parameters: []
   '/api/static_pages/team/{id}/':
