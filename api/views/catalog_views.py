@@ -32,7 +32,7 @@ def order(request):
     serializer.is_valid(raise_exception=True)
     serializer.save()
     # TODO (#42): Отправка писем от анонимных юзеров
-    send_order_emails(request.user or None, serializer.data)
+    send_order_emails(serializer.data, user=request.user or None)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
