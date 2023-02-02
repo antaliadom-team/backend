@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
+
+from api.validators import regex_check_number
 
 User = get_user_model()
 
@@ -109,17 +112,23 @@ class RealEstate(models.Model):
     title = models.CharField(
         max_length=settings.ESTATE_TITLE_LENGTH, verbose_name='Название'
     )
-    price = models.IntegerField(verbose_name='Цена')
-    area = models.IntegerField(verbose_name='Площадь')
+    price = models.PositiveIntegerField(verbose_name='Цена')
+    area = models.PositiveIntegerField(verbose_name='Площадь')
     floor = models.IntegerField(verbose_name='Этаж', null=True, blank=True)
-    total_floors = models.IntegerField(
-        verbose_name='Этажность', null=True, blank=True
+    total_floors = models.PositiveSmallIntegerField(
+        verbose_name='Этажность',
+        null=True,
+        blank=True,
+        validators=(MinValueValidator(1),),
     )
     construction_year = models.IntegerField(
         verbose_name='Год постройки', null=True, blank=True
     )
-    rooms = models.SmallIntegerField(
-        verbose_name='Количество комнат', null=True, blank=True
+    rooms = models.PositiveSmallIntegerField(
+        verbose_name='Количество комнат',
+        null=True,
+        blank=True,
+        validators=(MinValueValidator(1),),
     )
     date_added = models.DateTimeField(
         auto_now_add=True, verbose_name='Дата добавления', db_index=True
@@ -152,7 +161,7 @@ class RealEstate(models.Model):
         related_name='real_estate',
         db_index=True,
     )
-    type = models.ForeignKey(
+    property_type = models.ForeignKey(
         PropertyType,
         on_delete=models.SET_NULL,
         null=True,
@@ -188,7 +197,7 @@ class RealEstate(models.Model):
         return self.MODEL_STRING.format(
             name=self.title,
             location=self.location,
-            type=self.type,
+            type=self.property_type,
             category=self.category,
         )
 
@@ -277,12 +286,12 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    rooms = models.SmallIntegerField(
+    rooms = models.PositiveSmallIntegerField(
         default=1,
-        # max_length=4,
         verbose_name='Количество комнат',
         blank=True,
         null=True,
+        validators=(MinValueValidator(1),),
     )
     first_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Имя'
@@ -290,15 +299,13 @@ class Order(models.Model):
     last_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
     )
-    phone_number = models.CharField(
+    phone = models.CharField(
         max_length=settings.PHONE_LENGTH,
-        unique=True,
         verbose_name='Номер телефона',
+        validators=(regex_check_number,),
     )
     email = models.EmailField(
-        unique=True,
-        verbose_name='Электронная почта',
-        max_length=settings.EMAIL_LENGTH,
+        verbose_name='Электронная почта', max_length=settings.EMAIL_LENGTH
     )
     comment = models.TextField(
         verbose_name='Комментарии',
