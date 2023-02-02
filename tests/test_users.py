@@ -21,6 +21,7 @@ class TestUserAPI(APITestBase):
                 'phone': '+79999999999',
                 'password': '122q%5',
                 're_password': '122q%5',
+                'agreement': True,
             },
         )
         self.assert_status_code(400, response)
@@ -40,6 +41,7 @@ class TestUserAPI(APITestBase):
                 'phone': '+79999999999',
                 'password': '123$5Qq',
                 're_password': '123$5Qq',
+                'agreement': True,
             },
         )
         self.assert_status_code(201, response)
@@ -55,9 +57,28 @@ class TestUserAPI(APITestBase):
                 'phone': '+79999999999',
                 'password': '122q%5',
                 're_password': '122q%5',
+                'agreement': True,
             },
         )
         self.assert_status_code(400, response)
+
+    def test_create_user_without_agreement(self, client):
+        """Test creating user without agreement"""
+        response = client.post(
+            self.urls['users'],
+            data={
+                'email': 'test@fake.mail',
+                'first_name': 'test1',
+                'last_name': 'lastnametest2',
+                'phone': '+79999999999',
+                'password': '122q%5',
+                're_password': '122q%5',
+            },
+        )
+        self.assert_status_code(400, response)
+        assert response.data['agreement'][0] == (
+            'Вы должны принять соглашение о конфиденциальности.'
+        ), 'Ошибка в создании пользователя без соглашения о конфиденциальности'
 
     def test_usermanager_create_user_without_email(self):
         """Test User manager create user"""
@@ -66,7 +87,7 @@ class TestUserAPI(APITestBase):
             User.objects.create_user(
                 first_name='test1',
                 last_name='test2',
-                phone_number='+79999999999',
+                phone='+79999999999',
                 password='123$5Qq',
             )
         assert (
@@ -79,7 +100,7 @@ class TestUserAPI(APITestBase):
             email='admin@fake.mail',
             first_name='test1',
             last_name='test2',
-            phone_number='+79999999999',
+            phone='+79999999999',
             password='123$5Qq',
         )
         assert user.is_superuser, 'Пользователь не является суперпользователем'
@@ -92,12 +113,12 @@ class TestUserAPI(APITestBase):
                 email='admin@fake.mail',
                 first_name='test1',
                 last_name='test2',
-                phone_number='+79999999999',
+                phone='+79999999999',
                 password='123$5Qq',
                 is_superuser=False,
             )
         assert (
-                User.objects.count() == 0
+            User.objects.count() == 0
         ), 'Пользователь создан, хотя не должен был'
 
     def test_usermanager_create_superuser_without_is_staff(self):
@@ -108,11 +129,11 @@ class TestUserAPI(APITestBase):
                 email='admin@fake.mail',
                 first_name='test1',
                 last_name='test2',
-                phone_number='+79999999999',
+                phone='+79999999999',
                 password='123$5Qq',
                 is_staff=False,
             )
 
         assert (
-                User.objects.count() == 0
+            User.objects.count() == 0
         ), 'Пользователь создан, хотя не должен был'

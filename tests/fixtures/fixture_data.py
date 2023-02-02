@@ -54,13 +54,33 @@ def category1():
 
 
 @pytest.fixture
+def category2():
+    return Category.objects.create(name='Продажа')
+
+
+@pytest.fixture
 def object1(user, facility1, property_type_villa, location, category1):
 
     real_estate = RealEstate.objects.create(
         title='Тестовый объект 1',
-        type=property_type_villa,
+        property_type=property_type_villa,
         location=location,
         category=category1,
+        price=1000000,
+        area=100,
+    )
+    real_estate.facility.add(facility1)
+    return real_estate
+
+
+@pytest.fixture
+def object2(user, facility1, property_type_apartment, location, category2):
+
+    real_estate = RealEstate.objects.create(
+        title='Тестовый объект 2 - продажа',
+        property_type=property_type_apartment,
+        location=location,
+        category=category2,
         price=1000000,
         area=100,
     )

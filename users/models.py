@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
 
+from api.validators import regex_check_number
 from users.managers import CustomUserManager
 
 ROLE_CHOICE = (('seller', 'seller'), ('buyer', 'buyer'))
@@ -15,6 +16,12 @@ class User(AbstractUser):
         max_length=settings.EMAIL_LENGTH,
         unique=True,
         verbose_name='Электронная почта',
+        error_messages={
+            'unique': (
+                'Пользоватль с таким адресом электронной '
+                'почты уже существует.'
+            )
+        },
     )
     first_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Имя'
@@ -22,10 +29,11 @@ class User(AbstractUser):
     last_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
     )
-    phone_number = models.CharField(
+    phone = models.CharField(
         max_length=settings.PHONE_LENGTH,
         unique=False,
         verbose_name='Номер телефона',
+        validators=(regex_check_number,),
     )
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
     role = models.CharField(
