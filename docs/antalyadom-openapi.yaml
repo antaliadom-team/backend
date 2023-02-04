@@ -395,6 +395,51 @@ paths:
         in: path
         description: Уникальный идентификатор объекта недвижимости
         required: true
+  '/api/objects/{id}/favorite/':
+    parameters:
+      - type: integer
+        name: id
+        in: path
+        required: true
+        description: Уникальный идентификатор объекта недвижимости
+    post:
+      summary: Добавить объект в избранное
+      operationId: post-api-objects-id-favorite
+      tags:
+        - Избранное
+      description: Добавляет объект в избранное для текущего пользователя. Доступно только авторизованным пользователям.
+      responses:
+        '201':
+          description: Рецепт успешно добавлен в избранное.
+        '400':
+          description: 'Ошибка добавления в избранное (например, когда уже есть в избранном у данного пользователя).'
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                description: Описание ошибки
+        '401':
+          $ref: '#/responses/AuthenticationError'
+    delete:
+      summary: Удалить объекта из избранного
+      operationId: delete-api-objects-id-favorite
+      responses:
+        '204':
+          description: Объект успешно удален из избранного.
+        '400':
+          description: 'Ошибка удаления из избранного (например, когда объекта там и не было).'
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                description: Описание ошибки
+        '401':
+          $ref: '#/responses/AuthenticationError'
+      description: Удаляет объект из избранного текущего пользователя. Доступно только авторизованным пользователям.
+      tags:
+        - Избранное
   /api/static_pages/:
     get:
       operationId: Список статических страниц
@@ -657,6 +702,31 @@ paths:
           $ref: '#/responses/ValidationError'
         '401':
           $ref: '#/responses/AuthenticationError'
+      tags:
+        - Пользователи
+    parameters: []
+  /api/users/logout/:
+    post:
+      summary: Логаут
+      operationId: Логаут пользователя
+      responses:
+        '204':
+          description: В случае успешного внесения токена в черный список происходит успешное разлогирование пользователя.
+        '400':
+          description: 'Возвращается, если не удалось проверить Refresh-токен или разлогинить пользователя по другой причине.'
+          schema:
+            type: object
+            properties: {}
+        '401':
+          $ref: '#/responses/AuthenticationError'
+      description: |-
+        <p>Эндпоинт для разлогирования текущего пользователя. Доступен только авторизованным пользователям (должен быть передан хедер Authorization: Bearer <pre>access_token</pre>).</p>
+        <p>Для разлогирования в теле запроса должен быть передан <pre>refresh_token</pre> и оба токена (access и refresh) удалены с клиента.</p> Рефреш токен в случае успеха заносится в черный список, таким образом никто не сможет получить Access-токен, а сам Access-токен удалится сам по таймауту.</p>
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/TokenRefresh'
       tags:
         - Пользователи
     parameters: []
