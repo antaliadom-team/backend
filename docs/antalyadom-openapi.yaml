@@ -551,9 +551,6 @@ paths:
           description: В случае успешного внесения токена в черный список происходит успешное разлогирование пользователя.
         '400':
           description: 'Возвращается, если не удалось проверить Refresh-токен или разлогинить пользователя по другой причине.'
-          schema:
-            type: object
-            properties: {}
         '401':
           $ref: '#/responses/AuthenticationError'
       description: |-
