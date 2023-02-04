@@ -542,6 +542,31 @@ paths:
         - Пользователи
       summary: Создание пользователя
     parameters: []
+  /api/users/logout/:
+    post:
+      summary: Логаут
+      operationId: Логаут пользователя
+      responses:
+        '204':
+          description: В случае успешного внесения токена в черный список происходит успешное разлогирование пользователя.
+        '400':
+          description: 'Возвращается, если не удалось проверить Refresh-токен или разлогинить пользователя по другой причине.'
+          schema:
+            type: object
+            properties: {}
+        '401':
+          $ref: '#/responses/AuthenticationError'
+      description: |-
+        <p>Эндпоинт для разлогирования текущего пользователя. Доступен только авторизованным пользователям (должен быть передан хедер <code>Authorization: Bearer access_token</code>).</p>
+        <p>Для разлогирования в теле запроса должен быть передан <code>refresh_token</code> и оба токена (access и refresh) удалены с клиента.</p> Рефреш токен в случае успеха заносится в черный список, таким образом никто не сможет получить Access-токен, а сам Access-токен удалится сам по таймауту.</p>
+      parameters:
+        - in: body
+          name: body
+          schema:
+            $ref: '#/definitions/TokenRefresh'
+      tags:
+        - Пользователи
+    parameters: []
   /api/users/me/:
     get:
       operationId: Текущий пользователь
@@ -702,31 +727,6 @@ paths:
           $ref: '#/responses/ValidationError'
         '401':
           $ref: '#/responses/AuthenticationError'
-      tags:
-        - Пользователи
-    parameters: []
-  /api/users/logout/:
-    post:
-      summary: Логаут
-      operationId: Логаут пользователя
-      responses:
-        '204':
-          description: В случае успешного внесения токена в черный список происходит успешное разлогирование пользователя.
-        '400':
-          description: 'Возвращается, если не удалось проверить Refresh-токен или разлогинить пользователя по другой причине.'
-          schema:
-            type: object
-            properties: {}
-        '401':
-          $ref: '#/responses/AuthenticationError'
-      description: |-
-        <p>Эндпоинт для разлогирования текущего пользователя. Доступен только авторизованным пользователям (должен быть передан хедер Authorization: Bearer <pre>access_token</pre>).</p>
-        <p>Для разлогирования в теле запроса должен быть передан <pre>refresh_token</pre> и оба токена (access и refresh) удалены с клиента.</p> Рефреш токен в случае успеха заносится в черный список, таким образом никто не сможет получить Access-токен, а сам Access-токен удалится сам по таймауту.</p>
-      parameters:
-        - in: body
-          name: body
-          schema:
-            $ref: '#/definitions/TokenRefresh'
       tags:
         - Пользователи
     parameters: []
