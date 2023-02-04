@@ -6,7 +6,7 @@ from catalog.models import RealEstate
 
 
 class FavoriteMixin:
-    """добавление и удаление объекта в избранное"""
+    """Добавление и удаление объекта в избранное"""
 
     def add_object(self, request, *args, **kwargs):
         """Добавляет объект"""
@@ -20,7 +20,9 @@ class FavoriteMixin:
             )
         model.objects.create(user=user, real_estate=real_estate)
         return Response(
-            self.serializer_class(real_estate).data,
+            self.serializer_class(
+                real_estate, context={'request': self.request}
+            ).data,
             status=status.HTTP_201_CREATED,
         )
 

@@ -90,7 +90,7 @@ class FacilityViewSet(viewsets.ModelViewSet):
 class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     """Каталог недвижимости"""
 
-    http_method_names = ('get',)
+    http_method_names = ('get', 'post', 'delete')
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
     pagination_class = ObjectsLimitPagePagination
