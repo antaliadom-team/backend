@@ -60,7 +60,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('id', 'name',)
+        fields = ('id', 'name')
         lookup_field = 'name'
 
 
@@ -69,7 +69,7 @@ class PropertyTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PropertyType
-        fields = ('id', 'name',)
+        fields = ('id', 'name')
         lookup_field = 'name'
 
 
@@ -97,15 +97,6 @@ class RealEstateSerializer(serializers.ModelSerializer):
     facilities = FacilitySerializer(source='facility', many=True)
     images = ImageSerializer(many=True, read_only=True)
 
-    def get_is_favorited(self, obj):
-        user = self.context['request'].user
-        # Проверка на is_authenticated, иначе для анонимов
-        # будет ошибка
-        return (
-            user.is_authenticated
-            and user.favorites.filter(real_estate=obj).exists()
-        )
-
     class Meta:
         model = RealEstate
         fields = (
@@ -127,4 +118,13 @@ class RealEstateSerializer(serializers.ModelSerializer):
             'facilities',
             'images',
             'is_favorited',
+        )
+
+    def get_is_favorited(self, obj):
+        user = self.context['request'].user
+        # Проверка на is_authenticated, иначе для анонимов
+        # будет ошибка
+        return (
+            user.is_authenticated
+            and user.favorites.filter(real_estate=obj).exists()
         )
