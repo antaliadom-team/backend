@@ -1,8 +1,11 @@
-from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from api.validators import regex_check_number
+from api.validators import (
+    regex_check_number,
+    validate_name,
+)
 from users.managers import CustomUserManager
 
 ROLE_CHOICE = (('seller', 'seller'), ('buyer', 'buyer'))
@@ -24,10 +27,14 @@ class User(AbstractUser):
         },
     )
     first_name = models.CharField(
-        max_length=settings.NAMES_LENGTH, verbose_name='Имя'
+        max_length=settings.NAMES_LENGTH,
+        verbose_name='Имя',
+        validators=(validate_name,),
     )
     last_name = models.CharField(
-        max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
+        max_length=settings.NAMES_LENGTH,
+        verbose_name='Фамилия',
+        validators=(validate_name,),
     )
     phone = models.CharField(
         max_length=settings.PHONE_LENGTH,
@@ -53,5 +60,14 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
         ordering = ('-id',)
 
+    def __str__(self):
+        return f'{self.get_full_name()} ({self.email})'
+
     def get_username(self):
         return self.email
+
+    def get_short_name(self):
+        return self.first_name
+
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'

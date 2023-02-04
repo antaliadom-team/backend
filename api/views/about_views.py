@@ -5,35 +5,43 @@ from rest_framework.response import Response
 from about.models import StaticPage, Team
 from api.serializers.about_serializers import (
     StaticPageSerializer,
-    TeamSerializer,
+    TeamSerializer, StaticPageListSerializer,
 )
 
 
-class StaticPageViewSet(viewsets.ViewSet):
+class StaticPageViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение и вывод статических страниц."""
 
-    def list(self, request):
-        queryset = StaticPage.objects.all()
-        serializer = StaticPageSerializer(queryset, many=True)
+    queryset = StaticPage.objects.filter(is_active=True)
+    serializer_class = StaticPageSerializer
+    list_serializer_class = StaticPageListSerializer
+
+    def list(self, request, *args, **kwargs):
+        """Список статических страниц."""
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.list_serializer_class(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        queryset = StaticPage.objects.all()
-        page = get_object_or_404(queryset, pk=pk)
-        serializer = StaticPageSerializer(page)
+    def retrieve(self, request, *args, **kwargs):
+        """Получение статической страницы."""
+        instance = get_object_or_404(StaticPage, pk=kwargs['pk'])
+        serializer = self.serializer_class(instance)
         return Response(serializer.data)
 
 
-class TeamViewSet(viewsets.ViewSet):
+class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение и вывод команды."""
 
-    def list(self, request):
-        queryset = Team.objects.all()
+    queryset = Team.objects.filter(is_active=True)
+
+    def list(self, request, *args, **kwargs):
+        """Список команды."""
+        queryset = self.filter_queryset(self.get_queryset())
         serializer = TeamSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, pk=None):
-        queryset = Team.objects.all()
-        page = get_object_or_404(queryset, pk=pk)
-        serializer = TeamSerializer(page)
+    def retrieve(self, request, *args, **kwargs):
+        """Получение члена команды."""
+        instance = get_object_or_404(Team, pk=kwargs['pk'])
+        serializer = TeamSerializer(instance)
         return Response(serializer.data)

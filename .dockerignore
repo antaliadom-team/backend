@@ -6,3 +6,7 @@ htmlcov/
 .coveragerc
 codecov
 coverage.xml
+backend_static/
+backend_media/
+.env
+db.sqlite3

@@ -51,7 +51,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('name', 'slug')
+        fields = ('id', 'name', 'slug')
         lookup_field = 'slug'
 
 
@@ -60,7 +60,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name',)
+        fields = ('id', 'name',)
         lookup_field = 'name'
 
 
@@ -69,7 +69,7 @@ class PropertyTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PropertyType
-        fields = ('name',)
+        fields = ('id', 'name',)
         lookup_field = 'name'
 
 
@@ -78,8 +78,8 @@ class FacilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Facility
-        fields = ('name', 'icon')
-        lookup_field = 'name'
+        fields = ('id', 'name', 'icon')
+        lookup_field = 'id'
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -94,7 +94,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
     """Сериализатор недвижимости"""
 
     is_favorited = fields.SerializerMethodField(default=False)
-    facilities = FacilitySerializer(many=True, read_only=True)
+    facilities = FacilitySerializer(source='facility', many=True)
     images = ImageSerializer(many=True, read_only=True)
 
     def get_is_favorited(self, obj):
@@ -109,6 +109,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RealEstate
         fields = (
+            'id',
             'title',
             'price',
             'location',

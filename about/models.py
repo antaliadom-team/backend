@@ -1,14 +1,18 @@
 from django.db import models
 from django.conf import settings
 
+from api.validators import regex_check_number
+
 
 class StaticPage(models.Model):
     """Модель статической страницы."""
 
-    title = models.CharField(max_length=settings.NAMES_LENGTH,
-                             verbose_name='Заголовок')
-    slug = models.SlugField(max_length=settings.LONG_SLUG_LENGTH,
-                            verbose_name='URL')
+    title = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Заголовок'
+    )
+    slug = models.SlugField(
+        max_length=settings.LONG_SLUG_LENGTH, verbose_name='URL'
+    )
     content = models.TextField(verbose_name='Контент')
     is_active = models.BooleanField(default=True, verbose_name='Активна')
 
@@ -25,15 +29,21 @@ class Team(models.Model):
 
     MODEL_STRING = '{first_name} {last_name} - {position}'
 
-    first_name = models.CharField(max_length=settings.NAMES_LENGTH,
-                                  verbose_name='Имя')
-    last_name = models.CharField(max_length=settings.NAMES_LENGTH,
-                                 verbose_name='Фамилия')
-    phone = models.CharField(max_length=settings.PROPERTY_MAX_LENGTH,
-                             verbose_name='Телефон')
+    first_name = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Имя'
+    )
+    last_name = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
+    )
+    phone = models.CharField(
+        max_length=settings.PROPERTY_MAX_LENGTH,
+        verbose_name='Телефон',
+        validators=(regex_check_number,),
+    )
     email = models.EmailField(verbose_name='Email')
-    position = models.CharField(max_length=settings.NAMES_LENGTH,
-                                verbose_name='Должность')
+    position = models.CharField(
+        max_length=settings.NAMES_LENGTH, verbose_name='Должность'
+    )
     photo = models.ImageField(upload_to='team', verbose_name='Фото')
     is_active = models.BooleanField(default=True, verbose_name='Активен')
     date_added = models.DateTimeField(

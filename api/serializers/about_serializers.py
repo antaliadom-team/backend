@@ -3,12 +3,19 @@ from rest_framework import serializers
 from about.models import StaticPage, Team
 
 
-class StaticPageSerializer(serializers.ModelSerializer):
-    """Сериализатор статических страниц."""
+class StaticPageListSerializer(serializers.ModelSerializer):
+    """Сериализатор списка статических страниц."""
 
     class Meta:
         model = StaticPage
-        fields = '__all__'
+        fields = ['id', 'title', 'slug']
+
+
+class StaticPageSerializer(StaticPageListSerializer):
+    """Сериализатор статических страниц."""
+
+    class Meta(StaticPageListSerializer.Meta):
+        fields = StaticPageListSerializer.Meta.fields + ['content']
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -16,4 +23,11 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = '__all__'
+        fields = (
+            'id',
+            'first_name',
+            'last_name',
+            'position',
+            'photo',
+            'phone',
+        )
