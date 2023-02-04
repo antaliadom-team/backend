@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import api_view, action, permission_classes
 from rest_framework.response import Response
+
+from api.pagination import ObjectsLimitPagePagination
 from core.utils import send_order_emails
 
 from api.mixins import FavoriteMixin
@@ -91,6 +93,7 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     http_method_names = ('get',)
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
+    pagination_class = ObjectsLimitPagePagination
 
     @action(
         methods=('post', 'delete'),
