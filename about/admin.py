@@ -18,7 +18,13 @@ class StaticPageAdmin(admin.ModelAdmin):
 class TeamAdmin(admin.ModelAdmin):
     """Админка локации."""
 
-    list_display = ('first_name', 'last_name', 'position', 'phone')
+    list_display = (
+        'first_name',
+        'last_name',
+        'position',
+        'phone',
+        'is_active',
+    )
     list_display_links = ('first_name', 'last_name')
     search_fields = ('first_name', 'last_name', 'position', 'phone')
     list_filter = ('position', 'is_active')

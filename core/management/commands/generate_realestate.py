@@ -9,7 +9,7 @@ from tests.factories.realestate_factory import RealEstateFactory
 
 class Command(BaseCommand):
     help = (
-        'Генерирует множество сущностей модели RealEstate при помощи '
+        'Генерирует множество объектов модели RealEstate при помощи '
         'RealEstateFactory.'
     )
 

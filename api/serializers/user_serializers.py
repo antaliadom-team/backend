@@ -4,7 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
-from api.validators import regex_check_number
+from api.validators import (
+    regex_check_number,
+    validate_name,
+)
 
 User = get_user_model()
 
@@ -12,9 +15,18 @@ User = get_user_model()
 class BaseUserSerializer(serializers.ModelSerializer):
     """Базовый клас сериализатора пользователей"""
 
+    def validate_phone(self, value):
+        return regex_check_number(value)
+
+    def validate_first_name(self, value):
+        return validate_name(value)
+
+    def validate_last_name(self, value):
+        return validate_name(value)
+
     class Meta:
         model = User
-        fields = ('email', 'id', 'first_name', 'last_name')
+        fields = ('email', 'id', 'first_name', 'last_name', 'phone')
 
 
 class RegisterUserSerializer(BaseUserSerializer):
@@ -26,9 +38,6 @@ class RegisterUserSerializer(BaseUserSerializer):
         help_text='Введите пароль повторно.',
     )
     phone = serializers.CharField()
-
-    def validate_phone(self, value):
-        return regex_check_number(value)
 
     def validate_agreement(self, value):
         if not value:
@@ -77,7 +86,6 @@ class RegisterUserSerializer(BaseUserSerializer):
         fields = BaseUserSerializer.Meta.fields + (
             'password',
             're_password',
-            'phone',
             'agreement',
         )
         extra_kwargs = {'password': {'write_only': True, 'required': True}}
@@ -85,3 +93,6 @@ class RegisterUserSerializer(BaseUserSerializer):
 
 class UserSerializer(BaseUserSerializer):
     """Сериализатор пользователей."""
+
+    class Meta(BaseUserSerializer.Meta):
+        read_only_fields = ('email',)

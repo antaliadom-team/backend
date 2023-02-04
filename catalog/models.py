@@ -192,6 +192,7 @@ class RealEstate(models.Model):
     class Meta:
         verbose_name = 'Объект'
         verbose_name_plural = 'Объекты'
+        ordering = ('-date_added',)
 
     def __str__(self):
         return self.MODEL_STRING.format(
@@ -217,6 +218,7 @@ class Image(models.Model):
     class Meta:
         verbose_name = 'Фотография'
         verbose_name_plural = 'Фотографии'
+        ordering = ('-id',)
 
     def save(self, *args, **kwargs):
         if (

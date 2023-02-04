@@ -1,6 +1,9 @@
 from djoser.views import UserViewSet as DjoserUsers
-from rest_framework import status
+from rest_framework import permissions, status
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.response import Response
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
 class UserViewSet(DjoserUsers):
@@ -30,3 +33,14 @@ class UserViewSet(DjoserUsers):
 
     def reset_username_confirm(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(http_method_names=['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def logout(request):
+    """Logout view."""
+    try:
+        RefreshToken(request.data['refresh_token']).blacklist()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
