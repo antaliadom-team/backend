@@ -12,6 +12,9 @@
  - Django 3.2.16
  - Django Rest Framework
  - Djoser
+ - Pytest
+ - FactoryBoy
+ - Celery
 
 ## Диаграмма и описание моделей
 
