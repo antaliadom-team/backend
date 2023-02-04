@@ -26,10 +26,12 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'djoser',
+    'django_filters',
     'users',
     'catalog',
     'about',
     'api',
+    'core'
 ]
 
 MIDDLEWARE = [
@@ -99,7 +101,7 @@ USE_L10N = True
 USE_TZ = True
 
 MEDIA_URL = '/backend_media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / 'backend_media'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
 
@@ -130,9 +132,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
