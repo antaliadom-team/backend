@@ -1,6 +1,5 @@
-import os
-
 from datetime import timedelta
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -31,7 +30,7 @@ INSTALLED_APPS = [
     'catalog',
     'about',
     'api',
-    'core'
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +81,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 7, }
+        'OPTIONS': {'min_length': 7},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
@@ -133,7 +132,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
     ],
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
@@ -141,6 +140,7 @@ REST_FRAMEWORK = {
 }
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'AUTH_HEADER_TYPES': ('Bearer',),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
