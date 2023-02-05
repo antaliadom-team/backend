@@ -48,7 +48,13 @@ paths:
         '400':
           $ref: '#/responses/ValidationError'
         '401':
-          $ref: '#/responses/AuthenticationError'
+          description: 'Ошибка авторизации (неправильный емейл и/или пароль, забаненный пользователь).'
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                default: No active account found with the given credentials
       tags:
         - Токены
       security: []
