@@ -13,9 +13,3 @@ pytest-cov
 pytest-django
 pytest-mock
 pre-commit==3.0.4
-black
-flake8
-pep8-naming
-flake8-broken-line
-flake8-return
-flake8-isort
