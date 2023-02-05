@@ -13,3 +13,4 @@ pytest-cov
 pytest-django
 pytest-mock
 pre-commit==3.0.4
+black
