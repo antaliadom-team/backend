@@ -629,9 +629,7 @@ paths:
         '200':
           description: ''
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/CustomUserResponseOnCreate'
+            $ref: '#/definitions/CustomUserResponseOnCreate'
         '401':
           $ref: '#/responses/AuthenticationError'
       tags:
