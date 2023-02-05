@@ -33,7 +33,7 @@ paths:
         <a href="https://jwt.io/introduction">Токены JWT</a> - единственный способ авторизации пользователей на нашем проекте. Для получения токена в запросе нужно передать email пользователя и password в открытом виде. В случае, если пользователь с такой парой email/password существует, сервер создаст пару токенов refresh и access и отправит их в ответном JSON.
 
         Любой запрос к серверу, требующий авторизацию и аутентификацию следует отправлять с авторизационным токеном:<br>
-        <pre>Authorization: Bearer &laquo;token&raquo;</pre>
+        <pre>Authorization: Bearer ACCESS_TOKEN</pre>
         </p>
         <p>
         Вот общий воркфлоу для аутентификации пользователей в бэкэнде Django/DRF с использованием JWT с токенами <code>access</code> и <code>refresh</code>:
