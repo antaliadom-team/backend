@@ -4,10 +4,6 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
-from api.pagination import ObjectsLimitPagePagination
-from core.utils import send_order_emails
-
-
 from api.mixins import FavoriteMixin
 from api.pagination import ObjectsLimitPagePagination
 from api.serializers.catalog_serializers import (
