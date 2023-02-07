@@ -1,29 +1,29 @@
 from django.contrib.auth import get_user_model
-from rest_framework import status, viewsets, permissions
-from rest_framework.decorators import api_view, action, permission_classes
+from django.shortcuts import get_object_or_404
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
-from api.pagination import ObjectsLimitPagePagination
-from core.utils import send_order_emails
-
 from api.mixins import FavoriteMixin
+from api.pagination import ObjectsLimitPagePagination
 from api.serializers.catalog_serializers import (
     CategorySerializer,
     FacilitySerializer,
     LocationSerializer,
     OrderSerializer,
-    RealEstateOrderSerializer,
     PropertyTypeSerializer,
+    RealEstateOrderSerializer,
     RealEstateSerializer,
 )
 from catalog.models import (
     Category,
     Facility,
+    Favorite,
     Location,
     PropertyType,
     RealEstate,
-    Favorite,
 )
+from core.utils import send_order_emails
 
 User = get_user_model()
 
@@ -35,17 +35,24 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(serializer.data, user=request.user or None)
+    send_order_emails(serializer.data, user=request.user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(http_method_names=['POST'])
-def real_estate_order(request):
+def real_estate_order(request, id=None):
     """Заявка на конкретный объект недвижимости"""
-    serializer = RealEstateOrderSerializer(data=request.data)
+    real_estate = get_object_or_404(RealEstate, id=id)
+    serializer = RealEstateOrderSerializer(
+        real_estate,
+        data=request.data,
+        context={'request': request, 'real_estate': real_estate.id},
+    )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(serializer.data, user=request.user or None)
+    send_order_emails(
+        serializer.data, user=request.user, real_estate=real_estate
+    )
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
