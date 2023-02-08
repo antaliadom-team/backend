@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -15,6 +16,7 @@ from api.serializers.catalog_serializers import (
     RealEstateOrderSerializer,
     RealEstateSerializer,
 )
+from catalog.filters import RealEstateFilter
 from catalog.models import (
     Category,
     Facility,
@@ -99,6 +101,8 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
     pagination_class = ObjectsLimitPagePagination
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = RealEstateFilter
 
     @action(
         methods=('post', 'delete'),
