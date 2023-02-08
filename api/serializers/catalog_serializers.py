@@ -51,14 +51,15 @@ class OrderSerializer(CommonOrderSerializer):
         )
 
 
-class RealEstateOrderSerializer(CommonOrderSerializer):
+class RealEstateOrderSerializer(OrderSerializer):
     phone = fields.ReadOnlyField(source='user.phone')
     email = fields.ReadOnlyField(source='user.email')
     first_name = fields.ReadOnlyField(source='user.first_name')
     last_name = fields.ReadOnlyField(source='user.last_name')
+    category = fields.ReadOnlyField(source='real_estate.category')
 
-    class Meta(CommonOrderSerializer.Meta):
-        fields = CommonOrderSerializer.Meta.fields + ('real_estate',)
+    class Meta(OrderSerializer.Meta):
+        pass
 
 
 class LocationSerializer(serializers.ModelSerializer):

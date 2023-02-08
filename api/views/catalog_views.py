@@ -44,16 +44,14 @@ def real_estate_order(request, id=None):
     """Заявка на конкретный объект недвижимости"""
     real_estate = get_object_or_404(RealEstate, id=id)
     serializer = RealEstateOrderSerializer(
-        real_estate,
-        data=request.data,
-        context={'request': request, 'real_estate': real_estate.id},
+        real_estate, data=request.data, context={'request': request}
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
     send_order_emails(
         serializer.data, user=request.user, real_estate=real_estate
     )
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_201_CREATED)
 
 
 class LocationViewSet(viewsets.ModelViewSet):

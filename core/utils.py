@@ -12,7 +12,7 @@ class AdminImageWidget(AdminFileWidget):
 
     def render(self, name, value, attrs=None, **kwargs):
         output = []
-        if value and getattr(value, "url", None):
+        if value and getattr(value, 'url', None):
             image_url = value.url
             file_name = str(value)
             output.append(
@@ -31,30 +31,13 @@ def format_message(user_data, data, message_template, real_estate=None):
 
     # Если есть объект недвижимости, то добавляем его данные из базы
     # иначе берем из сериализатора (data)
-    if real_estate:
-        data["category"] = real_estate.category
-        data["location"] = real_estate.location
-        data["property_type"] = real_estate.property_type
-        data["rooms"] = real_estate.rooms
-    return message_template.format(
-        first_name=user_data["first_name"],
-        last_name=user_data["last_name"],
-        email=user_data["email"],
-        phone=user_data["phone"],
-        category=data["category"],
-        location=data["location"],
-        property_type=data["property_type"],
-        rooms=data["rooms"],
-        date_added=data["date_added"],
-        comment=data["comment"],
-    )
 
 
 def format_real_estate_message(real_estate):
     """Форматирует сообщение для объекта недвижимости"""
     return (
-        f"Заявка по объекту недвижимости #{real_estate.id} - "
-        f"{real_estate.title} <link>"
+        f'Заявка по объекту недвижимости #{real_estate.id} - '
+        f'{real_estate.title} <link>'
     )
 
 
@@ -63,39 +46,26 @@ def send_order_emails(data, user=AnonymousUser, *args, **kwargs):
     уведомление на почту администраторам о поступлении заявки"""
 
     # Если есть объект недвижимости, сохраняем его в переменную, иначе None
-    real_estate = kwargs.get("real_estate", None)
     admins = (
         User.objects.filter(is_staff=True)
-        .values_list("email", flat=True)
+        .values_list('email', flat=True)
         .distinct()
     )
     # Если пользователь авторизован, то берем данные из объекта юзера, иначе из
     # сериализатора
-    if user.is_anonymous:
-        user_data = {
-            "first_name": data["first_name"],
-            "last_name": data["last_name"],
-            "email": data["email"],
-            "phone": data["phone"],
-        }
-    else:
-        user_data = {
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "email": user.email,
-            "phone": user.phone,
-        }
+    if user.is_authenticated:
+        data['first_name'] = user.first_name
+        data['last_name'] = user.last_name
+        data['email'] = user.email
+        data['phone'] = user.phone
+
     # Формирование сообщений
-    message_to_user = format_message(
-        user_data, data, settings.EMAIL_USER_MESSAGE, real_estate
-    )
-    message_to_admins = format_message(
-        user_data, data, settings.EMAIL_ADMIN_MESSAGE, real_estate
-    )
+    message_to_user = settings.EMAIL_USER_MESSAGE.format(**data)
+    message_to_admins = settings.EMAIL_ADMIN_MESSAGE.format(**data)
     # Если это заявка на объект, то в сообщение добавляется ссылка на него
-    if real_estate:
-        message_to_user += format_real_estate_message(kwargs["real_estate"])
-        message_to_admins += format_real_estate_message(kwargs["real_estate"])
+    if kwargs.get('real_estate'):
+        message_to_user += format_real_estate_message(kwargs['real_estate'])
+        message_to_admins += format_real_estate_message(kwargs['real_estate'])
 
     # Отправка почты пользователю
     mail.send_mail(
@@ -103,7 +73,7 @@ def send_order_emails(data, user=AnonymousUser, *args, **kwargs):
         message=message_to_user,
         # html_message=settings.EMAIL_HTML_MESSAGE_USER,
         from_email=settings.EMAIL_REPLY_TO,
-        recipient_list=(user_data["email"],),
+        recipient_list=(data['email'],),
     )
     # Отправка почты админам
     mail.send_mail(
