@@ -26,13 +26,6 @@ class AdminImageWidget(AdminFileWidget):
         return mark_safe("".join(output))
 
 
-def format_message(user_data, data, message_template, real_estate=None):
-    """Форматирует сообщение по шаблону"""
-
-    # Если есть объект недвижимости, то добавляем его данные из базы
-    # иначе берем из сериализатора (data)
-
-
 def format_real_estate_message(real_estate):
     """Форматирует сообщение для объекта недвижимости"""
     return (
