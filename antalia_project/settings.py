@@ -4,6 +4,9 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from antalia_project.config import *
+from antalia_project.constants import *
+
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -75,21 +78,6 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 7},
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'
-    },
-]
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -127,55 +115,6 @@ CORS_ORIGIN_WHITELIST = os.environ.get(
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication'
-    ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
-    ],
-}
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
-# Djoser
-DJOSER = {
-    'LOGIN_FIELD': 'email',
-    'SEND_ACTIVATION_EMAIL': False,
-    'HIDE_USERS': True,
-    'USER_CREATE_PASSWORD_RETYPE': True,
-    'SET_PASSWORD_RETYPE': True,
-    'TOKEN_MODEL': None,
-    'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user_create': ['rest_framework.permissions.AllowAny'],
-        'user_list': ['djoser.permissions.CurrentUserOrAdmin'],
-    },
-    'SERIALIZERS': {
-        'user': 'api.serializers.user_serializers.UserSerializer',
-        'current_user': 'api.serializers.user_serializers.UserSerializer',
-        'user_create_password_retype': 'api.serializers.user_serializers.RegisterUserSerializer',
-    },
-}
-
-# swagger
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'JWT [Bearer {JWT}]': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header',
-        }
-    }
-}
-
 # В файле .env хранятся имя юзера и пароль приложения
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.zoho.com'
@@ -184,56 +123,3 @@ EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_REPLY_TO = 'antalyadom@telfia.com'
-
-EMAIL_USER_SUBJECT = 'Подтверждение заявки.'
-EMAIL_ADMIN_SUBJECT = 'Поступила новая заявка.'
-EMAIL_ADMIN_MESSAGE = (
-    'Поступила заявка от {first_name} {last_name}.\n\n'
-    'Были предоставлены следующие данные:\n'
-    'Имя: {first_name}\n'
-    'Фамилия: {last_name}\n'
-    'Электронная почта: {email}\n'
-    'Номер для связи: {phone}\n\n'
-    'Тип сделки: {category}\n'
-    'Локация: {location}\n'
-    'Тип недвижимости: {property_type}\n'
-    'Количество комнат: {rooms}\n\n'
-    'Комментарий: {comment}\n\n'
-    'Дата подачи заявки: {date_added}'
-)
-EMAIL_USER_MESSAGE = (
-    'Здравствуйте, {first_name}. Ваша заявка была принята в работу,'
-    'скоро с вами свяжется сотрудник нашего агентства.\n\n'
-    'По вашей заявке были приняты следующие данные:\n'
-    'Имя: {first_name}\n'
-    'Фамилия: {last_name}\n'
-    'Электронная почта: {email}\n'
-    'Номер для связи: {phone}\n\n'
-    'Тип сделки: {category}\n'
-    'Локация: {location}\n'
-    'Тип недвижимости: {property_type}\n'
-    'Количество комнат: {rooms}\n'
-    'Комментарий: {comment}\n\n'
-    'Дата подачи заявки: {date_added}'
-)
-EMAIL_HTML_MESSAGE_ADMIN = ''  # можно прикрутить HTML
-EMAIL_HTML_MESSAGE_USER = ''  # можно прикрутить HTML
-
-NA = 'Не указано'
-
-# Константы для моделей
-EMAIL_LENGTH = 50
-USER_ROLE_LENGTH = 6
-PHONE_LENGTH = 14
-NAMES_LENGTH = 30
-LONG_NAMES_LENGTH = 100
-ESTATE_TITLE_LENGTH = 200
-SLUG_LENGTH = 100
-LONG_SLUG_LENGTH = 255
-PROPERTY_MAX_LENGTH = 50
-ICON_SLUG = 100
-COMMENT_LENGTH = 200
-CONF_CODE_LENGTH = 32
-PASSWORD_LENGTH = 128
-IMAGE_LIMIT = 6
