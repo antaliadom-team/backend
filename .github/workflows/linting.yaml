@@ -12,8 +12,8 @@ on:
       - main
 
 jobs:
-  tests:
-    name: Python ${{ matrix.python-version }}
+  linting:
+    name: Flake8 with plugins
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -29,3 +29,18 @@ jobs:
       - name: Run linter
         run: |
           python -m flake8 .
+  send_message:
+    name: Sending notification
+    runs-on: ubuntu-20.04
+    needs: linting
+    steps:
+      - name: Send notification to telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TG_USER }}
+          token: ${{ secrets.TG_TOKEN }}
+          message: |
+            ${{ github.actor }} открыл ${{ github.event_name }}
+            ветки ${{ github.head_ref }} в ${{ github.base_ref }}
+            репозитория ${{ github.repository }}.
+            ${{ github.event.pull_request.html_url }}
