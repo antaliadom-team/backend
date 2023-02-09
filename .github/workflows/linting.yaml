@@ -35,6 +35,7 @@ jobs:
     needs: linting
     steps:
       - name: Send notification to telegram
+        if: ${{ github.event_name == 'pull_request' }}
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TG_USER }}
