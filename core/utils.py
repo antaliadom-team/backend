@@ -1,8 +1,10 @@
-from django.contrib.admin.widgets import AdminFileWidget
-from django.utils.safestring import mark_safe
-from users.models import User
-from django.core import mail
 from django.conf import settings
+from django.contrib.admin.widgets import AdminFileWidget
+from django.contrib.auth.models import AnonymousUser
+from django.core import mail
+from django.utils.safestring import mark_safe
+
+from users.models import User
 
 
 class AdminImageWidget(AdminFileWidget):
@@ -21,46 +23,56 @@ class AdminImageWidget(AdminFileWidget):
                 )
             )
         output.append(super().render(name, value, attrs, **kwargs))
-        return mark_safe(u''.join(output))
+        return mark_safe("".join(output))
 
 
-def send_order_emails(data, user=None, *args, **kwargs):
+def format_real_estate_message(real_estate):
+    """Форматирует сообщение для объекта недвижимости"""
+    return (
+        f'Заявка по объекту недвижимости #{real_estate.id} - '
+        f'{real_estate.title} <link>'
+    )
+
+
+def send_order_emails(data, user=AnonymousUser, *args, **kwargs):
     """Отправляет уведомление клиенту на почту о приеме заявки и рассылает
-     уведомление на почту администраторам о поступлении заявки"""
-    admins = User.objects.filter(is_staff=True).values('email').distinct()
-    unauthorized_user_data = {
-        'user_full_name': f"{data['first_name']} {data['last_name']}",
-        'first_name': data['first_name'],
-        'last_name': data['last_name']}
-    authorized_user_data = {
-        'user_full_name': user.get_full_name(),
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'email': user.email}
-    data = {
-        'category': data['category'],
-        'location': data['location'],
-        'property_type': data['property_type'],
-        'rooms': data['rooms'],
-        'phone_number': data['phone_number'],
-        'email': data['email'],
-        'date_added': data['date_added'],
-        'comment': data['comment']}
+    уведомление на почту администраторам о поступлении заявки"""
+
+    # Если есть объект недвижимости, сохраняем его в переменную, иначе None
+    admins = (
+        User.objects.filter(is_staff=True)
+        .values_list('email', flat=True)
+        .distinct()
+    )
+    # Если пользователь авторизован, то берем данные из объекта юзера, иначе из
+    # сериализатора
+    if user.is_authenticated:
+        data['first_name'] = user.first_name
+        data['last_name'] = user.last_name
+        data['email'] = user.email
+        data['phone'] = user.phone
+
+    # Формирование сообщений
+    message_to_user = settings.EMAIL_USER_MESSAGE.format(**data)
+    message_to_admins = settings.EMAIL_ADMIN_MESSAGE.format(**data)
+    # Если это заявка на объект, то в сообщение добавляется ссылка на него
+    if kwargs.get('real_estate'):
+        message_to_user += format_real_estate_message(kwargs['real_estate'])
+        message_to_admins += format_real_estate_message(kwargs['real_estate'])
+
+    # Отправка почты пользователю
     mail.send_mail(
-        subject='Подтверждение заявки.',
-        message=settings.EMAIL_USER_MESSAGE.format(
-            {**unauthorized_user_data, **data}) if user is None else
-        settings.EMAIL_USER_MESSAGE.format(
-            {**authorized_user_data, **data}),
-        html_message=settings.EMAIL_HTML_MESSAGE_USER,
+        subject=settings.EMAIL_USER_SUBJECT,
+        message=message_to_user,
+        # html_message=settings.EMAIL_HTML_MESSAGE_USER,
         from_email=settings.EMAIL_REPLY_TO,
-        recipient_list=(data['email'],),)
+        recipient_list=(data['email'],),
+    )
+    # Отправка почты админам
     mail.send_mail(
-        subject='Новая заявка.',
-        message=settings.EMAIL_ADMIN_MESSAGE.format(
-            {**unauthorized_user_data, **data}) if user is None else
-        settings.EMAIL_ADMIN_MESSAGE.format(
-            {**authorized_user_data, **data}),
-        html_message=settings.EMAIL_HTML_MESSAGE_ADMIN,
+        subject=settings.EMAIL_ADMIN_SUBJECT,
+        message=message_to_admins,
+        # html_message=settings.EMAIL_HTML_MESSAGE_ADMIN,
         from_email=settings.EMAIL_REPLY_TO,
-        recipient_list=admins,)
+        recipient_list=admins,
+    )
