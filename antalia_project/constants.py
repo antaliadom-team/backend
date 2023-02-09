@@ -1,11 +1,6 @@
 import os
-# В файле .env хранятся имя юзера и пароль приложения
+
 #константы для отправки электронных писем
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.zoho.com'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
