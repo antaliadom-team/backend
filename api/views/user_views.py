@@ -1,6 +1,6 @@
 from djoser.views import UserViewSet as DjoserUsers
 from rest_framework import permissions, status
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -41,5 +41,5 @@ def logout(request):
     try:
         RefreshToken(request.data['refresh_token']).blacklist()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    except Exception as e:
+    except Exception:
         return Response(status=status.HTTP_400_BAD_REQUEST)
