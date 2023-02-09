@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -36,18 +37,23 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(serializer.data, user=request.user or None)
+    send_order_emails(serializer.data, user=request.user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(http_method_names=['POST'])
-def real_estate_order(request):
+def real_estate_order(request, id=None):
     """Заявка на конкретный объект недвижимости"""
-    serializer = RealEstateOrderSerializer(data=request.data)
+    real_estate = get_object_or_404(RealEstate, id=id)
+    serializer = RealEstateOrderSerializer(
+        real_estate, data=request.data, context={'request': request}
+    )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(serializer.data, user=request.user or None)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    send_order_emails(
+        serializer.data, user=request.user, real_estate=real_estate
+    )
+    return Response(status=status.HTTP_201_CREATED)
 
 
 class LocationViewSet(viewsets.ModelViewSet):

@@ -14,6 +14,8 @@ from catalog.models import (
 class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
+    date_added = fields.DateTimeField(read_only=True, format='%d.%m.%Y %H:%M')
+
     class Meta:
         fields = (
             'first_name',
@@ -22,6 +24,7 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             'email',
             'comment',
             'agreement',
+            'date_added',
         )
         model = Order
 
@@ -29,6 +32,13 @@ class CommonOrderSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError('Вы должны принять соглашение.')
         return value
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance=instance)
+        data['category'] = instance.category.name
+        data['location'] = instance.location.name
+        data['property_type'] = instance.property_type.name
+        return data
 
 
 class OrderSerializer(CommonOrderSerializer):
@@ -41,9 +51,15 @@ class OrderSerializer(CommonOrderSerializer):
         )
 
 
-class RealEstateOrderSerializer(CommonOrderSerializer):
-    class Meta(CommonOrderSerializer.Meta):
-        fields = CommonOrderSerializer.Meta.fields + ('real_estate',)
+class RealEstateOrderSerializer(OrderSerializer):
+    phone = fields.ReadOnlyField(source='user.phone')
+    email = fields.ReadOnlyField(source='user.email')
+    first_name = fields.ReadOnlyField(source='user.first_name')
+    last_name = fields.ReadOnlyField(source='user.last_name')
+    category = fields.ReadOnlyField(source='real_estate.category')
+
+    class Meta(OrderSerializer.Meta):
+        pass
 
 
 class LocationSerializer(serializers.ModelSerializer):
