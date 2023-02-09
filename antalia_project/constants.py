@@ -1,8 +1,6 @@
 import os
 
 #константы для отправки электронных писем
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
 EMAIL_ADMIN_MESSAGE = (
     'Поступила заявка от {user_full_name}.'
