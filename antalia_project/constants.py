@@ -1,6 +1,4 @@
-import os
-
-#константы для отправки электронных писем
+# константы для отправки электронных писем
 EMAIL_REPLY_TO = 'antalyadom@telfia.com'
 EMAIL_ADMIN_MESSAGE = (
     'Поступила заявка от {user_full_name}.'
