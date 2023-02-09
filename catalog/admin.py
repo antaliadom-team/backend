@@ -7,8 +7,8 @@ from catalog.models import (
     Favorite,
     Image,
     Location,
-    RealEstate,
     PropertyType,
+    RealEstate,
 )
 from core.utils import AdminImageWidget
 
@@ -58,7 +58,7 @@ class ImageInline(admin.TabularInline):
     model = Image
     extra = 0
     # TODO: вынести в настройки, чтобы можно было менять
-    max_num = 6 # Максимальное количество изображений
+    max_num = 6  # Максимальное количество изображений
 
 
 @admin.register(RealEstate)
@@ -93,7 +93,7 @@ class RealEstateAdmin(admin.ModelAdmin):
     )
     list_display_links = ('title',)
     search_fields = ('title', 'description')
-    list_filter = ('status', 'location', 'property_type', )# 'owner'
+    list_filter = ('status', 'location', 'property_type')  # 'owner'
     readonly_fields = ('date_added',)
     inlines = (ImageInline,)
 

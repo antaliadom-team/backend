@@ -1,5 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -226,8 +226,7 @@ class Image(models.Model):
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
-        else:
-            super(Image, self).save(*args, **kwargs)
+        super(Image, self).save(*args, **kwargs)
 
 
 class Favorite(models.Model):

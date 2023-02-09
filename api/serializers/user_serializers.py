@@ -4,10 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
-from api.validators import (
-    regex_check_number,
-    validate_name,
-)
+from api.validators import regex_check_number, validate_name
 
 User = get_user_model()
 

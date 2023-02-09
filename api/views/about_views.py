@@ -4,8 +4,9 @@ from rest_framework.response import Response
 
 from about.models import StaticPage, Team
 from api.serializers.about_serializers import (
+    StaticPageListSerializer,
     StaticPageSerializer,
-    TeamSerializer, StaticPageListSerializer,
+    TeamSerializer,
 )
 
 
