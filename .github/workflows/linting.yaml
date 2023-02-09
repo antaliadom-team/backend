@@ -2,10 +2,10 @@ name: linting on pr and push to dev and main
 
 on:
   pull_request:
+    types: [opened, reopened, synchronize]
     branches:
       - dev
       - main
-  types: [ opened, synchronize, reopened ]
   push:
     branches:
       - dev
