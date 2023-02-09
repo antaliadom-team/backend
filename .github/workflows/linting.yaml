@@ -38,4 +38,8 @@ jobs:
         with:
           to: ${{ secrets.TG_USER }}
           token: ${{ secrets.TG_TOKEN }}
-          message: ${{ github.actor }} открыл ${{ github.event_name }} ветки ${{ github.head_ref }} в ${{ github.base_ref }}
+          message: |
+            ${{ github.actor }} открыл ${{ github.event_name }}
+            ветки ${{ github.head_ref }} в ${{ github.base_ref }}
+            репозитория ${{ github.repository }}.
+            ${{ github.event.pull_request.html_url }}
