@@ -24,4 +24,4 @@ jobs:
             script: |
               cd /home/antalia-dom/infra
               git fetch
-              git checkout -m origin/dev docs/
+              git checkout -m origin/${{ github.ref_name }} docs/
