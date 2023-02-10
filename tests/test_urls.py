@@ -32,9 +32,9 @@ class TestURLs(APITestBase):
                 response.status_code != 404
             ), f'Адрес {url} не найден, проверьте этот адрес в urls.py'
 
-    def test_disabled_joser_endpoints(self, user_client):
-        """Disabled djoser's endpoints should return 404s"""
-        disabled_endpoints = [
+    @pytest.mark.parametrize(
+        'disabled_endpoints',
+        [
             'resend_activation/',
             'activation/',
             'reset_password/',
@@ -42,9 +42,11 @@ class TestURLs(APITestBase):
             'set_username/',
             'reset_password_confirm/',
             'reset_username_confirm/',
-        ]
-        for url in disabled_endpoints:
-            full_url = '/api/users/' + url
-            self.assert_status_code(
-                404, user_client.get(full_url), url=full_url
-            )
+        ],
+    )
+    def test_disabled_joser_endpoints(self, user_client, disabled_endpoints):
+        """Disabled djoser's endpoints should return 404s"""
+        full_url = '/api/users/' + disabled_endpoints
+        self.assert_status_code(
+            404, user_client.get(full_url), url=full_url
+        )

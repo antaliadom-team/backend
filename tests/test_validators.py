@@ -1,7 +1,8 @@
-import pytest
 from django.core.exceptions import ValidationError
 
-from api.validators import regex_check_number
+import pytest
+
+from api.validators import regex_check_number, validate_name
 
 
 class TestValidators:
@@ -39,3 +40,27 @@ class TestValidators:
             f'Ошибка в возвращаемом значении '
             f'{number_with_delimeters} валидатора'
         )
+
+    def test_validate_name_success(self):
+        assert (
+            validate_name('Иван') == 'Иван'
+        ), 'Ошибка в возвращаемом значении валидатора'
+        assert (
+            validate_name('Иван-Иван') == 'Иван-Иван'
+        ), 'Ошибка в возвращаемом значении валидатора. Должен пропускать -'
+
+    @pytest.mark.parametrize(
+        'wrong_names',
+        [
+            'Иван1',
+            'Иван-Иван1',
+            'Иван Иван',
+            '111',
+            'Иван"№;%:?*()_+',
+        ],
+    )
+    def test_validate_name_wrong(self, wrong_names):
+        with pytest.raises(ValidationError):
+            assert (
+                validate_name(wrong_names) == False
+            ), f'Ошибка в работе валидатора на Имя {wrong_names}'
