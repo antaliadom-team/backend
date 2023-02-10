@@ -1,5 +1,6 @@
-import pytest
 from django.contrib.auth import get_user_model
+
+import pytest
 
 from tests.common import APITestBase
 
@@ -119,8 +120,8 @@ class TestUserAPI(APITestBase):
             == 'Имя и Фамилия должны состоять только из букв и символа -.'
         ), 'Ошибка в создании пользователя с неверным именем'
         assert (
-                response.data['last_name'][0]
-                == 'Имя и Фамилия должны состоять только из букв и символа -.'
+            response.data['last_name'][0]
+            == 'Имя и Фамилия должны состоять только из букв и символа -.'
         ), 'Ошибка в создании пользователя с неверным именем'
 
     def test_usermanager_create_user_without_email(self):
@@ -197,7 +198,7 @@ class TestUserAPI(APITestBase):
             url=url,
         )
         self.assert_status_code(
-            401,
+            400,
             user_client.post(url, data={'refresh_token': 'wrong_token'}),
             url=url,
         )
