@@ -35,4 +35,4 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: /home/runner/work/antaliadom-team/antaliadom-team/backend/coverage.xml
+          files: /home/runner/work/backend/backend/coverage.xml
