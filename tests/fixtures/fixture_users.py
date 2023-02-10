@@ -5,28 +5,44 @@ from django.contrib.auth import get_user_model
 @pytest.fixture
 def user(django_user_model):
     return django_user_model.objects.create_user(
-        email='test.user@fake.mail', password='12345Qq'
+        first_name='Tester',
+        last_name='Testerson',
+        email='test.user@fake.mail',
+        password='12345Qq',
     )
 
 
 @pytest.fixture
 def another_user(django_user_model):
     return django_user_model.objects.create_user(
-        email='another.test.user@fake.mail', password='12345Qq'
+        first_name='name',
+        last_name='last_name',
+        email='another.test.user@fake.mail',
+        password='12345Qq',
     )
 
 
 @pytest.fixture
 def admin(django_user_model):
     return django_user_model.objects.create_user(
-        email='test.admin@fake.mail', password='12345Qq', is_superuser=True
+        first_name='name',
+        last_name='last_name',
+        email='test.admin@fake.mail',
+        password='12345Qq',
+        is_superuser=True,
+        is_staff=True,
     )
 
 
 @pytest.fixture
 def admin2(django_user_model):
     return django_user_model.objects.create_user(
-        email='test.admin2@fake.mail', password='12345Qq', is_superuser=True
+        first_name='name',
+        last_name='last_name',
+        email='test.admin2@fake.mail',
+        password='12345Qq',
+        is_superuser=True,
+        is_staff=True,
     )
 
 

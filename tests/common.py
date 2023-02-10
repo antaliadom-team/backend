@@ -5,6 +5,7 @@ class APITestBase:
         'users_detail': '/api/users/{user_id}/',
         'users_me': '/api/users/me/',
         'set_password': '/api/users/set_password/',
+        'users_logout': '/api/users/logout/',
         # Auth
         'get_token': '/api/auth/jwt/create/',
         'refresh_token': '/api/auth/jwt/refresh/',
@@ -14,8 +15,8 @@ class APITestBase:
         'real_estate_list': '/api/objects/',
         'real_estate_detail': '/api/objects/{object_id}/',
         # Real Estate Types
-        'real_estate_type_list': '/api/objects/types/',
-        'real_estate_type_detail': '/api/objects/types/{property_type_id}/',
+        'real_estate_type_list': '/api/objects/property_types/',
+        'real_estate_type_detail': '/api/objects/property_types/{property_type_id}/',
         # Real Estate Locations
         'location_list': '/api/objects/locations/',
         'location_detail': '/api/objects/locations/{location_id}/',
@@ -25,9 +26,11 @@ class APITestBase:
         # Real Estate Categories
         'category_list': '/api/objects/categories/',
         'category_detail': '/api/objects/categories/{category_id}/',
-        # Requests
+        # Orders
         'order_general': '/api/objects/order/',
         'real_estate_order': '/api/objects/{object_id}/order/',
+        # Favorite objects
+        'favorite': '/api/objects/{object_id}/favorite/',
         # Static pages
         'static_page_list': '/api/static_pages/',
         'static_page': '/api/static_pages/{static_id}/',

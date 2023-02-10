@@ -1,2 +1,4 @@
-omit = "*/migrations/*"
-       "./tests/*"
+[run]
+    omit =
+        */migrations/*
+        ./tests/*

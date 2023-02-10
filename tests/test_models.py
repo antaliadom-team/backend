@@ -224,9 +224,19 @@ class TestModels:
 
     def test_model_image_limit(self, object1):
         """Тест количества изображений для модели RealEstate"""
-        for i in range(1, settings.IMAGE_LIMIT + 1):
+        for i in range(1, settings.IMAGE_LIMIT + 2):
             Image.objects.create(real_estate=object1, image=f'image{i}.jpg')
         assert (
             Image.objects.filter(real_estate=object1).count()
             == settings.IMAGE_LIMIT
         ), 'Максимальное количество изображений для объекта недвижимости'
+
+    def test_model_user_str(self, user):
+        """Тест метода __str__ для модели User"""
+        assert (
+            str(user) == 'Tester Testerson (test.user@fake.mail)'
+        ), 'Неверно формируется имя экземпляра объекта User'
+        assert user.get_short_name() == 'Tester', 'Неверно формируется имя'
+        assert (
+            user.get_full_name() == 'Tester Testerson'
+        ), 'Неверно формируется полное имя'

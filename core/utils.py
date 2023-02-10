@@ -46,7 +46,7 @@ def send_order_emails(data, user=AnonymousUser, *args, **kwargs):
     )
     # Если пользователь авторизован, то берем данные из объекта юзера, иначе из
     # сериализатора
-    if user.is_authenticated:
+    if not user.is_anonymous:
         data['first_name'] = user.first_name
         data['last_name'] = user.last_name
         data['email'] = user.email
