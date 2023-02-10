@@ -1,4 +1,4 @@
-name: linting on pr and push to dev and main
+name: Linting on PR and Push to dev and main
 
 on:
   pull_request:
