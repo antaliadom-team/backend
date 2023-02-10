@@ -24,8 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
-    'django_extensions',  # shell_plus --ipython
-    'drf_yasg',
     'corsheaders',
     'djoser',
     'django_filters',
@@ -35,6 +33,9 @@ INSTALLED_APPS = [
     'api',
     'core',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
