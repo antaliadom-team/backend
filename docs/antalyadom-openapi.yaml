@@ -2,7 +2,7 @@ swagger: '2.0'
 x-stoplight:
   id: 8zmtg9568r41f
 info:
-  title: AntalyaDom API
+  title: AntalyaDom API TEST
   description: AntalyaDom REST API
   version: v1
   contact:
