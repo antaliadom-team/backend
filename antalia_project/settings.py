@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'djoser',
@@ -35,7 +34,11 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
+    INSTALLED_APPS += [
+        'rest_framework',
+        'django_extensions',  # shell_plus --ipython
+        'drf_yasg',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -88,7 +91,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-MEDIA_URL = '/backend_media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'backend_media'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
