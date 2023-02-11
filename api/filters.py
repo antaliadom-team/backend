@@ -1,3 +1,4 @@
+from django.conf import settings
 from django_filters import rest_framework as filters
 
 from catalog.models import RealEstate
@@ -30,9 +31,9 @@ class RealEstateFilter(filters.FilterSet):
 
     def four_and_more(self, queryset, name, value):
         """Возвращает объекты недвижимости с количеством комнат"""
-        if 0 < value < 4:
+        if 0 < value < settings.ROOM_LIMITER:
             return self.queryset.filter(rooms=value)
-        return self.queryset.filter(rooms__gte=4)
+        return self.queryset.filter(rooms__gte=settings.ROOM_LIMITER)
 
     class Meta:
         model = RealEstate
