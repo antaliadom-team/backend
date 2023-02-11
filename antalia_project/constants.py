@@ -53,4 +53,4 @@ PASSWORD_LENGTH = 128
 IMAGE_LIMIT = 6
 
 # константы проекта
-ROOM_LIMITER = 4
+ROOMS_LIMIT = 4

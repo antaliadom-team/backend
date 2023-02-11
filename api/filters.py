@@ -29,11 +29,11 @@ class RealEstateFilter(filters.FilterSet):
             )
         return queryset
 
-    def four_and_more(self, queryset, name, value):
+    def rooms_limiter(self, queryset, name, value):
         """Возвращает объекты недвижимости с количеством комнат"""
-        if 0 < value < settings.ROOM_LIMITER:
+        if 0 < value < settings.ROOMS_LIMIT:
             return self.queryset.filter(rooms=value)
-        return self.queryset.filter(rooms__gte=settings.ROOM_LIMITER)
+        return self.queryset.filter(rooms__gte=settings.ROOMS_LIMIT)
 
     class Meta:
         model = RealEstate
