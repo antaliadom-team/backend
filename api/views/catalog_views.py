@@ -5,6 +5,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
+from api.filters import RealEstateFilter
 from api.mixins import FavoriteMixin
 from api.pagination import ObjectsLimitPagePagination
 from api.serializers.catalog_serializers import (
@@ -16,7 +17,6 @@ from api.serializers.catalog_serializers import (
     RealEstateOrderSerializer,
     RealEstateSerializer,
 )
-from catalog.filters import RealEstateFilter
 from catalog.models import (
     Category,
     Facility,

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django_filters import rest_framework as filters
 
 from catalog.models import RealEstate
@@ -15,7 +16,7 @@ class RealEstateFilter(filters.FilterSet):
         field_name='property_type__id', lookup_expr='in'
     )
     location = CharFilterInFilter(field_name='location__id', lookup_expr='in')
-    rooms = filters.NumberFilter(method='four_and_more')
+    rooms = filters.NumberFilter(method='rooms_limiter')
     is_favorited = filters.BooleanFilter(method='get_favorite')
 
     def get_favorite(self, queryset, name, value):
@@ -28,11 +29,11 @@ class RealEstateFilter(filters.FilterSet):
             )
         return queryset
 
-    def four_and_more(self, queryset, name, value):
+    def rooms_limiter(self, queryset, name, value):
         """Возвращает объекты недвижимости с количеством комнат"""
-        if 0 < value < 4:
+        if 0 < value < settings.ROOMS_LIMIT:
             return self.queryset.filter(rooms=value)
-        return self.queryset.filter(rooms__gte=4)
+        return self.queryset.filter(rooms__gte=settings.ROOMS_LIMIT)
 
     class Meta:
         model = RealEstate
