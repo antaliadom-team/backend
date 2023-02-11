@@ -16,7 +16,7 @@ class RealEstateFilter(filters.FilterSet):
         field_name='property_type__id', lookup_expr='in'
     )
     location = CharFilterInFilter(field_name='location__id', lookup_expr='in')
-    rooms = filters.NumberFilter(method='four_and_more')
+    rooms = filters.NumberFilter(method='rooms_limiter')
     is_favorited = filters.BooleanFilter(method='get_favorite')
 
     def get_favorite(self, queryset, name, value):
