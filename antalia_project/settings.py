@@ -77,7 +77,7 @@ DATABASES = {
         'NAME': os.getenv('POSTGRES_DB', default=BASE_DIR / 'db.sqlite3'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='db'),
+        'HOST': os.getenv('DB_HOST', default='localhost'),
         'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
@@ -127,3 +127,11 @@ EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+# Celery Broker settings
+CELERY_BROKER_URL = os.getenv(
+    'CELERY_BROKER_URL', default='redis://localhost:6379/0'
+)
+CELERY_RESULT_BACKEND = os.getenv(
+    'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
+)

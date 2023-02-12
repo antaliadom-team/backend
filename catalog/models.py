@@ -336,6 +336,7 @@ class Order(models.Model):
     confirmed = models.BooleanField(
         verbose_name='Подтверждение', default=False
     )
+    is_sent = models.BooleanField(verbose_name='Отправлено', default=False)
 
     class Meta:
         verbose_name = 'Заявка'

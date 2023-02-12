@@ -150,3 +150,5 @@ backend_media/
 backend_static/
 
 codecov
+/celerybeat-schedule.db
+/db.sqlite3.bak

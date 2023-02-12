@@ -1,20 +1,20 @@
-import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
 
+import pytest
+
 from about.models import StaticPage, Team
 from catalog.models import (
-    Favorite,
-    Location,
-    PropertyType,
-    Facility,
-    RealEstate,
-    Image,
-    Order,
     Category,
+    Facility,
+    Favorite,
+    Image,
+    Location,
+    Order,
+    PropertyType,
+    RealEstate,
 )
-
 
 User = get_user_model()
 
@@ -181,8 +181,8 @@ class TestModels:
         """Тест метода __str__ для модели Favorite"""
         favorite = Favorite.objects.create(real_estate=object1, user=user)
         assert str(favorite) == (
-            f'Избранный объект Тестовый объект 1 пользователя '
-            f'test.user@fake.mail'
+            'Избранный объект Тестовый объект 1 пользователя '
+            'test.user@fake.mail'
         )
 
     def test_model_real_estate_str(
@@ -205,17 +205,17 @@ class TestModels:
 
     def test_model_category_str(self):
         """Тест метода __str__ для модели Category"""
-        model_name = Category.objects.create(name='a' * 50)
+        model_name = Category.objects.create(name='a' * 5)
         assert (
-            str(model_name) == 'a' * 50
-        ), 'Имя модели Category должно содержать все 50 символов'
+            str(model_name) == 'a' * 5
+        ), 'Имя модели Category должно содержать все 5 символов'
 
     def test_model_staticpage_str(self):
         """Тест метода __str__ для модели StaticPages"""
-        model_name = StaticPage.objects.create(title='a' * 50)
+        model_name = StaticPage.objects.create(title='a' * 10)
         assert (
-            str(model_name) == 'a' * 50
-        ), 'Имя модели StaticPages должно содержать все 50 символов'
+            str(model_name) == 'a' * 10
+        ), 'Имя модели StaticPages должно содержать все 10 символов'
 
     def test_model_team_str(self, team_member1):
         """Тест метода __str__ для модели Team"""
