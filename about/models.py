@@ -36,7 +36,7 @@ class Team(models.Model):
         max_length=settings.NAMES_LENGTH, verbose_name='Фамилия'
     )
     phone = models.CharField(
-        max_length=settings.PROPERTY_MAX_LENGTH,
+        max_length=settings.PHONE_LENGTH,
         verbose_name='Телефон',
         validators=(regex_check_number,),
     )

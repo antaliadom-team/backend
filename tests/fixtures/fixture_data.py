@@ -1,17 +1,14 @@
 import pytest
 
-from about.models import Team, StaticPage
+from about.models import StaticPage, Team
 from catalog.models import (
+    Category,
+    Facility,
     Favorite,
     Location,
     PropertyType,
-    Facility,
     RealEstate,
-    Category,
 )
-
-# TODO: дополнить фикстурами из моделей юзера
-# from users.models import BuyerRequest
 
 
 @pytest.fixture
@@ -103,6 +100,11 @@ def image_str():
 
 
 @pytest.fixture
+def image_path():
+    return '/test/image/test_path.jpg'
+
+
+@pytest.fixture
 def static_page():
     return StaticPage.objects.create(
         title='Тестовая страница', content='Тестовый контент', slug='test-page'
@@ -110,12 +112,12 @@ def static_page():
 
 
 @pytest.fixture
-def team_member1(image_str):
+def team_member1(image_path):
     return Team.objects.create(
         position='Должность1',
         phone='+79999999999',
         email='team1@fake.mail',
         first_name='Имя1',
         last_name='Фамилия1',
-        photo=image_str,
+        photo=image_path,
     )

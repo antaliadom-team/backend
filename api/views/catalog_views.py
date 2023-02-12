@@ -5,6 +5,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 
+from antalia_project.tasks import send_order_emails
 from api.filters import RealEstateFilter
 from api.mixins import FavoriteMixin
 from api.pagination import ObjectsLimitPagePagination
@@ -25,7 +26,6 @@ from catalog.models import (
     PropertyType,
     RealEstate,
 )
-from core.utils import send_order_emails
 
 User = get_user_model()
 
@@ -37,7 +37,10 @@ def order(request):
     serializer = OrderSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(serializer.data, user=request.user)
+    send_order_emails.apply_async(
+        kwargs={'data': serializer.data, 'user_id': request.user.id or None},
+        countdown=5,
+    )
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -50,8 +53,13 @@ def real_estate_order(request, id=None):
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails(
-        serializer.data, user=request.user, real_estate=real_estate
+    send_order_emails.apply_async(
+        kwargs={
+            'data': serializer.data,
+            'user_id': request.user.id,
+            'real_estate_id': real_estate.id,
+        },
+        countdown=5,
     )
     return Response(status=status.HTTP_201_CREATED)
 
@@ -101,7 +109,7 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
     pagination_class = ObjectsLimitPagePagination
-    filter_backends = (DjangoFilterBackend, )
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = RealEstateFilter
 
     @action(
