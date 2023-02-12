@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'djoser',
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS += [
-        'rest_framework',
         'django_extensions',  # shell_plus --ipython
         'drf_yasg',
     ]
