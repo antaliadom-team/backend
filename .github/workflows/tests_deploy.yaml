@@ -75,7 +75,7 @@ jobs:
             cd ./infra
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker pull ${{ secrets.DOCKER_HUB_NAME }}/antalyadom-backend:latest
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose stop
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm backend -f
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm celery -f
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm -f backend
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm -f celery
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker volume rm infra_project_value
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose up -d --build
