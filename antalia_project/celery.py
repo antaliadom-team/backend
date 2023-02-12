@@ -4,5 +4,5 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'antalia_project.settings')
 
-app = Celery('sendmail')
+app = Celery('celery_app')
 app.config_from_object('django.conf:settings', namespace='CELERY')
