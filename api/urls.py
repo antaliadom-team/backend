@@ -1,6 +1,7 @@
 from django.urls import include, path
-from rest_framework import routers
+from rest_framework import permissions, routers
 
+from api.mixins import StaffBrowsableAPIMixin
 from api.views.about_views import StaticPageViewSet, TeamViewSet
 from api.views.catalog_views import (
     CategoryViewSet,
@@ -15,7 +16,16 @@ from api.views.user_views import UserViewSet, logout
 
 app_name = 'api'
 
-router = routers.DefaultRouter()
+
+class CustomAPIRootView(StaffBrowsableAPIMixin, routers.APIRootView):
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class CustomDefaultRouter(routers.DefaultRouter):
+    APIRootView = CustomAPIRootView
+
+
+router = CustomDefaultRouter()
 router.register('users', UserViewSet, basename='users')
 router.register('objects/locations', LocationViewSet, basename='locations')
 router.register('objects/categories', CategoryViewSet, basename='categories')

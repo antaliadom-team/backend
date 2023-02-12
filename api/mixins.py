@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import renderers, status
 from rest_framework.response import Response
 
 from catalog.models import RealEstate
@@ -41,3 +41,14 @@ class FavoriteMixin:
             )
         model.objects.get(user=user, real_estate=real_estate).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StaffBrowsableAPIMixin:
+    def get_renderers(self):
+        # explicitly set renderer to JSONRenderer (the default for non
+        # staff users)
+        rends = [renderers.JSONRenderer]
+        if self.request.user.is_staff:
+            # staff users see browsable API
+            rends.append(renderers.BrowsableAPIRenderer)
+        return [renderer() for renderer in rends]
