@@ -11,3 +11,4 @@ python-dotenv
 Pillow==9.3
 celery==5.2
 redis==4
+sentry-sdk
