@@ -76,4 +76,5 @@ jobs:
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker pull ${{ secrets.DOCKER_HUB_NAME }}/antalyadom-backend:latest
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose stop
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm backend
+            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm celery
             echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose up -d --build
