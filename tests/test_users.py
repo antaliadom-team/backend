@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.auth import get_user_model
 
 import pytest
@@ -202,3 +205,45 @@ class TestUserAPI(APITestBase):
             user_client.post(url, data={'refresh_token': 'wrong_token'}),
             url=url,
         )
+
+    def test_user_create_with_really_long_password(self, client):
+        """Test create user with really long password"""
+        password = ''.join(
+            random.choices(
+                string.ascii_uppercase
+                + string.ascii_lowercase
+                + string.digits,
+                k=1_000,
+            )
+        )
+        response = client.post(
+            self.urls['users'],
+            data={
+                'email': 'test@fake.mail',
+                'first_name': 'test',
+                'last_name': 'lastnametest',
+                'phone': '+79999999999',
+                'password': password,
+                're_password': password,
+                'agreement': True,
+            })
+        self.assert_status_code(400, response)
+
+    def test_usermanager_create_with_really_long_password(self, client):
+        """Test create user with really long password"""
+        password = ''.join(
+            random.choices(
+                string.ascii_uppercase
+                + string.ascii_lowercase
+                + string.digits,
+                k=1_000_000,
+            )
+        )
+        user = User.objects.create_user(
+            email='admin@fake.mail',
+            first_name='test',
+            last_name='test',
+            phone='+79999999999',
+            password=password,
+        )
+        assert user.check_password(password), 'Пароль не совпадает'
