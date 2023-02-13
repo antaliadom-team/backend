@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import permissions
 
-urlpatterns = []
+urlpatterns = [path('', include('django_prometheus.urls'))]
 
 if settings.DEBUG:
     from drf_yasg import openapi
