@@ -7,6 +7,7 @@ from rest_framework.response import Response
 
 from antalia_project.tasks import send_order_emails
 from api.filters import RealEstateFilter
+from api.metrics import save_metrics
 from api.mixins import FavoriteMixin
 from api.pagination import ObjectsLimitPagePagination
 from api.serializers.catalog_serializers import (
@@ -32,6 +33,7 @@ User = get_user_model()
 
 @api_view(http_method_names=['POST'])
 @permission_classes([permissions.AllowAny])
+@save_metrics
 def order(request):
     """Заявка общая"""
     serializer = OrderSerializer(data=request.data)
@@ -45,9 +47,10 @@ def order(request):
 
 
 @api_view(http_method_names=['POST'])
-def real_estate_order(request, id=None):
+@save_metrics
+def real_estate_order(request, pk=None):
     """Заявка на конкретный объект недвижимости"""
-    real_estate = get_object_or_404(RealEstate, id=id)
+    real_estate = get_object_or_404(RealEstate, pk=pk)
     serializer = RealEstateOrderSerializer(
         real_estate, data=request.data, context={'request': request}
     )
