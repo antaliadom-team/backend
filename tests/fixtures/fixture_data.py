@@ -1,3 +1,5 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 import pytest
 
 from about.models import StaticPage, Team
@@ -5,10 +7,35 @@ from catalog.models import (
     Category,
     Facility,
     Favorite,
+    Image,
     Location,
     PropertyType,
     RealEstate,
 )
+
+
+@pytest.fixture
+def image_str():
+    return (
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYA'
+        'AAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg'
+        '=='
+    )
+
+
+@pytest.fixture
+def image_path():
+    return '/backend_media/test_path.jpg'
+
+
+@pytest.fixture
+def image(object1):
+    image = SimpleUploadedFile(
+        name='test_image.jpg',
+        content=b'file_content',
+        content_type='image/jpeg',
+    )
+    return Image.objects.create(image=image, real_estate=object1)
 
 
 @pytest.fixture
@@ -88,20 +115,6 @@ def object2(user, facility1, property_type_apartment, location, category2):
 @pytest.fixture
 def favorite(user, object1):
     return Favorite.objects.create(real_estate=object1, user=user)
-
-
-@pytest.fixture
-def image_str():
-    return (
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYA'
-        'AAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg'
-        '=='
-    )
-
-
-@pytest.fixture
-def image_path():
-    return '/test/image/test_path.jpg'
 
 
 @pytest.fixture

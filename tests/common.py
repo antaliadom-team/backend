@@ -16,10 +16,12 @@ class APITestBase:
         'real_estate_detail': '/api/objects/{object_id}/',
         # Real Estate Types
         'real_estate_type_list': '/api/objects/property_types/',
-        'real_estate_type_detail': '/api/objects/property_types/{property_type_id}/',
+        'real_estate_type_detail': (
+            '/api/objects/property_types/{property_type_id}/'
+        ),
         # Real Estate Locations
         'location_list': '/api/objects/locations/',
-        'location_detail': '/api/objects/locations/{location_id}/',
+        'location_detail': '/api/objects/locations/{location_slug}/',
         # Real Estate Facilities
         'facility_list': '/api/objects/facilities/',
         'facility_detail': '/api/objects/facilities/{facility_id}/',

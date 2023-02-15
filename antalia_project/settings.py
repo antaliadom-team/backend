@@ -9,13 +9,16 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from antalia_project.config import *
 from antalia_project.constants import *
 
+DEBUG = os.getenv('DEBUG', default=False) == 'True'
+
 sentry_sdk.init(
+    environment='production' if not DEBUG else 'development',
     dsn=os.getenv('SENTRY_DSN'),
     integrations=[DjangoIntegration()],
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
-    traces_sample_rate=1.0,
+    traces_sample_rate=0.1,
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,
@@ -26,7 +29,6 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='django-secret-key')
-DEBUG = os.getenv('DEBUG', default=False) == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1').split()
 
 INSTALLED_APPS = [
