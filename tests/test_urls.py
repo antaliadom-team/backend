@@ -1,6 +1,5 @@
-import pytest
-
 from common import APITestBase
+import pytest
 
 
 class TestURLs(APITestBase):
@@ -16,7 +15,7 @@ class TestURLs(APITestBase):
                     user_id=user.id,
                     object_id=object1.id,
                     property_type_id=object1.property_type.id,
-                    location_id=object1.location.slug,
+                    location_slug=object1.location.slug,
                     facility_id=facility1.id,
                     category_id=object1.category.id,
                     static_id=static_page.id,
@@ -47,6 +46,4 @@ class TestURLs(APITestBase):
     def test_disabled_joser_endpoints(self, user_client, disabled_endpoints):
         """Disabled djoser's endpoints should return 404s"""
         full_url = '/api/users/' + disabled_endpoints
-        self.assert_status_code(
-            404, user_client.get(full_url), url=full_url
-        )
+        self.assert_status_code(404, user_client.get(full_url), url=full_url)
