@@ -32,20 +32,34 @@ class TestUserAPI(APITestBase):
         ), 'Ошибка в создании пользователя с слишком коротким паролем'
 
     def test_create_user_with_password(self, client):
-        """Test create user with password"""
-        response = client.post(
-            self.urls['users'],
-            data={
-                'email': 'test@fake.mail',
-                'first_name': 'test',
-                'last_name': 'lastnametest',
-                'phone': '+79999999999',
-                'password': '123$5Qq',
-                're_password': '123$5Qq',
-                'agreement': True,
-            },
-        )
+        """Test create user with password and all data"""
+        User.objects.all().delete()
+        data = {
+            'email': 'test@fake.mail',
+            'first_name': 'test',
+            'last_name': 'lastnametest',
+            'phone': '+79999999999',
+            'password': '123$5Qq',
+            're_password': '123$5Qq',
+            'agreement': True,
+        }
+        response = client.post(self.urls['users'], data=data)
         self.assert_status_code(201, response)
+        assert User.objects.count() == 1, 'Пользователь не создан'
+        assert User.objects.first().email == data['email'], 'Неверный email'
+        assert (
+            User.objects.first().first_name == data['first_name']
+        ), 'Неверное имя'
+        assert (
+            User.objects.first().last_name == data['last_name']
+        ), 'Неверная фамилия'
+        assert User.objects.first().phone == data['phone'], 'Неверный телефон'
+        assert User.objects.first().check_password(
+            data['password']
+        ), 'Неверный пароль'
+        assert (
+            User.objects.first().agreement == data['agreement']
+        ), 'Неверное соглашение, должно быть True'
 
     def test_create_user_without_email(self, client):
         """Test creating user with empty email"""
