@@ -73,7 +73,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    lookup_field = 'slug'
+    lookup_field = 'id'
     search_fields = ('name', 'slug')
     ordering = ('name',)
 

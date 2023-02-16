@@ -15,7 +15,7 @@ class TestURLs(APITestBase):
                     user_id=user.id,
                     object_id=object1.id,
                     property_type_id=object1.property_type.id,
-                    location_slug=object1.location.slug,
+                    location_id=object1.location.id,
                     facility_id=facility1.id,
                     category_id=object1.category.id,
                     static_id=static_page.id,

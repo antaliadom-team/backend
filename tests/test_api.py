@@ -98,7 +98,7 @@ class TestAPI(APITestBase):
 
     def test_get_locations_detail(self, client, location):
         """Test get location detail"""
-        url = self.urls['location_detail'].format(location_slug=location.slug)
+        url = self.urls['location_detail'].format(location_id=location.id)
         response = client.get(url)
         self.assert_status_code(200, response)
         self.assert_fields(['id', 'name'], response, url=url)
