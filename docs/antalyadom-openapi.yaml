@@ -1341,7 +1341,6 @@ definitions:
       - location
       - type
       - rooms
-      - comment
       - agreement
   OrderObjectCreate:
     title: OrderObjectCreate
@@ -1381,7 +1380,6 @@ definitions:
       - last_name
       - phone
       - email
-      - comment
       - agreement
   InvalidToken:
     title: InvalidToken
