@@ -269,12 +269,10 @@ paths:
       security: []
       summary: Получение локации
     parameters:
-      - name: slug
+      - name: id
         in: path
         required: true
         type: string
-        format: slug
-        pattern: '^[-a-zA-Z0-9_]+$'
   /api/objects/property_types/:
     get:
       operationId: types_list
