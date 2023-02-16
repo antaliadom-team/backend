@@ -21,7 +21,7 @@ class APITestBase:
         ),
         # Real Estate Locations
         'location_list': '/api/objects/locations/',
-        'location_detail': '/api/objects/locations/{location_slug}/',
+        'location_detail': '/api/objects/locations/{location_id}/',
         # Real Estate Facilities
         'facility_list': '/api/objects/facilities/',
         'facility_detail': '/api/objects/facilities/{facility_id}/',

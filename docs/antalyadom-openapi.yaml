@@ -252,10 +252,10 @@ paths:
               $ref: '#/definitions/Location'
       summary: Получение списка локаций
     parameters: []
-  '/api/objects/locations/{slug}/':
+  '/api/objects/locations/{id}/':
     get:
       operationId: locations_read
-      description: Возвращает имя локации по слагу. Эндпоинт доступен всем пользователям.
+      description: Возвращает имя локации по уникальному идентификатору локации (id). Эндпоинт доступен всем пользователям.
       parameters: []
       responses:
         '200':

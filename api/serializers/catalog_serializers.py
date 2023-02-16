@@ -35,9 +35,15 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance=instance)
-        data['category'] = instance.category.name
-        data['location'] = instance.location.name
-        data['property_type'] = instance.property_type.name
+        if hasattr(instance, 'category') and instance.category is not None:
+            data['category'] = instance.category.name
+        if hasattr(instance, 'location') and instance.location is not None:
+            data['location'] = instance.location.name
+        if (
+            hasattr(instance, 'property_type')
+            and instance.property_type is not None
+        ):
+            data['property_type'] = instance.property_type.name
         return data
 
 
@@ -68,7 +74,7 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('id', 'name', 'slug')
-        lookup_field = 'slug'
+        lookup_field = 'id'
 
 
 class CategorySerializer(serializers.ModelSerializer):

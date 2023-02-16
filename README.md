@@ -56,7 +56,7 @@
      ```
      python manage.py migrate
      ```
-  6. В отдельном терминале запустить воркер celery
+  6. Опционально: В отдельном терминале запустить воркер celery (требуется также Redis)
      ```
      celery -A antalia_project worker -l info -B
      ```
@@ -64,7 +64,7 @@
   7. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api`
   8. Запушить изменения с коммитом "добавляет эндпоинт каталога"
   9. Радоваться что всё прошло успешно :tada:
- 
+
 <p align="right"><a href="#top">⬆️ Наверх</a></p>
 
 ## Несколько требований к проекту
@@ -97,10 +97,10 @@
  - Python 3.8
  - Django 3.2.16
  - Django Rest Framework
- - Djoser
  - Pytest
  - FactoryBoy
  - Celery
+ - Redis
  - Docker
 
 ## Авторы:
@@ -108,5 +108,5 @@
  - [Роман](https://github.com/spaut33)
  - [Дмитрий](https://github.com/kultmet)
  - [Павел](https://github.com/pencool)
- 
+
  <p align="right"><a href="#top">⬆️ Наверх</a></p>
