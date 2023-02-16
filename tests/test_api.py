@@ -220,3 +220,139 @@ class TestAPI(APITestBase):
             response.data['images'][0]['image']
             == 'http://testserver/media/' + image.image.name
         ), 'Неверное изображение'
+
+    def test_real_estate_is_not_favorited(self, client, object1):
+        """Test real estate favorites for anonymous user"""
+        url = self.urls['real_estate_detail'].format(object_id=object1.id)
+        response = client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            response.data['is_favorited'] is False
+        ), 'Неверное значение is_favorited. Для анонимов должно быть false.'
+
+    def test_real_estate_is_favorited(self, user_client, object1, favorite):
+        """Test real estate favorites"""
+        url = self.urls['real_estate_detail'].format(object_id=object1.id)
+        response = user_client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            response.data['is_favorited'] is True
+        ), 'Неверное значение is_favorited'
+
+    def test_real_estate_list_is_favorited(
+        self, user_client, object1, object2, favorite
+    ):
+        """Test real estate favorites"""
+        url = self.urls['real_estate_list']
+        response = user_client.get(url)
+        self.assert_status_code(200, response)
+        for i in range(len(response.data['results'])):
+            if response.data['results'][i]['id'] == object1.id:
+                assert (
+                    response.data['results'][i]['is_favorited'] is True
+                ), f'Неверное значение is_favorited для объекта {object1.id}'
+            else:
+                assert (
+                    response.data['results'][i]['is_favorited'] is False
+                ), f'Неверное значение is_favorited для объекта {object2.id}'
+
+    def test_real_estate_list_filter_by_favorite(
+        self, user_client, object1, object2, favorite
+    ):
+        """Test real estate favorites. Filter by favorite"""
+        url = self.urls['real_estate_list']
+        response = user_client.get(url, {'is_favorited': True})
+        self.assert_status_code(200, response)
+        assert (
+            len(response.data['results']) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект в избранном.'
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
+
+    def test_real_estate_list_filter_by_rooms(self, client, object1, object2):
+        """Test real estate list filter by rooms"""
+        url = self.urls['real_estate_list']
+        response = client.get(url, {'rooms': object1.rooms})
+        self.assert_status_code(200, response)
+        assert (
+            len(response.data['results']) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект с 1 комнатой.'
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
+
+    def test_real_estate_list_filter_by_rooms_4(
+        self, client, object1, object2, object_rooms4, object_rooms5
+    ):
+        """Test real estate list filter by rooms. 4+ rooms"""
+        url = self.urls['real_estate_list']
+        response = client.get(url, {'rooms': 4})
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 2, (
+            'Неверное количество объектов, должен быть 2 объекта с 4+ '
+            'комнатами.'
+        )
+
+    def test_real_estate_list_filter_by_category(
+        self, client, object1, object2
+    ):
+        """Test real estate list filter by category"""
+        url = self.urls['real_estate_list']
+        response = client.get(url, {'category': object1.category.id})
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 1, (
+            f'Неверное количество объектов, должен быть 1 объект с '
+            f'категорией {object1.category.id}.'
+        )
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
+
+    def test_real_estate_list_filter_by_type(self, client, object1, object2):
+        """Test real estate list filter by type"""
+        url = self.urls['real_estate_list']
+        response = client.get(url, {'property_type': object1.property_type.id})
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 1, (
+            f'Неверное количество объектов, должен быть 1 объект с '
+            f'типом {object1.property_type.id}.'
+        )
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
+
+    def test_real_estate_list_filter_by_location(
+        self, client, object1, object2
+    ):
+        """Test real estate list filter by location"""
+        url = self.urls['real_estate_list']
+        response = client.get(url, {'location': object1.location.id})
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 1, (
+            f'Неверное количество объектов, должен быть 1 объект с '
+            f'типом {object1.location.id}.'
+        )
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
+
+    def test_real_estate_list_multiple_filters(self, client, object1, object2):
+        """Test real estate list with multiple filters"""
+        url = self.urls['real_estate_list']
+        response = client.get(
+            url,
+            {
+                'category': object1.category.id,
+                'property_type': object1.property_type.id,
+                'location': object1.location.id,
+            },
+        )
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 1, (
+            f'Неверное количество объектов, должен быть 1 объект с '
+            f'типом {object1.location.id}.'
+        )
+        assert (
+            response.data['results'][0]['id'] == object1.id
+        ), f'Неверный объект. Должен быть объект с {object1.id}'
