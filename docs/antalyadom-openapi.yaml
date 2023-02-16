@@ -1340,9 +1340,6 @@ definitions:
       - phone
       - email
       - category
-      - location
-      - type
-      - rooms
       - agreement
   OrderObjectCreate:
     title: OrderObjectCreate
