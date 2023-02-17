@@ -13,7 +13,8 @@ DAY = 'День'
 MONTH = 'Месяц'
 YEAR = 'Год'
 RENT = 'Аренда'
-SELL = 'Продажа'
+# SELL = 'Продажа'
+BUY = 'Покупка'
 TL = '₺'
 USD = '$'
 EUR = '€'
@@ -22,7 +23,7 @@ RUB = '₽'
 STATUS_CHOICES = ((NEW, 'Новостройка'), (SECONDARY, 'Вторичное'))
 CURRENCY_CHOICES = ((TL, '₺'), (USD, '$'), (EUR, '€'), (RUB, '₽'))
 PERIOD_CHOICES = ((DAY, 'День'), (MONTH, 'Месяц'), (YEAR, 'Год'))
-SELL_TYPES = ((RENT, 'Аренда'), (SELL, 'Продажа'))
+SELL_TYPES = ((RENT, 'Аренда'), (BUY, 'Покупка'))
 
 
 class Location(models.Model):
