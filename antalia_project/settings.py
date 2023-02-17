@@ -127,7 +127,7 @@ else:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     CSRF_COOKIE_SECURE = False  # TODO: Turn on while https
-    SESSION_COOKIE_SECURE = False # TODO: Turn on while https
+    SESSION_COOKIE_SECURE = False  # TODO: Turn on while https
 
     X_FRAME_OPTIONS = 'DENY'
 
