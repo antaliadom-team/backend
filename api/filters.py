@@ -4,7 +4,7 @@ from django_filters import rest_framework as filters
 from catalog.models import RealEstate
 
 
-class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):
+class CharFilterInFilter(filters.BaseInFilter, filters.NumberFilter):
     """Фильтр для поиска по списку значений. Значения разделяются запятыми"""
     # Например: ?locaiton=1,2,3
 
