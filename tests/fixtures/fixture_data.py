@@ -149,6 +149,23 @@ def object_rooms5(
     real_estate.facility.add(facility1)
     return real_estate
 
+@pytest.fixture
+def object3(
+    user, facility1, property_type_villa, location2, category2
+):
+
+    real_estate = RealEstate.objects.create(
+        title='Тестовый объект 3 - продажа',
+        property_type=property_type_villa,
+        location=location2,
+        category=category2,
+        price=1000000,
+        area=100,
+        rooms=5,
+    )
+    real_estate.facility.add(facility1)
+    return real_estate
+
 
 @pytest.fixture
 def favorite(user, object1):

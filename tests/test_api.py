@@ -338,7 +338,7 @@ class TestAPI(APITestBase):
         ), f'Неверный объект. Должен быть объект с {object1.id}'
 
     def test_real_estate_list_multiple_filters(
-        self, client, object1, object2, object_rooms5
+        self, client, object1, object2, object_rooms5, object3
     ):
         """Test real estate list with multiple filters"""
         url = self.urls['real_estate_list']
@@ -361,12 +361,12 @@ class TestAPI(APITestBase):
         response = client.get(
             url,
             {
-                'property_type': object1.property_type.id,
+                'property_type': object1.location.id,
                 'rooms': object_rooms5.rooms,
             },
         )
         assert len(response.data['results']) == 1, (
             f'Неверное количество объектов, должен быть 1 объект с '
-            f'типом {object1.property_type.id} и количеством комнат '
-            f'{object1.rooms}.'
+            f'локацией {object1.location.id} и количеством комнат '
+            f'{object_rooms5.rooms}.'
         )
