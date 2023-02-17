@@ -464,7 +464,7 @@ paths:
       description: Добавляет объект в избранное для текущего пользователя. Доступно только авторизованным пользователям.
       responses:
         '201':
-          description: Рецепт успешно добавлен в избранное.
+          description: Объект успешно добавлен в избранное.
         '400':
           description: 'Ошибка добавления в избранное (например, когда уже есть в избранном у данного пользователя).'
           schema:
@@ -844,11 +844,8 @@ definitions:
     type: object
     properties:
       id:
-        title: Категория объекта
-        type: string
-        enum:
-          - rent
-          - sell
+        title: Уникальный идентификатор категории объекта
+        type: integer
       name:
         type: string
         enum:
