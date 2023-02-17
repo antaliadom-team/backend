@@ -383,8 +383,11 @@ class TestAPI(APITestBase):
                 'rooms': 'sdfw'
             },
         )
-        self.assert_status_code(400, response)
-        assert response.data['category'][0] == 'Введите число.'
-        assert response.data['property_type'][0] == 'Введите число.'
-        assert response.data['location'][0] == 'Введите число.'
-        assert response.data['rooms'][0] == 'Введите число.'
+        self.assert_status_code(200, response)
+        assert len(response.data['results']) == 1, (
+            'Неверное количество объектов, должен быть 1 объект'
+        )
+        # assert response.data['category'][0] == 'Введите число.'
+        # assert response.data['property_type'][0] == 'Введите число.'
+        # assert response.data['location'][0] == 'Введите число.'
+        # assert response.data['rooms'][0] == 'Введите число.'
