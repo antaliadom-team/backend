@@ -191,7 +191,7 @@ paths:
         - Категории
       summary: Получение категории
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         description: Уникальный идентификатор категории
@@ -233,7 +233,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
         description: Уникальный идентификатор удобства
   /api/objects/locations/:
     get:
@@ -272,7 +272,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
   /api/objects/property_types/:
     get:
       operationId: types_list
@@ -307,7 +307,7 @@ paths:
         - Типы недвижимости
       summary: Получение типа
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         required: true
@@ -444,7 +444,7 @@ paths:
       security: []
       summary: Заявка на конкретный объект
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         description: Уникальный идентификатор объекта недвижимости
@@ -531,7 +531,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
   /api/static_pages/team/:
     get:
       operationId: team_list
@@ -735,7 +735,7 @@ paths:
           schema:
             $ref: '#/definitions/CustomUserUpdate'
           description: ''
-        - type: string
+        - type: integer
           in: path
           required: true
           name: id
@@ -762,7 +762,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/CustomUserUpdate'
-        - type: string
+        - type: integer
           in: path
           required: true
           name: id
@@ -793,7 +793,7 @@ definitions:
       password:
         title: Password
         type: string
-        minLength: 1
+        maxLength: 128
         format: password
         description: Пароль
     required:
@@ -1119,12 +1119,12 @@ definitions:
         example: Пупкин
       password:
         type: string
-        maxLength: 150
+        maxLength: 128
         description: Пароль
-        example: Qwerty123
         format: password
       re_password:
         type: string
+        maxLength: 128
         format: password
         description: Повтор пароля
       phone:
@@ -1214,12 +1214,12 @@ definitions:
       password:
         title: Password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Пароль
       re_password:
         title: Re password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Повторный пароль
     required:
       - email
@@ -1232,17 +1232,17 @@ definitions:
       new_password:
         title: New password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Новый пароль
       re_new_password:
         title: Re new password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Повторный новый пароль
       current_password:
         title: Current password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Текущий пароль
     required:
       - new_password

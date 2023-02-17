@@ -16,7 +16,7 @@ class RealEstateFilter(filters.FilterSet):
         field_name='property_type__id', lookup_expr='in'
     )
     location = CharFilterInFilter(field_name='location__id', lookup_expr='in')
-    rooms = filters.NumberFilter(method='rooms_limiter')
+    rooms = filters.Filter(method='rooms_limiter')
     is_favorited = filters.BooleanFilter(method='get_favorite')
 
     def get_favorite(self, queryset, name, value):
@@ -32,8 +32,10 @@ class RealEstateFilter(filters.FilterSet):
     def rooms_limiter(self, queryset, name, value):
         """Возвращает объекты недвижимости с количеством комнат"""
         if 0 < value < settings.ROOMS_LIMIT:
-            return self.queryset.filter(rooms=value)
-        return self.queryset.filter(rooms__gte=settings.ROOMS_LIMIT)
+            queryset = self.queryset.filter(rooms=value)
+        else:
+            queryset = self.queryset.filter(rooms__gte=settings.ROOMS_LIMIT)
+        return queryset
 
     class Meta:
         model = RealEstate
