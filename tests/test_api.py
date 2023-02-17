@@ -370,3 +370,21 @@ class TestAPI(APITestBase):
             f'локацией {object1.location.id} и количеством комнат '
             f'{object_rooms5.rooms}.'
         )
+
+    def test_real_estate_filter_wrong_symbols(self, client, object1):
+        """Test real estate filter with wrong symbols"""
+        url = self.urls['real_estate_list']
+        response = client.get(
+            url,
+            {
+                'category': 'asd',
+                'property_type': 'fgsg',
+                'location': 'sdgerg',
+                'rooms': 'sdfw'
+            },
+        )
+        self.assert_status_code(400, response)
+        assert response.data['category'][0] == 'Введите число.'
+        assert response.data['property_type'][0] == 'Введите число.'
+        assert response.data['location'][0] == 'Введите число.'
+        assert response.data['rooms'][0] == 'Введите число.'
