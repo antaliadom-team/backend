@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager
 
 
@@ -6,7 +7,7 @@ class CustomUserManager(UserManager):
         if not email:
             raise ValueError('Должен быть указан email')
         user = self.model(email=self.normalize_email(email), **extra_fields)
-        user.set_password(password)
+        user.password = make_password(password)
         user.save(using=self._db)
         return user
 
