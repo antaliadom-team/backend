@@ -4,19 +4,18 @@ from django_filters import rest_framework as filters
 from catalog.models import RealEstate
 
 
-class CharFilterInFilter(filters.BaseInFilter, filters.NumberFilter):
-    """Фильтр для поиска по списку значений. Значения разделяются запятыми"""
-    # Например: ?locaiton=1,2,3
-
-
 class RealEstateFilter(filters.FilterSet):
     """Фильтр недвижимости."""
 
-    category = filters.BaseInFilter(field_name='category__id', lookup_expr='in')
+    category = filters.BaseInFilter(
+        field_name='category__id', lookup_expr='in'
+    )
     property_type = filters.BaseInFilter(
         field_name='property_type__id', lookup_expr='in'
     )
-    location = filters.BaseInFilter(field_name='location__id', lookup_expr='in')
+    location = filters.BaseInFilter(
+        field_name='location__id', lookup_expr='in'
+    )
     rooms = filters.Filter(method='rooms_limiter')
     is_favorited = filters.BooleanFilter(method='get_favorite')
 
