@@ -31,6 +31,10 @@ class RealEstateFilter(filters.FilterSet):
 
     def rooms_limiter(self, queryset, name, value):
         """Возвращает объекты недвижимости с количеством комнат"""
+        try:
+            value = int(value)
+        except ValueError:
+            return queryset
         if 0 < value < settings.ROOMS_LIMIT:
             queryset = self.queryset.filter(rooms=value)
         else:
