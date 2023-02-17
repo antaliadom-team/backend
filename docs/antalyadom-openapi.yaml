@@ -124,7 +124,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/TokenRefresh2'
+            $ref: '#/definitions/TokenRefresh'
         '400':
           $ref: '#/responses/ValidationError'
         '401':
@@ -160,7 +160,7 @@ paths:
   /api/objects/categories/:
     get:
       operationId: Список категорий
-      description: 'Возвращает список категорий объекта. Эндпоинт доступен всем пользователям. В нашем проекте их изначально что два - <b>аренда</b> и <b>продажа</b>, но этот список может быть расширен через панель администратора.'
+      description: 'Возвращает список категорий объекта. Эндпоинт доступен всем пользователям. В нашем проекте их изначально два - <b>аренда</b> и <b>покупка</b>, но этот список может быть расширен через панель администратора.'
       parameters: []
       tags:
         - Категории
@@ -850,7 +850,7 @@ definitions:
         type: string
         enum:
           - Аренда
-          - Продажа
+          - Покупка
     description: Модель категорий
   Facility:
     type: object
