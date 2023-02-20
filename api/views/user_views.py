@@ -39,7 +39,7 @@ class UserViewSet(DjoserUsers):
 def logout(request):
     """Logout view."""
     try:
-        RefreshToken(request.data['refresh_token']).blacklist()
+        RefreshToken(request.data['refresh']).blacklist()
         return Response(status=status.HTTP_204_NO_CONTENT)
     except Exception:
         return Response(status=status.HTTP_400_BAD_REQUEST)

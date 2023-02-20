@@ -210,13 +210,13 @@ class TestUserAPI(APITestBase):
         self.assert_status_code(
             204,
             user_client.post(
-                url, data={'refresh_token': token_user.get('refresh')}
+                url, data={'refresh': token_user.get('refresh')}
             ),
             url=url,
         )
         self.assert_status_code(
             400,
-            user_client.post(url, data={'refresh_token': 'wrong_token'}),
+            user_client.post(url, data={'refresh': 'wrong_token'}),
             url=url,
         )
 

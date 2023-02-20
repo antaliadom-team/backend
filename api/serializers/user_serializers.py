@@ -35,6 +35,7 @@ class RegisterUserSerializer(BaseUserSerializer):
         help_text='Введите пароль повторно.',
     )
     phone = serializers.CharField()
+    agreement = serializers.BooleanField()
 
     def validate_agreement(self, value):
         if not value:
