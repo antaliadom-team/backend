@@ -43,7 +43,9 @@ urlpatterns = [
     path('', include(auth)),
     path(r'objects/order/', order, name='order'),
     path(
-        r'objects/<int:id>/order/', real_estate_order, name='real_estate_order'
+        r'objects/<int:object_id>/order/',
+        real_estate_order,
+        name='real_estate_order',
     ),
     path(r'users/logout/', logout, name='logout'),
     path('', include(router.urls)),
