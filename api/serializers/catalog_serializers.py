@@ -1,5 +1,6 @@
 from rest_framework import fields, serializers
 
+from api.validators import regex_check_number, validate_name
 from catalog.models import (
     Category,
     Facility,
@@ -14,21 +15,17 @@ from catalog.models import (
 class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
-    first_name = serializers.CharField(required=False, allow_null=True)
-    last_name = serializers.CharField(required=False, allow_null=True)
-    phone = serializers.CharField(required=False, allow_null=True)
-    email = serializers.EmailField(required=False, allow_null=True)
+    first_name = serializers.CharField(
+        required=True, validators=(validate_name,)
+    )
+    last_name = serializers.CharField(
+        required=True, validators=(validate_name,)
+    )
+    phone = serializers.CharField(
+        required=True, validators=(regex_check_number,)
+    )
+    email = serializers.EmailField(required=True)
     date_added = fields.DateTimeField(read_only=True, format='%d.%m.%Y %H:%M')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            user = request.user
-            self.fields['first_name'].default = user.first_name
-            self.fields['last_name'].default = user.last_name
-            self.fields['phone'].default = user.phone
-            self.fields['email'].default = user.email
 
     class Meta:
         fields = (
@@ -41,6 +38,32 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             'date_added',
         )
         model = Order
+
+    def __init__(self, instance=None, data=None, **kwargs):
+        if data and 'context' in kwargs:
+            user = kwargs['context']['request'].user
+            if user.is_authenticated:
+                data['first_name'] = user.first_name
+                data['last_name'] = user.last_name
+                data['phone'] = user.phone
+                data['email'] = user.email
+
+        super().__init__(instance=instance, data=data, **kwargs)
+
+    def validate(self, data):
+        if data and 'request' not in self.context:
+            return data
+        user = self.context['request'].user
+        if user.is_authenticated:
+            if not data.get('first_name'):
+                data['first_name'] = user.first_name
+            if not data.get('last_name'):
+                data['last_name'] = user.last_name
+            if not data.get('phone'):
+                data['phone'] = user.phone
+            if not data.get('email'):
+                data['email'] = user.email
+        return data
 
     def validate_agreement(self, value):
         if not value:
