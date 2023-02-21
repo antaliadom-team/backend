@@ -1,5 +1,4 @@
 # константы для отправки электронных писем
-EMAIL_REPLY_TO = 'antalyadom@telfia.com'
 EMAIL_USER_SUBJECT = 'Подтверждение заявки.'
 EMAIL_ADMIN_SUBJECT = 'Поступила новая заявка.'
 EMAIL_ADMIN_MESSAGE = (
