@@ -17,7 +17,7 @@ def format_real_estate_message(real_estate):
     )
 
 
-@shared_task
+@shared_task(rate_limit='10/m')
 def send_order_emails(data, user_id=None, *args, **kwargs):
     """Отправляет уведомление клиенту на почту о приеме заявки и рассылает
     уведомление на почту администраторам о поступлении заявки"""
