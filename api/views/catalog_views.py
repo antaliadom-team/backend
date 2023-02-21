@@ -47,6 +47,7 @@ def order(request):
 
 
 @api_view(http_method_names=['POST'])
+@permission_classes([permissions.AllowAny])
 @save_metrics
 def real_estate_order(request, pk=None):
     """Заявка на конкретный объект недвижимости"""
@@ -59,7 +60,7 @@ def real_estate_order(request, pk=None):
     send_order_emails.apply_async(
         kwargs={
             'data': serializer.data,
-            'user_id': request.user.id,
+            'user_id': request.user.id or None,
             'real_estate_id': real_estate.id,
         },
         countdown=5,

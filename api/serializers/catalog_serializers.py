@@ -14,7 +14,21 @@ from catalog.models import (
 class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
+    first_name = serializers.CharField(required=False, allow_null=True)
+    last_name = serializers.CharField(required=False, allow_null=True)
+    phone = serializers.CharField(required=False, allow_null=True)
+    email = serializers.EmailField(required=False, allow_null=True)
     date_added = fields.DateTimeField(read_only=True, format='%d.%m.%Y %H:%M')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            user = request.user
+            self.fields['first_name'].default = user.first_name
+            self.fields['last_name'].default = user.last_name
+            self.fields['phone'].default = user.phone
+            self.fields['email'].default = user.email
 
     class Meta:
         fields = (
@@ -58,10 +72,6 @@ class OrderSerializer(CommonOrderSerializer):
 
 
 class RealEstateOrderSerializer(OrderSerializer):
-    phone = fields.ReadOnlyField(source='user.phone')
-    email = fields.ReadOnlyField(source='user.email')
-    first_name = fields.ReadOnlyField(source='user.first_name')
-    last_name = fields.ReadOnlyField(source='user.last_name')
     category = fields.ReadOnlyField(source='real_estate.category')
 
     class Meta(OrderSerializer.Meta):
