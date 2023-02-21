@@ -317,7 +317,7 @@ paths:
       operationId: Каталог недвижимости
       description: |-
         <p>Список объектов недвижимости с пагинацией. Эндпоинт доступен всем пользователям. Доступна фильтрация по <b>избранному</b>, <b>локации</b>, <b>категории</b>, <b>типу</b>, <b>количеству комнат</b>.</p>
-        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited всегда для всех объектов будет возвращаться 0. Если пользователь авторизован, то is_favorited будет возвращать 1 для объектов, которые пользователь добавил в избранное.</p>
+        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited всегда для всех объектов будет возвращаться <code>false</code>. Если пользователь авторизован, то is_favorited будет возвращать <code>true</code> для объектов, которые пользователь добавил в избранное.</p>
         <p>В случае, если в request-запросе передан параметр is_favorited=1, эндпоинт возвращает только объекты, добавленные текущим пользователем в избранное.</p>
       parameters:
         - type: string
@@ -382,7 +382,7 @@ paths:
       operationId: objects_read
       description: |-
         <p>Возвращает объект недвижимости по уникальному идентификатору объекта. Эндпоинт доступен всем пользователям.</p>
-        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited будет содержать 0. Если пользователь авторизован и добавил данный объект в избранное, то is_favorited будет содержать 1.</p>
+        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited будет содержать <code>false</code>. Если пользователь авторизован и добавил данный объект в избранное, то is_favorited будет содержать <code>true</code>.</p>
       parameters: []
       responses:
         '200':
@@ -412,7 +412,7 @@ paths:
             $ref: '#/definitions/OrderCreate'
       responses:
         '201':
-          description: ''
+          description: 'Заявка успешно отправлена'
         '400':
           $ref: '#/responses/ValidationError'
       tags:
@@ -430,11 +430,8 @@ paths:
           schema:
             $ref: '#/definitions/OrderObjectCreate'
       responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-            properties: {}
+        '201':
+          description: 'Заявка успешно отправлена'
         '400':
           $ref: '#/responses/ValidationError'
         '404':
@@ -1021,8 +1018,8 @@ definitions:
         readOnly: true
       is_favorited:
         title: Is favorited
-        type: string
-        default: '0'
+        type: boolean
+        default: false
         description: Добавлен ли объект в избранное у текущего пользователя
         readOnly: true
     required:

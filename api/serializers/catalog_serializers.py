@@ -50,21 +50,6 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
         super().__init__(instance=instance, data=data, **kwargs)
 
-    def validate(self, data):
-        if data and 'request' not in self.context:
-            return data
-        user = self.context['request'].user
-        if user.is_authenticated:
-            if not data.get('first_name'):
-                data['first_name'] = user.first_name
-            if not data.get('last_name'):
-                data['last_name'] = user.last_name
-            if not data.get('phone'):
-                data['phone'] = user.phone
-            if not data.get('email'):
-                data['email'] = user.email
-        return data
-
     def validate_agreement(self, value):
         if not value:
             raise serializers.ValidationError('Вы должны принять соглашение.')
@@ -98,7 +83,7 @@ class RealEstateOrderSerializer(OrderSerializer):
     category = fields.ReadOnlyField(source='real_estate.category')
 
     class Meta(OrderSerializer.Meta):
-        pass
+        fields = OrderSerializer.Meta.fields
 
 
 class LocationSerializer(serializers.ModelSerializer):
