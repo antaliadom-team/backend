@@ -1,6 +1,7 @@
 asgiref==3.5
 Django==3.2.16
 djangorestframework==3.14
+django-cleanup
 django-cors-headers==3.13
 django_filter==22.1
 django_extensions==3.2

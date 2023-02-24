@@ -1,4 +1,3 @@
-from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     'about',
     'api',
     'core',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 if DEBUG:
@@ -100,7 +100,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
-
 
 AUTH_USER_MODEL = 'users.User'
 
