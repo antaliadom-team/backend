@@ -77,7 +77,7 @@ class ObjectAdmin(admin.ModelAdmin):
         'description',
         'type',
         'facility',
-        'owner',
+        # 'owner',
         'date_added',
     )
     list_display = (
