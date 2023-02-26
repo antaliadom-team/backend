@@ -1069,14 +1069,14 @@ definitions:
         title: Имя
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Имя
         example: Василий
       last_name:
         title: Фамилия
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Фамилия
         example: Пупкин
       phone:
@@ -1111,11 +1111,13 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       password:
         type: string
         maxLength: 128
@@ -1161,11 +1163,13 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       phone:
         type: string
         pattern: '^\+?[0-9]{10,13}$'
@@ -1292,12 +1296,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон
@@ -1345,12 +1349,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон
