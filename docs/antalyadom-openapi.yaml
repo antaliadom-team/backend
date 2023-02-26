@@ -412,7 +412,7 @@ paths:
             $ref: '#/definitions/OrderCreate'
       responses:
         '201':
-          description: 'Заявка успешно отправлена'
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
       tags:
@@ -431,7 +431,7 @@ paths:
             $ref: '#/definitions/OrderObjectCreate'
       responses:
         '201':
-          description: 'Заявка успешно отправлена'
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
         '404':
@@ -472,6 +472,8 @@ paths:
                 description: Описание ошибки
         '401':
           $ref: '#/responses/AuthenticationError'
+        '404':
+          $ref: '#/responses/NotFound'
     delete:
       summary: Удалить объекта из избранного
       operationId: delete-api-objects-id-favorite
@@ -685,8 +687,8 @@ paths:
       tags:
         - Пользователи
       responses:
-        '200':
-          description: OK
+        '204':
+          description: Успешная смена пароля.
           schema:
             type: object
             properties: {}
