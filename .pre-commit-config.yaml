@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+        entry: black -l 79 -S --check
+        exclude: ^(catalog/migrations/|about/migrations/|users/migrations/|tests/|\.venv/|\.tox/|\.git/|\.mypy_cache/|_build/|buck-out/|build/|dist/|node_modules/|\.eggs/|\.pytest_cache/|\.cache/|\.ropeproject/|\.mypy_cache/|\.vscode/|\.idea/|\.ipynb_checkpoints/|\.DS_Store/|\.coverage/|\.coverage.*)
+        language_version: python3.8
+  - repo: https://github.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+        args: [--config=setup.cfg]
+        additional_dependencies:
+          - flake8-broken-line
+          - flake8-isort
+          - flake8-return
+          - pep8-naming
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

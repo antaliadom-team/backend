@@ -1,5 +1,6 @@
 import re
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 
 
@@ -16,6 +17,11 @@ def regex_check_number(number):
 
 def validate_name(value):
     """Проверка валидности имени и фамилии"""
+    if len(value) < settings.NAMES_MIN_LENGTH:
+        raise ValidationError(
+            f'Имя и Фамилия должны быть не менее {settings.NAMES_MIN_LENGTH} '
+            'символов.'
+        )
     pattern = r'^[a-zA-Z\u0400-\u04FF-]+$'
     if not re.match(pattern, value):
         raise ValidationError(
