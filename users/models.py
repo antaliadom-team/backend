@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinLengthValidator
 from django.db import models
 
 from api.validators import regex_check_number, validate_name
@@ -26,12 +27,24 @@ class User(AbstractUser):
     first_name = models.CharField(
         max_length=settings.NAMES_LENGTH,
         verbose_name='Имя',
-        validators=(validate_name,),
+        validators=(
+            validate_name,
+            MinLengthValidator(
+                settings.NAMES_MIN_LENGTH,
+                'Имя должно быть минимум 2 символа в длину.',
+            ),
+        ),
     )
     last_name = models.CharField(
         max_length=settings.NAMES_LENGTH,
         verbose_name='Фамилия',
-        validators=(validate_name,),
+        validators=(
+            validate_name,
+            MinLengthValidator(
+                settings.NAMES_MIN_LENGTH,
+                'Фамилия должна быть минимум 2 символа в длину.',
+            ),
+        ),
     )
     phone = models.CharField(
         max_length=settings.PHONE_LENGTH,
