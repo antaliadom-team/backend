@@ -14,3 +14,4 @@ celery==5.2
 redis==4
 sentry-sdk
 django-prometheus
+django-resized==1.0.2

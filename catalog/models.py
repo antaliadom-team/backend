@@ -1,7 +1,13 @@
+from datetime import datetime
+import os
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+
+from PIL import Image as PillowImage
+from django_resized import ResizedImageField
 
 from api.validators import regex_check_number
 
@@ -204,9 +210,17 @@ class RealEstate(models.Model):
         )
 
 
+def folder_path(instance, filename):
+    id = instance.real_estate.pk
+
+    print(datetime.timestamp(datetime.now()))
+
+    return (f'real_estate/{id}_'
+            f'{datetime.timestamp()}_original.jpg')
+
+
 class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
-
     real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
@@ -214,7 +228,13 @@ class Image(models.Model):
         db_index=True,
         verbose_name='Объект',
     )
-    image = models.ImageField(upload_to='real_estate', verbose_name='Фото')
+    # image = models.ImageField(upload_to=folder_path, verbose_name='Фото')
+    image = ResizedImageField(
+        size=[738, 632],
+        verbose_name='Фото',
+        upload_to=folder_path,
+        crop=['middle', 'center']
+    )
 
     class Meta:
         verbose_name = 'Фотография'
@@ -222,17 +242,37 @@ class Image(models.Model):
         ordering = ('-id',)
 
     def save(self, *args, **kwargs):
+        preview_image_size = (328, 261)
+        infile = self.image
         if (
             Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
+        outfile = f'{self.image.path[:-12]}preview.jpg'
+        with PillowImage.open(infile) as im:
+            width, height = im.size
+            if width <= height:
+                print('if')
+                im_new = im.crop(
+                    (0, 0 + height // 5, width, height - height // 5)
+                )
+                im_resize = im_new.resize(preview_image_size)
+                im_resize.save(outfile, 'JPEG')
+            else:
+                print('else')
+                im_resize = im.resize(preview_image_size)
+                im_resize.save(outfile, 'JPEG')
+
+    def delete(self, using=None, keep_parents=False):
+        print(f'{self.image.path[:-12]}preview.jpg')
+        os.remove(f'{self.image.path[:-12]}preview.jpg')
+        return super().delete(using, keep_parents)
 
 
 class Favorite(models.Model):
     """Модель избранного."""
-
     real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
