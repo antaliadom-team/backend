@@ -214,7 +214,7 @@ def folder_path(instance, filename):
     """Генерирует имя файла. Возвращает путь к нему."""
     id = instance.real_estate.pk
     return (f'real_estate/{id}_'
-            f'{datetime.timestamp(datetime.now())}_original.jpg')
+            f'{datetime.timestamp(datetime.now())*1000:.0f}.jpg')
 
 
 class Image(models.Model):
@@ -227,10 +227,8 @@ class Image(models.Model):
         verbose_name='Объект',
     )
     image = ResizedImageField(
-        size=settings.FULL_SIZE,
         verbose_name='Фото',
         upload_to=folder_path,
-        crop=['middle', 'center']
     )
 
     class Meta:
@@ -254,6 +252,11 @@ class Image(models.Model):
             else:
                 im_resize = im.resize(image_size)
                 im_resize.save(outfile, 'JPEG')
+    
+    def filename_generator(self, filepath, size):
+        weith, higth = size
+        name, file_format = filepath.split('.')
+        return f'{name}_{weith}x{higth}.{file_format}'
 
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
@@ -264,16 +267,18 @@ class Image(models.Model):
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
-        preview_outfile = f'{self.image.path[:-12]}preview.jpg'
-        self.image_generator(
-            infile=infile,
-            outfile=preview_outfile,
-            image_size=settings.PREVIEW_SIZE
-        )
+        for size in settings.ALL_SIZES:
+            outfile = self.filename_generator(self.image.path, size)
+            self.image_generator(
+                infile=infile,
+                outfile=outfile,
+                image_size=size
+            )
 
     def delete(self, using=None, keep_parents=False):
         """Удаляет дополнительно все файлы связанные с обьектом."""
-        os.remove(f'{self.image.path[:-12]}preview.jpg')
+        for size in settings.ALL_SIZES:
+            os.remove(self.filename_generator(self.image.path, size))
         return super().delete(using, keep_parents)
 
 

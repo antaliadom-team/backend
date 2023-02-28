@@ -57,3 +57,4 @@ ROOMS_LIMIT = 4
 # константы размеров изображений
 FULL_SIZE = (738, 632)
 PREVIEW_SIZE = (328, 261)
+ALL_SIZES = [FULL_SIZE, PREVIEW_SIZE]
