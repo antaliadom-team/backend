@@ -211,12 +211,10 @@ class RealEstate(models.Model):
 
 
 def folder_path(instance, filename):
+    """Генерирует имя файла. Возвращает путь к нему."""
     id = instance.real_estate.pk
-
-    print(datetime.timestamp(datetime.now()))
-
     return (f'real_estate/{id}_'
-            f'{datetime.timestamp()}_original.jpg')
+            f'{datetime.timestamp(datetime.now())}_original.jpg')
 
 
 class Image(models.Model):
@@ -228,9 +226,8 @@ class Image(models.Model):
         db_index=True,
         verbose_name='Объект',
     )
-    # image = models.ImageField(upload_to=folder_path, verbose_name='Фото')
     image = ResizedImageField(
-        size=[738, 632],
+        size=settings.FULL_SIZE,
         verbose_name='Фото',
         upload_to=folder_path,
         crop=['middle', 'center']
@@ -241,8 +238,25 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
+    def image_generator(self, infile, outfile, image_size):
+        """
+        Генерирует изображения в требуемых размерах.
+        Обрезает и центрует вертикальные изображения.
+        """
+        with PillowImage.open(infile) as im:
+            width, height = im.size
+            if width <= height:
+                im_new = im.crop(
+                    (0, 0 + height // 5, width, height - height // 5)
+                )
+                im_resize = im_new.resize(image_size)
+                im_resize.save(outfile, 'JPEG')
+            else:
+                im_resize = im.resize(image_size)
+                im_resize.save(outfile, 'JPEG')
+
     def save(self, *args, **kwargs):
-        preview_image_size = (328, 261)
+        """Сохраняет дополнительно изображения в требуемых размерах."""
         infile = self.image
         if (
             Image.objects.filter(real_estate=self.real_estate).count()
@@ -250,23 +264,15 @@ class Image(models.Model):
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
-        outfile = f'{self.image.path[:-12]}preview.jpg'
-        with PillowImage.open(infile) as im:
-            width, height = im.size
-            if width <= height:
-                print('if')
-                im_new = im.crop(
-                    (0, 0 + height // 5, width, height - height // 5)
-                )
-                im_resize = im_new.resize(preview_image_size)
-                im_resize.save(outfile, 'JPEG')
-            else:
-                print('else')
-                im_resize = im.resize(preview_image_size)
-                im_resize.save(outfile, 'JPEG')
+        preview_outfile = f'{self.image.path[:-12]}preview.jpg'
+        self.image_generator(
+            infile=infile,
+            outfile=preview_outfile,
+            image_size=settings.PREVIEW_SIZE
+        )
 
     def delete(self, using=None, keep_parents=False):
-        print(f'{self.image.path[:-12]}preview.jpg')
+        """Удаляет дополнительно все файлы связанные с обьектом."""
         os.remove(f'{self.image.path[:-12]}preview.jpg')
         return super().delete(using, keep_parents)
 
