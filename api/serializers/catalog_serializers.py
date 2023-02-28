@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import fields, serializers
 
 from api.validators import regex_check_number, validate_name
@@ -16,15 +17,22 @@ class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
     first_name = serializers.CharField(
-        required=True, validators=(validate_name,)
+        required=True,
+        validators=(validate_name,),
+        max_length=settings.NAMES_LENGTH,
     )
     last_name = serializers.CharField(
-        required=True, validators=(validate_name,)
+        required=True,
+        validators=(validate_name,),
+        max_length=settings.NAMES_LENGTH,
     )
     phone = serializers.CharField(
         required=True, validators=(regex_check_number,)
     )
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField(
+        required=True, max_length=settings.EMAIL_LENGTH
+    )
+    agreement = serializers.BooleanField(required=True)
     date_added = fields.DateTimeField(read_only=True, format='%d.%m.%Y %H:%M')
 
     class Meta:
