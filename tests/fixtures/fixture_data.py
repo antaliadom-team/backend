@@ -9,6 +9,7 @@ from catalog.models import (
     Category,
     Facility,
     Favorite,
+    Image,
     Location,
     PropertyType,
     RealEstate,
@@ -38,6 +39,11 @@ def image():
             name='test_image.jpg', content=f.read(), content_type='image/jpeg'
         )
     return image_file.name
+
+
+@pytest.fixture
+def image_object(image, object1):
+    return Image.objects.create(real_estate=object1, image=image)
 
 
 @pytest.fixture
