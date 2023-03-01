@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from PIL import Image as PillowImage
+from PIL import Image as PillowImage, ImageOps
 from django_resized import ResizedImageField
 
 from api.validators import regex_check_number
@@ -212,9 +212,8 @@ class RealEstate(models.Model):
 
 def folder_path(instance, filename):
     """Генерирует имя файла. Возвращает путь к нему."""
-    id = instance.real_estate.pk
-    return (f'real_estate/{id}_'
-            f'{datetime.timestamp(datetime.now())*1000:.0f}.jpg')
+    return (f'real_estate/{instance.real_estate.pk}_'
+            f'{datetime.now().timestamp()*1000:.0f}.jpg')
 
 
 class Image(models.Model):
@@ -236,48 +235,38 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
-    def image_generator(self, infile, outfile, image_size):
-        """
-        Генерирует изображения в требуемых размерах.
-        Обрезает и центрует вертикальные изображения.
-        """
+    def thumbnail_generator(self, infile, outfile, image_size):
+        """Генерирует изображения в требуемых размерах."""
         with PillowImage.open(infile) as im:
-            width, height = im.size
-            if width <= height:
-                im_new = im.crop(
-                    (0, 0 + height // 5, width, height - height // 5)
-                )
-                im_resize = im_new.resize(image_size)
-                im_resize.save(outfile, 'JPEG')
-            else:
-                im_resize = im.resize(image_size)
-                im_resize.save(outfile, 'JPEG')
-    
+            im.thumbnail(image_size)
+            ImageOps.fit(
+                im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+            ).save(outfile, quality=95)
+
     def filename_generator(self, filepath, size):
-        weith, higth = size
+        """Генерирует имя для каждого размера изображения."""
+        width, height = size
         name, file_format = filepath.split('.')
-        return f'{name}_{weith}x{higth}.{file_format}'
+        return f'{name}_{width}x{height}.{file_format}'
 
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
-        infile = self.image
         if (
             Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
-        for size in settings.ALL_SIZES:
-            outfile = self.filename_generator(self.image.path, size)
-            self.image_generator(
-                infile=infile,
-                outfile=outfile,
+        for size in settings.PREVIEW_SIZES:
+            self.thumbnail_generator(
+                infile=self.image,
+                outfile=self.filename_generator(self.image.path, size),
                 image_size=size
             )
 
     def delete(self, using=None, keep_parents=False):
         """Удаляет дополнительно все файлы связанные с обьектом."""
-        for size in settings.ALL_SIZES:
+        for size in settings.PREVIEW_SIZES:
             os.remove(self.filename_generator(self.image.path, size))
         return super().delete(using, keep_parents)
 

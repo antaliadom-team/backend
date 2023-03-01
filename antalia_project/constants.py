@@ -54,7 +54,5 @@ IMAGE_LIMIT = 6
 # константы проекта
 ROOMS_LIMIT = 4
 
-# константы размеров изображений
-FULL_SIZE = (738, 632)
-PREVIEW_SIZE = (328, 261)
-ALL_SIZES = [FULL_SIZE, PREVIEW_SIZE]
+# Список размеров в пикселях создаваемых превью для фотографий объекта [(hor, vert), ...]
+PREVIEW_SIZES = ((738, 632), (328, 261))
