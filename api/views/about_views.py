@@ -1,5 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 
 from about.models import StaticPage, Team
@@ -25,7 +26,13 @@ class StaticPageViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """Получение статической страницы."""
-        instance = get_object_or_404(StaticPage, pk=kwargs['pk'])
+        try:
+            instance = get_object_or_404(StaticPage, pk=kwargs['pk'])
+        except (ValueError, ValidationError):
+            return Response(
+                {'error': 'Объект не найден.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         serializer = self.serializer_class(instance)
         return Response(serializer.data)
 
@@ -43,6 +50,12 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         """Получение члена команды."""
-        instance = get_object_or_404(Team, pk=kwargs['pk'])
+        try:
+            instance = get_object_or_404(Team, pk=kwargs['pk'])
+        except (ValueError, ValidationError):
+            return Response(
+                {'error': 'Объект не найден.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
         serializer = TeamSerializer(instance)
         return Response(serializer.data)
