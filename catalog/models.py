@@ -288,12 +288,8 @@ class Order(models.Model):
         blank=True,
         null=True,
     )
-    rooms = models.PositiveSmallIntegerField(
-        default=1,
-        verbose_name='Количество комнат',
-        blank=True,
-        null=True,
-        validators=(MinValueValidator(1),),
+    rooms = models.CharField(
+        verbose_name='Количество комнат', blank=True, null=True, max_length=255
     )
     first_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Имя'
@@ -342,3 +338,8 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
+
+    def get_rooms(self):
+        return [
+            int(room.strip()) for room in self.rooms.split(',') if room.strip()
+        ]

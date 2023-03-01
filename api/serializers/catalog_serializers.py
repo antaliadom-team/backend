@@ -13,6 +13,21 @@ from catalog.models import (
 )
 
 
+class RoomListField(serializers.ListField):
+    child = serializers.IntegerField(min_value=0, max_value=4)
+
+    def to_internal_value(self, data):
+        # split the comma-separated string of room numbers into a
+        # list of integers
+        try:
+            room_list = [
+                int(room.strip()) for room in data.split(',') if room.strip()
+            ]
+        except AttributeError:
+            room_list = [data]
+        return super().to_internal_value(room_list)
+
+
 class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
@@ -78,6 +93,10 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(CommonOrderSerializer):
+    """Сериализатор для заявок"""
+
+    rooms = RoomListField(required=False)
+
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
             'category',
