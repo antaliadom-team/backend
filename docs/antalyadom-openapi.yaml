@@ -1322,9 +1322,9 @@ definitions:
         description: Уникальный идентификатор типа недвижимости
         type: integer
       rooms:
-        type: integer
-        description: Количество комнат
-        example: 1
+        type: string
+        description: 'Количество комнат. Может содержать `integer`, либо `список` значений через запятую. Допускается также пустое значение `""`'
+        example: '1, 2, 3'
       comment:
         type: string
         description: Комментарии
