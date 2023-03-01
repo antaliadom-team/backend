@@ -10,7 +10,7 @@ class TestValidators:
     def test_wrong_number_validator(self, wrong_number):
         with pytest.raises(ValidationError):
             assert (
-                regex_check_number(wrong_number) == False
+                regex_check_number(wrong_number) is False
             ), f'Ошибка в работе валидатора на номер {wrong_number}'
 
     @pytest.mark.parametrize('right_number', ['+901234567890', '+79876543210'])
@@ -51,16 +51,10 @@ class TestValidators:
 
     @pytest.mark.parametrize(
         'wrong_names',
-        [
-            'Иван1',
-            'Иван-Иван1',
-            'Иван Иван',
-            '111',
-            'Иван"№;%:?*()_+',
-        ],
+        ['Иван1', 'Иван-Иван1', 'Иван Иван', '111', 'Иван"№;%:?*()_+', 'G'],
     )
     def test_validate_name_wrong(self, wrong_names):
         with pytest.raises(ValidationError):
             assert (
-                validate_name(wrong_names) == False
+                validate_name(wrong_names) is False
             ), f'Ошибка в работе валидатора на Имя {wrong_names}'

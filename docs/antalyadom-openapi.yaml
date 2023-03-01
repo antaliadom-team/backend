@@ -412,7 +412,7 @@ paths:
             $ref: '#/definitions/OrderCreate'
       responses:
         '201':
-          description: 'Заявка успешно отправлена'
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
       tags:
@@ -431,7 +431,7 @@ paths:
             $ref: '#/definitions/OrderObjectCreate'
       responses:
         '201':
-          description: 'Заявка успешно отправлена'
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
         '404':
@@ -472,6 +472,8 @@ paths:
                 description: Описание ошибки
         '401':
           $ref: '#/responses/AuthenticationError'
+        '404':
+          $ref: '#/responses/NotFound'
     delete:
       summary: Удалить объекта из избранного
       operationId: delete-api-objects-id-favorite
@@ -685,8 +687,8 @@ paths:
       tags:
         - Пользователи
       responses:
-        '200':
-          description: OK
+        '204':
+          description: Успешная смена пароля.
           schema:
             type: object
             properties: {}
@@ -1067,14 +1069,14 @@ definitions:
         title: Имя
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Имя
         example: Василий
       last_name:
         title: Фамилия
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Фамилия
         example: Пупкин
       phone:
@@ -1109,11 +1111,13 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       password:
         type: string
         maxLength: 128
@@ -1159,11 +1163,13 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       phone:
         type: string
         pattern: '^\+?[0-9]{10,13}$'
@@ -1290,12 +1296,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон
@@ -1343,12 +1349,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон
