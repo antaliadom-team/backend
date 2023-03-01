@@ -236,7 +236,7 @@ class Image(models.Model):
         ordering = ('-id',)
 
     def thumbnail_generator(self, infile, outfile, image_size):
-        """Генерирует изображения в требуемых размерах."""
+        """Генерирует изображения  в требуемых размерах."""
         with PillowImage.open(infile) as im:
             im.thumbnail(image_size)
             ImageOps.fit(
