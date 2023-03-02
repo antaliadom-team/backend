@@ -267,7 +267,8 @@ class Image(models.Model):
     def delete(self, using=None, keep_parents=False):
         """Удаляет дополнительно все файлы связанные с обьектом."""
         for size in settings.PREVIEW_SIZES:
-            os.remove(self.filename_generator(self.image.path, size))
+            if os.path.exists(self.filename_generator(self.image.path, size)):
+                os.remove(self.filename_generator(self.image.path, size))
         return super().delete(using, keep_parents)
 
 
