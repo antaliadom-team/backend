@@ -5,9 +5,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import ImageField
 
 from PIL import Image as PillowImage, ImageOps
-from django_resized import ResizedImageField
 
 from api.validators import regex_check_number
 
@@ -212,12 +212,15 @@ class RealEstate(models.Model):
 
 def folder_path(instance, filename):
     """Генерирует имя файла. Возвращает путь к нему."""
-    return (f'real_estate/{instance.real_estate.pk}_'
-            f'{datetime.now().timestamp()*1000:.0f}.jpg')
+    return (
+        f'real_estate/{instance.real_estate.pk}_'
+        f'{datetime.now().timestamp()*1000:.0f}.jpg'
+    )
 
 
 class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
+
     real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,
@@ -225,10 +228,7 @@ class Image(models.Model):
         db_index=True,
         verbose_name='Объект',
     )
-    image = ResizedImageField(
-        verbose_name='Фото',
-        upload_to=folder_path,
-    )
+    image = ImageField(verbose_name='Фото', upload_to=folder_path)
 
     class Meta:
         verbose_name = 'Фотография'
@@ -261,19 +261,20 @@ class Image(models.Model):
             self.thumbnail_generator(
                 infile=self.image,
                 outfile=self.filename_generator(self.image.path, size),
-                image_size=size
+                image_size=size,
             )
 
-    def delete(self, using=None, keep_parents=False):
-        """Удаляет дополнительно все файлы связанные с обьектом."""
+    def delete_thumbnails(self):
+        """Удаляет дополнительно все файлы связанные с объектом."""
         for size in settings.PREVIEW_SIZES:
-            if os.path.exists(self.filename_generator(self.image.path, size)):
-                os.remove(self.filename_generator(self.image.path, size))
-        return super().delete(using, keep_parents)
+            file_name = self.filename_generator(self.image.path, size)
+            if os.path.exists(file_name):
+                os.remove(file_name)
 
 
 class Favorite(models.Model):
     """Модель избранного."""
+
     real_estate = models.ForeignKey(
         RealEstate,
         on_delete=models.CASCADE,

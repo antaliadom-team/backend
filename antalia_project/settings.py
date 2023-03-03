@@ -48,14 +48,11 @@ INSTALLED_APPS = [
     'about',
     'api',
     'core',
-    'django_cleanup.apps.CleanupConfig',
+    'django_cleanup',
 ]
 
 if DEBUG:
-    INSTALLED_APPS += [
-        'django_extensions',  # shell_plus --ipython
-        'drf_yasg',
-    ]
+    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
@@ -154,9 +151,3 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_RESULT_BACKEND = os.getenv(
     'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
 )
-
-DJANGORESIZED_DEFAULT_QUALITY = 75
-DJANGORESIZED_DEFAULT_KEEP_META = True
-DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
-DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
-DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
