@@ -205,7 +205,7 @@ class TestAPI(APITestBase):
             response.data['facilities'][0]['name'] == facility1.name
         ), 'Неверное название удобства'
 
-    def test_real_estate_images(self, client, object1, image):
+    def test_real_estate_images(self, client, object1, image_object):
         """Test real estate images"""
         url = self.urls['real_estate_detail'].format(object_id=object1.id)
         response = client.get(url)
@@ -214,11 +214,11 @@ class TestAPI(APITestBase):
             len(response.data['images']) == 1
         ), 'Количество изображений не совпадает'
         assert (
-            response.data['images'][0]['id'] == image.id
+            response.data['images'][0]['id'] == image_object.id
         ), 'Неверный id изображения'
         assert (
             response.data['images'][0]['image']
-            == 'http://testserver/media/' + image.image.name
+            == 'http://testserver/media/' + image_object.image.name
         ), 'Неверное изображение'
 
     def test_real_estate_is_not_favorited(self, client, object1):
@@ -380,13 +380,13 @@ class TestAPI(APITestBase):
                 'category': 'asd',
                 'property_type': 'fgsg',
                 'location': 'sdgerg',
-                'rooms': 'sdfw'
+                'rooms': 'sdfw',
             },
         )
         self.assert_status_code(200, response)
-        assert len(response.data['results']) == 1, (
-            'Неверное количество объектов, должен быть 1 объект'
-        )
+        assert (
+            len(response.data['results']) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект'
         # assert response.data['category'][0] == 'Введите число.'
         # assert response.data['property_type'][0] == 'Введите число.'
         # assert response.data['location'][0] == 'Введите число.'

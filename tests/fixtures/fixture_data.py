@@ -1,3 +1,5 @@
+import os
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 import pytest
@@ -29,13 +31,19 @@ def image_path():
 
 
 @pytest.fixture
-def image(object1):
-    image = SimpleUploadedFile(
-        name='test_image.jpg',
-        content=b'file_content',
-        content_type='image/jpeg',
-    )
-    return Image.objects.create(image=image, real_estate=object1)
+def image():
+    """Fixture generates a test image and returns its filename."""
+    image_path = os.path.join(os.path.dirname(__file__), 'test_image.jpg')
+    with open(image_path, 'rb') as f:
+        image_file = SimpleUploadedFile(
+            name='test_image.jpg', content=f.read(), content_type='image/jpeg'
+        )
+    return image_file.name
+
+
+@pytest.fixture
+def image_object(image, object1):
+    return Image.objects.create(real_estate=object1, image=image)
 
 
 @pytest.fixture
@@ -149,10 +157,9 @@ def object_rooms5(
     real_estate.facility.add(facility1)
     return real_estate
 
+
 @pytest.fixture
-def object3(
-    user, facility1, property_type_villa, location2, category2
-):
+def object3(user, facility1, property_type_villa, location2, category2):
 
     real_estate = RealEstate.objects.create(
         title='Тестовый объект 3 - продажа',

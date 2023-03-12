@@ -1,7 +1,13 @@
+from datetime import datetime
+import os
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import ImageField
+
+from PIL import Image as PillowImage, ImageOps
 
 from api.validators import regex_check_number
 
@@ -204,6 +210,14 @@ class RealEstate(models.Model):
         )
 
 
+def folder_path(instance, filename):
+    """Генерирует имя файла. Возвращает путь к нему."""
+    return (
+        f'real_estate/{instance.real_estate.pk}_'
+        f'{datetime.now().timestamp()*1000:.0f}.jpg'
+    )
+
+
 class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
 
@@ -214,20 +228,48 @@ class Image(models.Model):
         db_index=True,
         verbose_name='Объект',
     )
-    image = models.ImageField(upload_to='real_estate', verbose_name='Фото')
+    image = ImageField(verbose_name='Фото', upload_to=folder_path)
 
     class Meta:
         verbose_name = 'Фотография'
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
+    def thumbnail_generator(self, infile, outfile, image_size):
+        """Генерирует изображения в требуемых размерах."""
+        with PillowImage.open(infile) as im:
+            im.thumbnail(image_size)
+            ImageOps.fit(
+                im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+            ).save(outfile, quality=95)
+
+    def filename_generator(self, filepath, size):
+        """Генерирует имя для каждого размера изображения."""
+        width, height = size
+        name, file_format = filepath.split('.')
+        return f'{name}_{width}x{height}.{file_format}'
+
     def save(self, *args, **kwargs):
+        """Сохраняет дополнительно изображения в требуемых размерах."""
         if (
             Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
+        for size in settings.PREVIEW_SIZES:
+            self.thumbnail_generator(
+                infile=self.image,
+                outfile=self.filename_generator(self.image.path, size),
+                image_size=size,
+            )
+
+    def delete_thumbnails(self):
+        """Удаляет дополнительно все файлы связанные с объектом."""
+        for size in settings.PREVIEW_SIZES:
+            file_name = self.filename_generator(self.image.path, size)
+            if os.path.exists(file_name):
+                os.remove(file_name)
 
 
 class Favorite(models.Model):

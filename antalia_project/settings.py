@@ -48,14 +48,11 @@ INSTALLED_APPS = [
     'about',
     'api',
     'core',
-    'django_cleanup.apps.CleanupConfig',
+    'django_cleanup',
 ]
 
 if DEBUG:
-    INSTALLED_APPS += [
-        'django_extensions',  # shell_plus --ipython
-        'drf_yasg',
-    ]
+    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',

@@ -5,6 +5,7 @@ django-cleanup
 django-cors-headers==3.13
 django_filter==22.1
 django_extensions==3.2
+django-prometheus
 psycopg2-binary
 gunicorn==20.1
 drf_yasg==1.21
@@ -20,4 +21,3 @@ Pillow
 celery==5.2
 redis==4
 sentry-sdk
-django-prometheus
