@@ -105,7 +105,7 @@ class OrderSerializer(CommonOrderSerializer):
         return super().to_internal_value(data)
 
     def bulk_create_for_order_category(self, categories, order):
-        """Создает несколько связей Тегов с Рецептом."""
+        """Создает несколько связей Категории с Заявкой."""
         if categories:
             categories_objs = [
                 OrderCategory(
@@ -118,7 +118,7 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def bulk_create_for_order_location(self, locations, order):
-        """Создает несколько связей Тегов с Рецептом."""
+        """Создает несколько связей Локации с Заявкой."""
         if locations:
             location_objs = [
                 OrderLocation(
@@ -131,7 +131,7 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def bulk_create_for_order_property_type(self, property_types, order):
-        """Создает несколько связей Тегов с Рецептом."""
+        """Создает несколько связей Типа недвижимости с Заявкой."""
         if property_types:
             property_type_objs = [
                 OrderPropertyType(
@@ -147,6 +147,7 @@ class OrderSerializer(CommonOrderSerializer):
         categories = validated_data.pop('category')
         locations = validated_data.pop('location')
         property_types = validated_data.pop('property_type')
+
         order = Order.objects.create(**validated_data)
         self.bulk_create_for_order_category(categories=categories, order=order)
         self.bulk_create_for_order_location(locations=locations, order=order)

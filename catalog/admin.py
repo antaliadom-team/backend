@@ -7,17 +7,34 @@ from catalog.models import (
     Favorite,
     Image,
     Location,
+    Order,
     PropertyType,
-    RealEstate,
+    RealEstate,   
 )
 from core.utils import AdminImageWidget
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    """Админка заявки."""
+    list_display = (
+        'pk',
+        'get_category',
+        'get_location',
+        'get_property_type',
+        'rooms',
+        'first_name',
+        'last_name',
+        'phone',
+        'email'
+    )
 
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
     """Админка локации."""
 
-    list_display = ('name',)
+    list_display = ('pk', 'name',)
     list_display_links = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
