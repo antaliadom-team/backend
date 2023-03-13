@@ -90,7 +90,7 @@ class OrderSerializer(CommonOrderSerializer):
     property_type = serializers.PrimaryKeyRelatedField(
         many=True, queryset=PropertyType.objects.all()
     )
-    rooms = serializers.CharField()
+    rooms = serializers.ListSerializer(child=serializers.IntegerField())
 
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
@@ -100,47 +100,28 @@ class OrderSerializer(CommonOrderSerializer):
             'rooms',
         )
 
-    def to_internal_value(self, data):
-        data['rooms'] = ', '.join([str(i) for i in data['rooms']])
-        return super().to_internal_value(data)
+    @staticmethod
+    def validate_rooms(value):
+        for room in value:
+            if not isinstance(room, int):
+                raise serializers.ValidationError(
+                    'Все значения должны быть числами.'
+                )
+            if room > 4:
+                raise serializers.ValidationError(
+                    'Число комнат не может быть больше 4.'
+                )
+        return value
 
-    def bulk_create_for_order_category(self, categories, order):
-        """Создает несколько связей Категории с Заявкой."""
-        if categories:
+    @staticmethod
+    def bulk_create_for_order(objects, order, field, model):
+        """Создает м2м связи локаций, категорий и типов с Заявкой."""
+        if objects:
             categories_objs = [
-                OrderCategory(
-                    category=category, order=order
-                ) for category in categories
+                model(**{field: item}, order=order) for item in objects
             ]
-            OrderCategory.objects.bulk_create(
-                objs=categories_objs,
-                batch_size=len(categories_objs)
-            )
-
-    def bulk_create_for_order_location(self, locations, order):
-        """Создает несколько связей Локации с Заявкой."""
-        if locations:
-            location_objs = [
-                OrderLocation(
-                    location=location, order=order
-                ) for location in locations
-            ]
-            OrderLocation.objects.bulk_create(
-                objs=location_objs,
-                batch_size=len(location_objs)
-            )
-
-    def bulk_create_for_order_property_type(self, property_types, order):
-        """Создает несколько связей Типа недвижимости с Заявкой."""
-        if property_types:
-            property_type_objs = [
-                OrderPropertyType(
-                    property_type=property_type, order=order
-                ) for property_type in property_types
-            ]
-            OrderPropertyType.objects.bulk_create(
-                objs=property_type_objs,
-                batch_size=len(property_type_objs)
+            model.objects.bulk_create(
+                objs=categories_objs, batch_size=len(categories_objs)
             )
 
     def create(self, validated_data):
@@ -149,10 +130,23 @@ class OrderSerializer(CommonOrderSerializer):
         property_types = validated_data.pop('property_type')
 
         order = Order.objects.create(**validated_data)
-        self.bulk_create_for_order_category(categories=categories, order=order)
-        self.bulk_create_for_order_location(locations=locations, order=order)
-        self.bulk_create_for_order_property_type(
-            property_types=property_types, order=order
+        self.bulk_create_for_order(
+            objects=categories,
+            order=order,
+            field='category',
+            model=OrderCategory,
+        )
+        self.bulk_create_for_order(
+            objects=locations,
+            order=order,
+            field='location',
+            model=OrderLocation,
+        )
+        self.bulk_create_for_order(
+            objects=property_types,
+            order=order,
+            field='property_type',
+            model=OrderPropertyType,
         )
         return order
 
