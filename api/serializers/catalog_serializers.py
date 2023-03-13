@@ -10,22 +10,10 @@ from catalog.models import (
     Order,
     PropertyType,
     RealEstate,
+    OrderCategory,
+    OrderLocation,
+    OrderPropertyType
 )
-
-
-class RoomListField(serializers.ListField):
-    child = serializers.IntegerField(min_value=0, max_value=4)
-
-    def to_internal_value(self, data):
-        # split the comma-separated string of room numbers into a
-        # list of integers
-        try:
-            room_list = [
-                int(room.strip()) for room in data.split(',') if room.strip()
-            ]
-        except AttributeError:
-            room_list = [data]
-        return super().to_internal_value(room_list)
 
 
 class CommonOrderSerializer(serializers.ModelSerializer):
@@ -93,10 +81,10 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(CommonOrderSerializer):
-    """Сериализатор для заявок"""
-
-    rooms = RoomListField(required=False)
-
+    category = serializers.PrimaryKeyRelatedField(many=True, queryset= Category.objects.all())
+    location = serializers.PrimaryKeyRelatedField(many=True, queryset=Location.objects.all())
+    property_type = serializers.PrimaryKeyRelatedField(many=True, queryset=PropertyType.objects.all())
+    rooms = serializers.CharField()
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
             'category',
@@ -104,7 +92,58 @@ class OrderSerializer(CommonOrderSerializer):
             'property_type',
             'rooms',
         )
-
+    def to_internal_value(self, data):
+        data['rooms'] = ', '.join([str(i) for i in data['rooms']])
+        return super().to_internal_value(data)
+    
+    def bulk_create_for_order_category(self, categories, order):
+        """Создает несколько связей Тегов с Рецептом."""
+        if categories:
+            categories_objs = [
+                OrderCategory(
+                category=category, order=order
+                ) for category in categories
+            ]
+            OrderCategory.objects.bulk_create(
+                objs=categories_objs,
+                batch_size=len(categories_objs)
+            )
+    
+    def bulk_create_for_order_location(self, locations, order):
+        """Создает несколько связей Тегов с Рецептом."""
+        if locations:
+            location_objs = [
+                OrderLocation(
+                location=location, order=order
+                ) for location in locations
+            ]
+            OrderLocation.objects.bulk_create(
+                objs=location_objs,
+                batch_size=len(location_objs)
+            )
+    
+    def bulk_create_for_order_property_type(self, property_types, order):
+        """Создает несколько связей Тегов с Рецептом."""
+        if property_types:
+            property_type_objs = [
+                OrderPropertyType(
+                property_type=property_type, order=order
+                ) for property_type in property_types
+            ]
+            OrderPropertyType.objects.bulk_create(
+                objs=property_type_objs,
+                batch_size=len(property_type_objs)
+            )
+    
+    def create(self, validated_data):
+        categories = validated_data.pop('category')
+        locations = validated_data.pop('location')
+        property_types = validated_data.pop('property_type')
+        order = Order.objects.create(**validated_data)
+        self.bulk_create_for_order_category(categories=categories, order=order)
+        self.bulk_create_for_order_location(locations=locations, order=order)
+        self.bulk_create_for_order_property_type(property_types=property_types, order=order)
+        return order
 
 class RealEstateOrderSerializer(OrderSerializer):
     category = fields.ReadOnlyField(source='real_estate.category')
