@@ -9,7 +9,7 @@ from catalog.models import (
     Location,
     Order,
     PropertyType,
-    RealEstate,   
+    RealEstate,
 )
 from core.utils import AdminImageWidget
 
