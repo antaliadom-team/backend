@@ -1311,14 +1311,14 @@ definitions:
         maxLength: 50
       category:
         type: array
-        example: '[1, 2]'
+        example: [1, 2]
         description: 'Уникальный идентификатор категории недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значений `[]`'
         items:
           type: integer
           x-nullable: true
       location:
         type: array
-        example: '[1]'
+        example: [1]
         description: 'Уникальный идентификатор локации. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значений `[]`'
         items:
           type: integer
@@ -1326,14 +1326,14 @@ definitions:
       property_type:
         description: 'Уникальный идентификатор типа недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значений `[]`'
         type: array
-        example: '[1, 2, 3]'
+        example: [1, 2, 3]
         items:
           type: integer
           x-nullable: true
       rooms:
         type: array
         description: 'Количество комнат. `Cписок` из чисел через запятую. Допускается также пустое значений `[]`'
-        example: '[1, 2, 3]'
+        example: [1, 2, 3]
         items:
           type: integer
           x-nullable: true
