@@ -8,11 +8,12 @@ from catalog.models import (
     Image,
     Location,
     Order,
-    PropertyType,
-    RealEstate,
     OrderCategory,
     OrderLocation,
-    OrderPropertyType
+    OrderPropertyType,
+    PropertyType,
+    RealEstate,
+    
 )
 
 
