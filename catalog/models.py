@@ -405,6 +405,7 @@ class Order(models.Model):
             for i in OrderPropertyType.objects.filter(order=self)
         ])
 
+
 class OrderCategory(models.Model):
     order = models.ForeignKey(
         Order,
@@ -417,6 +418,7 @@ class OrderCategory(models.Model):
         related_name='ordercategory'
     )
 
+
 class OrderLocation(models.Model):
     order = models.ForeignKey(
         Order,
@@ -428,6 +430,7 @@ class OrderLocation(models.Model):
         on_delete=models.CASCADE,
         related_name='orderlocation'
     )
+
 
 class OrderPropertyType(models.Model):
     order = models.ForeignKey(
