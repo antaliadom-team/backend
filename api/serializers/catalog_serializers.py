@@ -13,7 +13,6 @@ from catalog.models import (
     OrderPropertyType,
     PropertyType,
     RealEstate,
-    
 )
 
 
