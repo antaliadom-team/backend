@@ -54,9 +54,6 @@ MODEL_FIELDS = [
     [
         Order,
         [
-            'category_id',
-            'location_id',
-            'property_type_id',
             'rooms',
             'first_name',
             'last_name',
@@ -90,7 +87,10 @@ MODEL_FIELDS = [
     ],
 ]
 
-MODEL_M2M_FIELDS = [[RealEstate, ['facility']]]
+MODEL_M2M_FIELDS = [
+    [RealEstate, ['facility']],
+    [Order, ['category', 'property_type', 'location']],
+]
 
 
 def search_field(fields, attname):
