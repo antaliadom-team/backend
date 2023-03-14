@@ -690,9 +690,6 @@ paths:
       responses:
         '200':
           description: OK
-          schema:
-            type: object
-            properties: {}
         '400':
           $ref: '#/responses/ValidationError'
         '401':
@@ -720,9 +717,6 @@ paths:
       responses:
         '204':
           description: Успешное создание запроса на восстановление пароля
-          schema:
-            type: object
-            properties: {}
         '400':
           description: |-
             <p>Ошибка в воде email:
