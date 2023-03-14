@@ -697,8 +697,79 @@ paths:
           $ref: '#/responses/ValidationError'
         '401':
           $ref: '#/responses/AuthenticationError'
-      summary: Изменение пароля
+      summary: Сброс пароля
     parameters: []
+  /api/users/reset_password/:
+    post:
+      summary: Восстановление пароля
+      operationId: api_users_reset_password
+      security: []
+      tags:
+        - Пользователи
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: E-mail пользователя
+      responses:
+        '204':
+          description: Успешное создание запроса на восстановление пароля
+          schema:
+            type: object
+            properties: {}
+        '400':
+          description: |-
+            <p>Ошибка в воде email:
+            <code>{"email": ["Введите правильный адрес электронной почты."]}</code>
+            </p>
+            <p>E-mail не найден:
+            <code>["Пользователь с данным адресом электронной почты не существует."]</code>
+            </p>
+          schema:
+            type: object
+            properties: {}
+  /api/users/reset_password_confirm/:
+    post:
+      summary: Подтверждение сброса пароля
+      operationId: api_users_reset_password_confirm
+      responses:
+        '204':
+          description: Пароль успешно изменен
+        '400':
+          $ref: '#/responses/ValidationError'
+      security: []
+      parameters:
+        - type: string
+          in: query
+          name: uid
+          description: 'Уникальный идентификатор, полученный из ссылки'
+          required: true
+        - type: string
+          in: query
+          name: token
+          description: Токен из ссылки
+          required: true
+        - type: string
+          in: query
+          required: true
+          name: new_password
+          format: password
+          description: Новый пароль
+        - type: string
+          in: query
+          required: true
+          name: re_new_password
+          format: password
+          description: Повтор нового пароля
+      description: ''
+      tags:
+        - Пользователи
   '/api/users/{id}/':
     get:
       operationId: Профиль пользователя
@@ -1311,14 +1382,17 @@ definitions:
         maxLength: 50
       category:
         type: array
-        example: [1, 2]
+        example:
+          - 1
+          - 2
         description: 'Уникальный идентификатор категории недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
         items:
           type: integer
           x-nullable: true
       location:
         type: array
-        example: [1]
+        example:
+          - 1
         description: 'Уникальный идентификатор локации. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
         items:
           type: integer
@@ -1326,14 +1400,20 @@ definitions:
       property_type:
         description: 'Уникальный идентификатор типа недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
         type: array
-        example: [1, 2, 3]
+        example:
+          - 1
+          - 2
+          - 3
         items:
           type: integer
           x-nullable: true
       rooms:
         type: array
         description: 'Количество комнат. `Cписок` из чисел через запятую. Допускается также пустое значение `[]`'
-        example: [1, 2, 3]
+        example:
+          - 1
+          - 2
+          - 3
         items:
           type: integer
           x-nullable: true
