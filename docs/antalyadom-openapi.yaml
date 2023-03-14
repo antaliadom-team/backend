@@ -694,11 +694,11 @@ paths:
           $ref: '#/responses/ValidationError'
         '401':
           $ref: '#/responses/AuthenticationError'
-      summary: Сброс пароля
+      summary: Изменение пароля
     parameters: []
   /api/users/reset_password/:
     post:
-      summary: Восстановление пароля
+      summary: Сброс пароля
       operationId: api_users_reset_password
       security: []
       tags:
@@ -755,12 +755,14 @@ paths:
           name: new_password
           format: password
           description: Новый пароль
+          minLength: 1
         - type: string
           in: query
           required: true
           name: re_new_password
           format: password
           description: Повтор нового пароля
+          minLength: 1
       description: ''
       tags:
         - Пользователи
