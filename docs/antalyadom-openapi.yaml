@@ -716,7 +716,7 @@ paths:
                 description: E-mail пользователя
       responses:
         '204':
-          description: Успешное создание запроса на восстановление пароля
+          description: Успешное создание запроса на сброс пароля
         '400':
           description: |-
             <p>Ошибка в воде email:
