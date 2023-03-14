@@ -143,6 +143,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_REPLY_TO = 'noreply@telfia.com'
+DEFAULT_FROM_EMAIL = EMAIL_REPLY_TO
 
 # Celery Broker settings
 CELERY_BROKER_URL = os.getenv(

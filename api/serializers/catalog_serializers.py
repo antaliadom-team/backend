@@ -8,24 +8,12 @@ from catalog.models import (
     Image,
     Location,
     Order,
+    OrderCategory,
+    OrderLocation,
+    OrderPropertyType,
     PropertyType,
     RealEstate,
 )
-
-
-class RoomListField(serializers.ListField):
-    child = serializers.IntegerField(min_value=0, max_value=4)
-
-    def to_internal_value(self, data):
-        # split the comma-separated string of room numbers into a
-        # list of integers
-        try:
-            room_list = [
-                int(room.strip()) for room in data.split(',') if room.strip()
-            ]
-        except AttributeError:
-            room_list = [data]
-        return super().to_internal_value(room_list)
 
 
 class CommonOrderSerializer(serializers.ModelSerializer):
@@ -93,9 +81,16 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(CommonOrderSerializer):
-    """Сериализатор для заявок"""
-
-    rooms = RoomListField(required=False)
+    category = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Category.objects.all()
+    )
+    location = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Location.objects.all()
+    )
+    property_type = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=PropertyType.objects.all()
+    )
+    rooms = serializers.ListSerializer(child=serializers.IntegerField())
 
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
@@ -104,6 +99,56 @@ class OrderSerializer(CommonOrderSerializer):
             'property_type',
             'rooms',
         )
+
+    @staticmethod
+    def validate_rooms(value):
+        for room in value:
+            if not isinstance(room, int):
+                raise serializers.ValidationError(
+                    'Все значения должны быть числами.'
+                )
+            if room > 4:
+                raise serializers.ValidationError(
+                    'Число комнат не может быть больше 4.'
+                )
+        return value
+
+    @staticmethod
+    def bulk_create_for_order(objects, order, field, model):
+        """Создает м2м связи локаций, категорий и типов с Заявкой."""
+        if objects:
+            categories_objs = [
+                model(**{field: item}, order=order) for item in objects
+            ]
+            model.objects.bulk_create(
+                objs=categories_objs, batch_size=len(categories_objs)
+            )
+
+    def create(self, validated_data):
+        categories = validated_data.pop('category')
+        locations = validated_data.pop('location')
+        property_types = validated_data.pop('property_type')
+
+        order = Order.objects.create(**validated_data)
+        self.bulk_create_for_order(
+            objects=categories,
+            order=order,
+            field='category',
+            model=OrderCategory,
+        )
+        self.bulk_create_for_order(
+            objects=locations,
+            order=order,
+            field='location',
+            model=OrderLocation,
+        )
+        self.bulk_create_for_order(
+            objects=property_types,
+            order=order,
+            field='property_type',
+            model=OrderPropertyType,
+        )
+        return order
 
 
 class RealEstateOrderSerializer(OrderSerializer):
@@ -188,6 +233,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
+        """Дает избранное."""
         user = self.context['request'].user
         # Проверка на is_authenticated, иначе для анонимов
         # будет ошибка
