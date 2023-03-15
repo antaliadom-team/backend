@@ -68,21 +68,30 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance=instance)
-        if hasattr(instance, 'category') and instance.category is not None:
-            data['category'] = instance.category.name
-        if hasattr(instance, 'location') and instance.location is not None:
-            data['location'] = instance.location.name
+        if (
+            hasattr(instance, 'category')
+            and instance.get_category() is not None
+        ):
+            data['category'] = instance.get_category()
+        if (
+            hasattr(instance, 'location')
+            and instance.get_location() is not None
+        ):
+            data['location'] = instance.get_location()
         if (
             hasattr(instance, 'property_type')
-            and instance.property_type is not None
+            and instance.get_property_type() is not None
         ):
-            data['property_type'] = instance.property_type.name
+            data['property_type'] = instance.get_property_type()
+        if hasattr(instance, 'comment') and instance.comment is None:
+            data['comment'] = ''
         return data
 
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all()
+        many=True,
+        queryset=Category.objects.all()
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all()
