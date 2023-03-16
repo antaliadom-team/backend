@@ -1,11 +1,16 @@
+from django.conf import settings
 from rest_framework import fields, serializers
 
+from api.validators import regex_check_number, validate_name
 from catalog.models import (
     Category,
     Facility,
     Image,
     Location,
     Order,
+    OrderCategory,
+    OrderLocation,
+    OrderPropertyType,
     PropertyType,
     RealEstate,
 )
@@ -14,6 +19,23 @@ from catalog.models import (
 class CommonOrderSerializer(serializers.ModelSerializer):
     """Общий сериализатор для заявок"""
 
+    first_name = serializers.CharField(
+        required=True,
+        validators=(validate_name,),
+        max_length=settings.NAMES_LENGTH,
+    )
+    last_name = serializers.CharField(
+        required=True,
+        validators=(validate_name,),
+        max_length=settings.NAMES_LENGTH,
+    )
+    phone = serializers.CharField(
+        required=True, validators=(regex_check_number,)
+    )
+    email = serializers.EmailField(
+        required=True, max_length=settings.EMAIL_LENGTH
+    )
+    agreement = serializers.BooleanField(required=True)
     date_added = fields.DateTimeField(read_only=True, format='%d.%m.%Y %H:%M')
 
     class Meta:
@@ -28,6 +50,17 @@ class CommonOrderSerializer(serializers.ModelSerializer):
         )
         model = Order
 
+    def __init__(self, instance=None, data=None, **kwargs):
+        if data and 'context' in kwargs:
+            user = kwargs['context']['request'].user
+            if user.is_authenticated:
+                data['first_name'] = user.first_name
+                data['last_name'] = user.last_name
+                data['phone'] = user.phone
+                data['email'] = user.email
+
+        super().__init__(instance=instance, data=data, **kwargs)
+
     def validate_agreement(self, value):
         if not value:
             raise serializers.ValidationError('Вы должны принять соглашение.')
@@ -35,19 +68,39 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance=instance)
-        if hasattr(instance, 'category') and instance.category is not None:
-            data['category'] = instance.category.name
-        if hasattr(instance, 'location') and instance.location is not None:
-            data['location'] = instance.location.name
+        if (
+            hasattr(instance, 'category')
+            and instance.get_category() is not None
+        ):
+            data['category'] = instance.get_category()
+        if (
+            hasattr(instance, 'location')
+            and instance.get_location() is not None
+        ):
+            data['location'] = instance.get_location()
         if (
             hasattr(instance, 'property_type')
-            and instance.property_type is not None
+            and instance.get_property_type() is not None
         ):
-            data['property_type'] = instance.property_type.name
+            data['property_type'] = instance.get_property_type()
+        if hasattr(instance, 'comment') and instance.comment is None:
+            data['comment'] = ''
+        data['rooms'] = instance.get_rooms()
         return data
 
 
 class OrderSerializer(CommonOrderSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Category.objects.all()
+    )
+    location = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Location.objects.all()
+    )
+    property_type = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=PropertyType.objects.all()
+    )
+    rooms = serializers.ListSerializer(child=serializers.IntegerField())
+
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
             'category',
@@ -56,16 +109,62 @@ class OrderSerializer(CommonOrderSerializer):
             'rooms',
         )
 
+    @staticmethod
+    def validate_rooms(value):
+        for room in value:
+            if not isinstance(room, int):
+                raise serializers.ValidationError(
+                    'Все значения должны быть числами.'
+                )
+            if room > 4:
+                raise serializers.ValidationError(
+                    'Число комнат не может быть больше 4.'
+                )
+        return value
+
+    @staticmethod
+    def bulk_create_for_order(objects, order, field, model):
+        """Создает м2м связи локаций, категорий и типов с Заявкой."""
+        if objects:
+            categories_objs = [
+                model(**{field: item}, order=order) for item in objects
+            ]
+            model.objects.bulk_create(
+                objs=categories_objs, batch_size=len(categories_objs)
+            )
+
+    def create(self, validated_data):
+        categories = validated_data.pop('category')
+        locations = validated_data.pop('location')
+        property_types = validated_data.pop('property_type')
+
+        order = Order.objects.create(**validated_data)
+        self.bulk_create_for_order(
+            objects=categories,
+            order=order,
+            field='category',
+            model=OrderCategory,
+        )
+        self.bulk_create_for_order(
+            objects=locations,
+            order=order,
+            field='location',
+            model=OrderLocation,
+        )
+        self.bulk_create_for_order(
+            objects=property_types,
+            order=order,
+            field='property_type',
+            model=OrderPropertyType,
+        )
+        return order
+
 
 class RealEstateOrderSerializer(OrderSerializer):
-    phone = fields.ReadOnlyField(source='user.phone')
-    email = fields.ReadOnlyField(source='user.email')
-    first_name = fields.ReadOnlyField(source='user.first_name')
-    last_name = fields.ReadOnlyField(source='user.last_name')
     category = fields.ReadOnlyField(source='real_estate.category')
 
     class Meta(OrderSerializer.Meta):
-        pass
+        fields = OrderSerializer.Meta.fields
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -143,6 +242,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
+        """Дает избранное."""
         user = self.context['request'].user
         # Проверка на is_authenticated, иначе для анонимов
         # будет ошибка

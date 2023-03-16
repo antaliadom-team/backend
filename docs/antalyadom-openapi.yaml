@@ -191,7 +191,7 @@ paths:
         - Категории
       summary: Получение категории
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         description: Уникальный идентификатор категории
@@ -233,7 +233,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
         description: Уникальный идентификатор удобства
   /api/objects/locations/:
     get:
@@ -272,7 +272,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
   /api/objects/property_types/:
     get:
       operationId: types_list
@@ -307,7 +307,7 @@ paths:
         - Типы недвижимости
       summary: Получение типа
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         required: true
@@ -317,7 +317,7 @@ paths:
       operationId: Каталог недвижимости
       description: |-
         <p>Список объектов недвижимости с пагинацией. Эндпоинт доступен всем пользователям. Доступна фильтрация по <b>избранному</b>, <b>локации</b>, <b>категории</b>, <b>типу</b>, <b>количеству комнат</b>.</p>
-        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited всегда для всех объектов будет возвращаться 0. Если пользователь авторизован, то is_favorited будет возвращать 1 для объектов, которые пользователь добавил в избранное.</p>
+        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited всегда для всех объектов будет возвращаться <code>false</code>. Если пользователь авторизован, то is_favorited будет возвращать <code>true</code> для объектов, которые пользователь добавил в избранное.</p>
         <p>В случае, если в request-запросе передан параметр is_favorited=1, эндпоинт возвращает только объекты, добавленные текущим пользователем в избранное.</p>
       parameters:
         - type: string
@@ -382,7 +382,7 @@ paths:
       operationId: objects_read
       description: |-
         <p>Возвращает объект недвижимости по уникальному идентификатору объекта. Эндпоинт доступен всем пользователям.</p>
-        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited будет содержать 0. Если пользователь авторизован и добавил данный объект в избранное, то is_favorited будет содержать 1.</p>
+        <p>В случае, если пользователь не авторизован, то в ответном JSON is_favorited будет содержать <code>false</code>. Если пользователь авторизован и добавил данный объект в избранное, то is_favorited будет содержать <code>true</code>.</p>
       parameters: []
       responses:
         '200':
@@ -412,7 +412,7 @@ paths:
             $ref: '#/definitions/OrderCreate'
       responses:
         '201':
-          description: ''
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
       tags:
@@ -430,11 +430,8 @@ paths:
           schema:
             $ref: '#/definitions/OrderObjectCreate'
       responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-            properties: {}
+        '201':
+          description: Заявка успешно отправлена
         '400':
           $ref: '#/responses/ValidationError'
         '404':
@@ -444,7 +441,7 @@ paths:
       security: []
       summary: Заявка на конкретный объект
     parameters:
-      - type: string
+      - type: integer
         name: id
         in: path
         description: Уникальный идентификатор объекта недвижимости
@@ -475,6 +472,8 @@ paths:
                 description: Описание ошибки
         '401':
           $ref: '#/responses/AuthenticationError'
+        '404':
+          $ref: '#/responses/NotFound'
     delete:
       summary: Удалить объекта из избранного
       operationId: delete-api-objects-id-favorite
@@ -531,7 +530,7 @@ paths:
       - name: id
         in: path
         required: true
-        type: string
+        type: integer
   /api/static_pages/team/:
     get:
       operationId: team_list
@@ -690,6 +689,8 @@ paths:
       responses:
         '200':
           description: OK
+        '204':
+          description: Успешная смена пароля.
         '400':
           $ref: '#/responses/ValidationError'
         '401':
@@ -802,7 +803,7 @@ paths:
           schema:
             $ref: '#/definitions/CustomUserUpdate'
           description: ''
-        - type: string
+        - type: integer
           in: path
           required: true
           name: id
@@ -829,7 +830,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/CustomUserUpdate'
-        - type: string
+        - type: integer
           in: path
           required: true
           name: id
@@ -860,7 +861,7 @@ definitions:
       password:
         title: Password
         type: string
-        minLength: 1
+        maxLength: 128
         format: password
         description: Пароль
     required:
@@ -1088,8 +1089,8 @@ definitions:
         readOnly: true
       is_favorited:
         title: Is favorited
-        type: string
-        default: '0'
+        type: boolean
+        default: false
         description: Добавлен ли объект в избранное у текущего пользователя
         readOnly: true
     required:
@@ -1137,14 +1138,14 @@ definitions:
         title: Имя
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Имя
         example: Василий
       last_name:
         title: Фамилия
         type: string
         maxLength: 30
-        minLength: 1
+        minLength: 2
         description: Фамилия
         example: Пупкин
       phone:
@@ -1179,19 +1180,21 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       password:
         type: string
-        maxLength: 150
+        maxLength: 128
         description: Пароль
-        example: Qwerty123
         format: password
       re_password:
         type: string
+        maxLength: 128
         format: password
         description: Повтор пароля
       phone:
@@ -1229,11 +1232,13 @@ definitions:
         maxLength: 30
         description: Имя
         example: Вася
+        minLength: 2
       last_name:
         type: string
         maxLength: 30
         description: Фамилия
         example: Пупкин
+        minLength: 2
       phone:
         type: string
         pattern: '^\+?[0-9]{10,13}$'
@@ -1281,12 +1286,12 @@ definitions:
       password:
         title: Password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Пароль
       re_password:
         title: Re password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Повторный пароль
     required:
       - email
@@ -1299,17 +1304,17 @@ definitions:
       new_password:
         title: New password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Новый пароль
       re_new_password:
         title: Re new password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Повторный новый пароль
       current_password:
         title: Current password
         type: string
-        minLength: 1
+        maxLength: 128
         description: Текущий пароль
     required:
       - new_password
@@ -1360,12 +1365,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон
@@ -1437,12 +1442,12 @@ definitions:
         type: string
         description: Имя
         maxLength: 30
-        minLength: 1
+        minLength: 2
       last_name:
         type: string
         description: Фамилия
         maxLength: 30
-        minLength: 1
+        minLength: 2
       phone:
         type: string
         description: Телефон

@@ -205,7 +205,7 @@ class TestAPI(APITestBase):
             response.data['facilities'][0]['name'] == facility1.name
         ), 'Неверное название удобства'
 
-    def test_real_estate_images(self, client, object1, image):
+    def test_real_estate_images(self, client, object1, image_object):
         """Test real estate images"""
         url = self.urls['real_estate_detail'].format(object_id=object1.id)
         response = client.get(url)
@@ -214,11 +214,11 @@ class TestAPI(APITestBase):
             len(response.data['images']) == 1
         ), 'Количество изображений не совпадает'
         assert (
-            response.data['images'][0]['id'] == image.id
+            response.data['images'][0]['id'] == image_object.id
         ), 'Неверный id изображения'
         assert (
             response.data['images'][0]['image']
-            == 'http://testserver/media/' + image.image.name
+            == 'http://testserver/media/' + image_object.image.name
         ), 'Неверное изображение'
 
     def test_real_estate_is_not_favorited(self, client, object1):
@@ -337,7 +337,9 @@ class TestAPI(APITestBase):
             response.data['results'][0]['id'] == object1.id
         ), f'Неверный объект. Должен быть объект с {object1.id}'
 
-    def test_real_estate_list_multiple_filters(self, client, object1, object2):
+    def test_real_estate_list_multiple_filters(
+        self, client, object1, object2, object_rooms5, object3
+    ):
         """Test real estate list with multiple filters"""
         url = self.urls['real_estate_list']
         response = client.get(
@@ -351,8 +353,41 @@ class TestAPI(APITestBase):
         self.assert_status_code(200, response)
         assert len(response.data['results']) == 1, (
             f'Неверное количество объектов, должен быть 1 объект с '
-            f'типом {object1.location.id}.'
+            f'локацией {object1.location.id}.'
         )
         assert (
             response.data['results'][0]['id'] == object1.id
         ), f'Неверный объект. Должен быть объект с {object1.id}'
+        response = client.get(
+            url,
+            {
+                'property_type': object1.location.id,
+                'rooms': object_rooms5.rooms,
+            },
+        )
+        assert len(response.data['results']) == 1, (
+            f'Неверное количество объектов, должен быть 1 объект с '
+            f'локацией {object1.location.id} и количеством комнат '
+            f'{object_rooms5.rooms}.'
+        )
+
+    def test_real_estate_filter_wrong_symbols(self, client, object1):
+        """Test real estate filter with wrong symbols"""
+        url = self.urls['real_estate_list']
+        response = client.get(
+            url,
+            {
+                'category': 'asd',
+                'property_type': 'fgsg',
+                'location': 'sdgerg',
+                'rooms': 'sdfw',
+            },
+        )
+        self.assert_status_code(200, response)
+        assert (
+            len(response.data['results']) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект'
+        # assert response.data['category'][0] == 'Введите число.'
+        # assert response.data['property_type'][0] == 'Введите число.'
+        # assert response.data['location'][0] == 'Введите число.'
+        # assert response.data['rooms'][0] == 'Введите число.'

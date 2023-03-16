@@ -1,5 +1,4 @@
 # константы для отправки электронных писем
-EMAIL_REPLY_TO = 'antalyadom@telfia.com'
 EMAIL_USER_SUBJECT = 'Подтверждение заявки.'
 EMAIL_ADMIN_SUBJECT = 'Поступила новая заявка.'
 EMAIL_ADMIN_MESSAGE = (
@@ -41,6 +40,7 @@ EMAIL_LENGTH = 50
 USER_ROLE_LENGTH = 6
 PHONE_LENGTH = 14
 NAMES_LENGTH = 30
+NAMES_MIN_LENGTH = 2
 LONG_NAMES_LENGTH = 100
 ESTATE_TITLE_LENGTH = 200
 SLUG_LENGTH = 100
@@ -54,3 +54,6 @@ IMAGE_LIMIT = 6
 
 # константы проекта
 ROOMS_LIMIT = 4
+
+# Список размеров в пикселях создаваемых превью для фотографий объекта [(hor, vert), ...]
+PREVIEW_SIZES = ((738, 632), (328, 261))

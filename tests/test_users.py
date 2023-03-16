@@ -14,6 +14,28 @@ User = get_user_model()
 class TestUserAPI(APITestBase):
     """Test user API"""
 
+    def test_create_user_with_short_name(self, client):
+        """Test create user with short name"""
+        response = client.post(
+            self.urls['users'],
+            data={
+                'email': 'test@fake.mail',
+                'first_name': 'g',
+                'last_name': 'g',
+                'phone': '+79999999999',
+                'password': '122q%5',
+                're_password': '122q%5',
+                'agreement': True,
+            },
+        )
+        self.assert_status_code(400, response)
+        assert response.data['first_name'][0] == (
+            'Имя и Фамилия должны быть не менее 2 символов.'
+        ), 'Ошибка в создании пользователя с коротким именем'
+        assert response.data['last_name'][0] == (
+            'Имя и Фамилия должны быть не менее 2 символов.'
+        ), 'Ошибка в создании пользователя с коротким именем'
+
     def test_create_user_with_short_password(self, client):
         """Test create user with short password"""
         response = client.post(
@@ -210,13 +232,13 @@ class TestUserAPI(APITestBase):
         self.assert_status_code(
             204,
             user_client.post(
-                url, data={'refresh_token': token_user.get('refresh')}
+                url, data={'refresh': token_user.get('refresh')}
             ),
             url=url,
         )
         self.assert_status_code(
             400,
-            user_client.post(url, data={'refresh_token': 'wrong_token'}),
+            user_client.post(url, data={'refresh': 'wrong_token'}),
             url=url,
         )
 

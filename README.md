@@ -60,6 +60,10 @@
      ```
      celery -A antalia_project worker -l info -B
      ```
+  6.1. Для Windows у celery есть специальный костыль.
+  ```
+  celery -A your-application worker -l info --pool=solo
+  ```
   6. Перейти в ветку разраработки `git checkout dev`
   7. Из ветки `dev` создать и перейти в ветку с названием вашей работы `git checkout -b feature/api`
   8. Запушить изменения с коммитом "добавляет эндпоинт каталога"

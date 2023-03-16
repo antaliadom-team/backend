@@ -12,8 +12,6 @@ class UserViewSet(DjoserUsers):
 
     # Методы принудительно отключены для соответствия ТЗ
     #
-    def reset_password(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def activation(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -27,9 +25,6 @@ class UserViewSet(DjoserUsers):
     def set_username(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def reset_password_confirm(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     def reset_username_confirm(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -39,7 +34,7 @@ class UserViewSet(DjoserUsers):
 def logout(request):
     """Logout view."""
     try:
-        RefreshToken(request.data['refresh_token']).blacklist()
+        RefreshToken(request.data['refresh']).blacklist()
         return Response(status=status.HTTP_204_NO_CONTENT)
     except Exception:
         return Response(status=status.HTTP_400_BAD_REQUEST)

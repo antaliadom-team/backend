@@ -1,7 +1,13 @@
+from datetime import datetime
+import os
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import ImageField
+
+from PIL import Image as PillowImage, ImageOps
 
 from api.validators import regex_check_number
 
@@ -204,6 +210,14 @@ class RealEstate(models.Model):
         )
 
 
+def folder_path(instance, filename):
+    """Генерирует имя файла. Возвращает путь к нему."""
+    return (
+        f'real_estate/{instance.real_estate.pk}_'
+        f'{datetime.now().timestamp()*1000:.0f}.jpg'
+    )
+
+
 class Image(models.Model):
     """1toМ Модель для фотографий объекта."""
 
@@ -214,20 +228,48 @@ class Image(models.Model):
         db_index=True,
         verbose_name='Объект',
     )
-    image = models.ImageField(upload_to='real_estate', verbose_name='Фото')
+    image = ImageField(verbose_name='Фото', upload_to=folder_path)
 
     class Meta:
         verbose_name = 'Фотография'
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
+    def thumbnail_generator(self, infile, outfile, image_size):
+        """Генерирует изображения в требуемых размерах."""
+        with PillowImage.open(infile) as im:
+            im.thumbnail(image_size)
+            ImageOps.fit(
+                im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+            ).save(outfile, quality=95)
+
+    def filename_generator(self, filepath, size):
+        """Генерирует имя для каждого размера изображения."""
+        width, height = size
+        name, file_format = filepath.split('.')
+        return f'{name}_{width}x{height}.{file_format}'
+
     def save(self, *args, **kwargs):
+        """Сохраняет дополнительно изображения в требуемых размерах."""
         if (
             Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
         super(Image, self).save(*args, **kwargs)
+        for size in settings.PREVIEW_SIZES:
+            self.thumbnail_generator(
+                infile=self.image,
+                outfile=self.filename_generator(self.image.path, size),
+                image_size=size,
+            )
+
+    def delete_thumbnails(self):
+        """Удаляет дополнительно все файлы связанные с объектом."""
+        for size in settings.PREVIEW_SIZES:
+            file_name = self.filename_generator(self.image.path, size)
+            if os.path.exists(file_name):
+                os.remove(file_name)
 
 
 class Favorite(models.Model):
@@ -269,31 +311,28 @@ class Favorite(models.Model):
 class Order(models.Model):
     """Модель заявки."""
 
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, verbose_name='Аренда/Покупка'
+    category = models.ManyToManyField(
+        Category,
+        related_name='orders',
+        verbose_name='Аренда/Покупка',
+        through='OrderCategory',
     )
-    location = models.ForeignKey(
+    location = models.ManyToManyField(
         Location,
         related_name='orders',
-        on_delete=models.SET_NULL,
         verbose_name='Локация',
+        through='OrderLocation',
         blank=True,
-        null=True,
     )
-    property_type = models.ForeignKey(
+    property_type = models.ManyToManyField(
         PropertyType,
-        on_delete=models.SET_NULL,
         verbose_name='Тип недвижимости',
         related_name='orders',
+        through='OrderPropertyType',
         blank=True,
-        null=True,
     )
-    rooms = models.PositiveSmallIntegerField(
-        default=1,
-        verbose_name='Количество комнат',
-        blank=True,
-        null=True,
-        validators=(MinValueValidator(1),),
+    rooms = models.CharField(
+        verbose_name='Количество комнат', blank=True, null=True, max_length=255
     )
     first_name = models.CharField(
         max_length=settings.NAMES_LENGTH, verbose_name='Имя'
@@ -342,3 +381,68 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'Заявка'
         verbose_name_plural = 'Заявки'
+
+    def get_rooms(self):
+        return ', '.join(map(str, self.rooms))
+
+    def get_category(self):
+        return (
+            ', '.join(
+                [
+                    i.category.name
+                    for i in OrderCategory.objects.filter(order=self)
+                ]
+            )
+            or settings.NA
+        )
+
+    def get_location(self):
+        return (
+            ', '.join(
+                [
+                    i.location.name
+                    for i in OrderLocation.objects.filter(order=self)
+                ]
+            )
+            or settings.NA
+        )
+
+    def get_property_type(self):
+        return (
+            ', '.join(
+                [
+                    i.property_type.name
+                    for i in OrderPropertyType.objects.filter(order=self)
+                ]
+            )
+            or settings.NA
+        )
+
+
+class OrderCategory(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='ordercategory'
+    )
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name='ordercategory'
+    )
+
+
+class OrderLocation(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='orderlocation'
+    )
+    location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name='orderlocation'
+    )
+
+
+class OrderPropertyType(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='orderpropertytype'
+    )
+    property_type = models.ForeignKey(
+        PropertyType,
+        on_delete=models.CASCADE,
+        related_name='orderpropertytype',
+    )

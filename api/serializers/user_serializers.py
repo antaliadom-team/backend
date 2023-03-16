@@ -23,7 +23,14 @@ class BaseUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'first_name', 'last_name', 'phone')
+        fields = (
+            'email',
+            'id',
+            'first_name',
+            'last_name',
+            'phone',
+            'agreement',
+        )
 
 
 class RegisterUserSerializer(BaseUserSerializer):
@@ -35,6 +42,7 @@ class RegisterUserSerializer(BaseUserSerializer):
         help_text='Введите пароль повторно.',
     )
     phone = serializers.CharField()
+    agreement = serializers.BooleanField()
 
     def validate_agreement(self, value):
         if not value:
@@ -92,4 +100,4 @@ class UserSerializer(BaseUserSerializer):
     """Сериализатор пользователей."""
 
     class Meta(BaseUserSerializer.Meta):
-        read_only_fields = ('email',)
+        read_only_fields = ('email', 'agreement')

@@ -19,12 +19,7 @@ class FavoriteMixin:
                 status=status.HTTP_400_BAD_REQUEST,
             )
         model.objects.create(user=user, real_estate=real_estate)
-        return Response(
-            self.serializer_class(
-                real_estate, context={'request': self.request}
-            ).data,
-            status=status.HTTP_201_CREATED,
-        )
+        return Response(status=status.HTTP_201_CREATED)
 
     @staticmethod
     def delete_object(request, *args, **kwargs):

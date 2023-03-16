@@ -36,21 +36,24 @@ User = get_user_model()
 @save_metrics
 def order(request):
     """Заявка общая"""
-    serializer = OrderSerializer(data=request.data)
+    serializer = OrderSerializer(
+        data=request.data, context={'request': request}
+    )
     serializer.is_valid(raise_exception=True)
     serializer.save()
     send_order_emails.apply_async(
         kwargs={'data': serializer.data, 'user_id': request.user.id or None},
         countdown=5,
     )
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(status=status.HTTP_201_CREATED)
 
 
 @api_view(http_method_names=['POST'])
+@permission_classes([permissions.AllowAny])
 @save_metrics
-def real_estate_order(request, pk=None):
+def real_estate_order(request, object_id=None):
     """Заявка на конкретный объект недвижимости"""
-    real_estate = get_object_or_404(RealEstate, pk=pk)
+    real_estate = get_object_or_404(RealEstate, pk=object_id)
     serializer = RealEstateOrderSerializer(
         real_estate, data=request.data, context={'request': request}
     )
@@ -59,7 +62,7 @@ def real_estate_order(request, pk=None):
     send_order_emails.apply_async(
         kwargs={
             'data': serializer.data,
-            'user_id': request.user.id,
+            'user_id': request.user.id or None,
             'real_estate_id': real_estate.id,
         },
         countdown=5,

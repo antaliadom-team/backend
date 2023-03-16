@@ -54,9 +54,6 @@ MODEL_FIELDS = [
     [
         Order,
         [
-            'category_id',
-            'location_id',
-            'property_type_id',
             'rooms',
             'first_name',
             'last_name',
@@ -90,7 +87,10 @@ MODEL_FIELDS = [
     ],
 ]
 
-MODEL_M2M_FIELDS = [[RealEstate, ['facility']]]
+MODEL_M2M_FIELDS = [
+    [RealEstate, ['facility']],
+    [Order, ['category', 'property_type', 'location']],
+]
 
 
 def search_field(fields, attname):
@@ -222,10 +222,13 @@ class TestModels:
         model_name = team_member1.__str__()
         assert model_name, 'Имя1 Фамилия1 - Должность1'
 
-    def test_model_image_limit(self, object1):
+    def test_model_image_limit(self, object1, image):
         """Тест количества изображений для модели RealEstate"""
         for i in range(1, settings.IMAGE_LIMIT + 2):
-            Image.objects.create(real_estate=object1, image=f'image{i}.jpg')
+            image_object = Image.objects.create(
+                real_estate=object1, image=image
+            )
+            image_object.save()
         assert (
             Image.objects.filter(real_estate=object1).count()
             == settings.IMAGE_LIMIT

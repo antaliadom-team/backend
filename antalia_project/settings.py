@@ -1,4 +1,3 @@
-from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -49,13 +48,11 @@ INSTALLED_APPS = [
     'about',
     'api',
     'core',
+    'django_cleanup',
 ]
 
 if DEBUG:
-    INSTALLED_APPS += [
-        'django_extensions',  # shell_plus --ipython
-        'drf_yasg',
-    ]
+    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
@@ -101,7 +98,6 @@ DATABASES = {
     }
 }
 
-
 AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'ru-ru'
@@ -127,7 +123,7 @@ else:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     CSRF_COOKIE_SECURE = False  # TODO: Turn on while https
-    SESSION_COOKIE_SECURE = False # TODO: Turn on while https
+    SESSION_COOKIE_SECURE = False  # TODO: Turn on while https
 
     X_FRAME_OPTIONS = 'DENY'
 
@@ -140,12 +136,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # В файле .env хранятся имя юзера и пароль приложения
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_HOST = 'smtp.zeptomail.com'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_REPLY_TO = 'noreply@telfia.com'
+DEFAULT_FROM_EMAIL = EMAIL_REPLY_TO
 
 # Celery Broker settings
 CELERY_BROKER_URL = os.getenv(
