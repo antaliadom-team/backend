@@ -311,24 +311,25 @@ class Favorite(models.Model):
 class Order(models.Model):
     """Модель заявки."""
 
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, verbose_name='Аренда/Покупка'
+    category = models.ManyToManyField(
+        Category,
+        related_name='orders',
+        verbose_name='Аренда/Покупка',
+        through='OrderCategory'
     )
-    location = models.ForeignKey(
+    location = models.ManyToManyField(
         Location,
         related_name='orders',
-        on_delete=models.SET_NULL,
         verbose_name='Локация',
+        through='OrderLocation',
         blank=True,
-        null=True,
     )
-    property_type = models.ForeignKey(
+    property_type = models.ManyToManyField(
         PropertyType,
-        on_delete=models.SET_NULL,
         verbose_name='Тип недвижимости',
         related_name='orders',
+        through='OrderPropertyType',
         blank=True,
-        null=True,
     )
     rooms = models.CharField(
         verbose_name='Количество комнат', blank=True, null=True, max_length=255
@@ -385,3 +386,60 @@ class Order(models.Model):
         return [
             int(room.strip()) for room in self.rooms.split(',') if room.strip()
         ]
+
+    def get_category(self):
+        return ',\n'.join([
+            i.category.name
+            for i in OrderCategory.objects.filter(order=self)
+        ])
+
+    def get_location(self):
+        return ',\n'.join([
+            i.location.name
+            for i in OrderLocation.objects.filter(order=self)
+        ])
+
+    def get_property_type(self):
+        return ',\n'.join([
+            i.property_type.name
+            for i in OrderPropertyType.objects.filter(order=self)
+        ])
+
+
+class OrderCategory(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='ordercategory'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='ordercategory'
+    )
+
+
+class OrderLocation(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='orderlocation'
+    )
+    location = models.ForeignKey(
+        Location,
+        on_delete=models.CASCADE,
+        related_name='orderlocation'
+    )
+
+
+class OrderPropertyType(models.Model):
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='orderpropertytype'
+    )
+    property_type = models.ForeignKey(
+        PropertyType,
+        on_delete=models.CASCADE,
+        related_name='orderpropertytype'
+    )
