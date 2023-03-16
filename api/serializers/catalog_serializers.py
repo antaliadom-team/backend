@@ -85,13 +85,13 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             data['property_type'] = instance.get_property_type()
         if hasattr(instance, 'comment') and instance.comment is None:
             data['comment'] = ''
+        data['rooms'] = instance.get_rooms()
         return data
 
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Category.objects.all()
+        many=True, queryset=Category.objects.all()
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all()

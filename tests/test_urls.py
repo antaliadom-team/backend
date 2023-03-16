@@ -36,10 +36,8 @@ class TestURLs(APITestBase):
         [
             'resend_activation/',
             'activation/',
-            'reset_password/',
             'reset_username/',
             'set_username/',
-            'reset_password_confirm/',
             'reset_username_confirm/',
         ],
     )
