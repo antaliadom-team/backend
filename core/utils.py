@@ -21,4 +21,4 @@ class AdminImageWidget(AdminFileWidget):
                 )
             )
         output.append(super().render(name, value, attrs, **kwargs))
-        return mark_safe("".join(output))
+        return mark_safe(''.join(output))
