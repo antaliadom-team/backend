@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core import validators
 from rest_framework import fields, serializers
 
 from api.validators import regex_check_number, validate_name
@@ -50,24 +51,20 @@ class CommonOrderSerializer(serializers.ModelSerializer):
         )
         model = Order
 
-    def __init__(self, instance=None, data=None, **kwargs):
-        if data and 'context' in kwargs:
-            user = kwargs['context']['request'].user
-            if user.is_authenticated:
-                data['first_name'] = user.first_name
-                data['last_name'] = user.last_name
-                data['phone'] = user.phone
-                data['email'] = user.email
-
-        super().__init__(instance=instance, data=data, **kwargs)
-
-    def validate_agreement(self, value):
+    @staticmethod
+    def validate_agreement(value):
         if not value:
             raise serializers.ValidationError('Вы должны принять соглашение.')
         return value
 
     def to_representation(self, instance):
         data = super().to_representation(instance=instance)
+        user = self.context['request'].user
+        if user.is_authenticated:
+            data['first_name'] = user.first_name
+            data['last_name'] = user.last_name
+            data['phone'] = user.phone
+            data['email'] = user.email
         if (
             hasattr(instance, 'category')
             and instance.get_category() is not None
@@ -85,7 +82,8 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             data['property_type'] = instance.get_property_type()
         if hasattr(instance, 'comment') and instance.comment is None:
             data['comment'] = ''
-        data['rooms'] = instance.get_rooms()
+        if hasattr(instance, 'rooms') and instance.rooms is not None:
+            data['rooms'] = instance.get_rooms()
         return data
 
 
@@ -99,7 +97,15 @@ class OrderSerializer(CommonOrderSerializer):
     property_type = serializers.PrimaryKeyRelatedField(
         many=True, queryset=PropertyType.objects.all()
     )
-    rooms = serializers.ListSerializer(child=serializers.IntegerField())
+    rooms = serializers.ListField(
+        child=serializers.IntegerField(
+            validators=[
+                validators.MinValueValidator(1),
+                validators.MaxValueValidator(4),
+            ]
+        ),
+        required=True,
+    )
 
     class Meta(CommonOrderSerializer.Meta):
         fields = CommonOrderSerializer.Meta.fields + (
@@ -108,19 +114,6 @@ class OrderSerializer(CommonOrderSerializer):
             'property_type',
             'rooms',
         )
-
-    @staticmethod
-    def validate_rooms(value):
-        for room in value:
-            if not isinstance(room, int):
-                raise serializers.ValidationError(
-                    'Все значения должны быть числами.'
-                )
-            if room > 4:
-                raise serializers.ValidationError(
-                    'Число комнат не может быть больше 4.'
-                )
-        return value
 
     @staticmethod
     def bulk_create_for_order(objects, order, field, model):
