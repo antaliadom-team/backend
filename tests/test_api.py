@@ -391,3 +391,75 @@ class TestAPI(APITestBase):
         # assert response.data['property_type'][0] == 'Введите число.'
         # assert response.data['location'][0] == 'Введите число.'
         # assert response.data['rooms'][0] == 'Введите число.'
+
+    def test_about_static_list(self, client, static_page):
+        """Test getting static pages list"""
+        url = self.urls['static_page_list']
+        response = client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            len(response.data) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект.'
+
+    def test_about_static_page(self, client, static_page):
+        """Test getting static page"""
+        url = self.urls['static_page'].format(static_id=static_page.id)
+        response = client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            response.data['id'] == static_page.id
+        ), f'Неверный объект. Должен быть объект с {static_page.id}'
+
+    def test_about_static_page_wrong_id(self, client, static_page):
+        """Test getting static page with wrong id"""
+        url = self.urls['static_page'].format(static_id=static_page.id + 1)
+        response = client.get(url)
+        self.assert_status_code(404, response)
+        assert (
+            response.data['detail'] == 'Страница не найдена.'
+        ), 'Неверный текст ошибки.'
+
+    def test_about_static_page_id_string(self, client):
+        """Test getting static page with wrong id"""
+        url = self.urls['static_page'].format(static_id='asd')
+        response = client.get(url)
+        self.assert_status_code(404, response)
+        assert (
+            response.data['error'] == 'Объект не найден.'
+        ), 'Неверный текст ошибки.'
+
+    def test_about_team_list(self, client, team_member1):
+        """Test getting team list"""
+        url = self.urls['team']
+        response = client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            len(response.data) == 1
+        ), 'Неверное количество объектов, должен быть 1 объект.'
+
+    def test_about_team_page(self, client, team_member1):
+        """Test getting static page"""
+        url = self.urls['team_member'].format(member_id=team_member1.id)
+        response = client.get(url)
+        self.assert_status_code(200, response)
+        assert (
+            response.data['id'] == team_member1.id
+        ), f'Неверный объект. Должен быть объект с {team_member1.id}'
+
+    def test_about_team_page_wrong_id(self, client, team_member1):
+        """Test getting static page with wrong id"""
+        url = self.urls['team_member'].format(member_id=team_member1.id + 1)
+        response = client.get(url)
+        self.assert_status_code(404, response)
+        assert (
+            response.data['detail'] == 'Страница не найдена.'
+        ), 'Неверный текст ошибки.'
+
+    def test_about_team_page_id_string(self, client):
+        """Test getting static page with wrong id"""
+        url = self.urls['team_member'].format(member_id='asd')
+        response = client.get(url)
+        self.assert_status_code(404, response)
+        assert (
+            response.data['error'] == 'Объект не найден.'
+        ), 'Неверный текст ошибки.'
