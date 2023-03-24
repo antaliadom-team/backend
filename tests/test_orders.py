@@ -34,7 +34,7 @@ class TestOrders(APITestBase):
             kwargs={'data': response.data, 'user_id': None}, countdown=5
         )
 
-    def test_common_order_with_empty_fields(self, mocker, client):
+    def test_common_order_with_empty_fields(self, mocker, client, category1):
         """Test anonymous orders with empty location, category, type"""
         mocker.patch('api.views.catalog_views.send_order_emails')
         url = self.urls['order_general']
@@ -44,17 +44,17 @@ class TestOrders(APITestBase):
             'phone': '1234567890',
             'email': 'test@example.com',
             'location': [],
-            'category': [],
+            'category': category1.id,
             'property_type': [],
             'agreement': True,
             'comment': 'Test comment',
-            'rooms': [1, 2, 3],
+            'rooms': [],
         }
         response = client.post(url, data=data)
         self.assert_status_code(201, response, url=url)
 
-    def test_common_order_wrong_rooms(
-        self, mocker, client, location, category1, property_type_apartment
+    def test_common_order_wrong_category(
+        self, mocker, client, location, property_type_apartment
     ):
         """Test anonymous orders with empty rooms"""
         mocker.patch('api.views.catalog_views.send_order_emails')
@@ -65,7 +65,7 @@ class TestOrders(APITestBase):
             'phone': '1234567890',
             'email': 'test@example.com',
             'location': [location.id],
-            'category': [category1.id],
+            'category': [],
             'property_type': [property_type_apartment.id],
             'agreement': True,
             'comment': 'Test comment',
