@@ -89,7 +89,9 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all()
+        many=False,
+        queryset=Category.objects.all()
+
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all()
@@ -97,6 +99,7 @@ class OrderSerializer(CommonOrderSerializer):
     property_type = serializers.PrimaryKeyRelatedField(
         many=True, queryset=PropertyType.objects.all()
     )
+
     rooms = serializers.ListField(
         child=serializers.IntegerField(
             validators=[
@@ -104,7 +107,7 @@ class OrderSerializer(CommonOrderSerializer):
                 validators.MaxValueValidator(4),
             ]
         ),
-        required=True,
+        required=False,
     )
 
     class Meta(CommonOrderSerializer.Meta):
@@ -127,17 +130,11 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def create(self, validated_data):
-        categories = validated_data.pop('category')
+        category = validated_data.pop('category')
         locations = validated_data.pop('location')
         property_types = validated_data.pop('property_type')
-
         order = Order.objects.create(**validated_data)
-        self.bulk_create_for_order(
-            objects=categories,
-            order=order,
-            field='category',
-            model=OrderCategory,
-        )
+        OrderCategory.objects.create(order=order, category=category)
         self.bulk_create_for_order(
             objects=locations,
             order=order,
