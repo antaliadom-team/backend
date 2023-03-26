@@ -49,6 +49,11 @@ class TestAPI(APITestBase):
         Favorite.objects.all().delete()
         self.assert_status_code(400, user_client.delete(url), url=url)
 
+    def test_wrong_favorite_id(self, user_client):
+        """Test wrong favorite id - string instead of int"""
+        url = self.urls['favorite'].format(object_id='id')
+        self.assert_status_code(404, user_client.post(url), url=url)
+
     def test_get_categories_list(self, client, category1):
         """Test get categories"""
         response = client.get(self.urls['category_list'])
