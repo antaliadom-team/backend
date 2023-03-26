@@ -207,19 +207,20 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ('id', 'image', 'image_328x261', 'image_738x632')
-    
+
     def get_image_common(self, obj, scale):
         host_name = self.context[
             'request'
         ].build_absolute_uri().split('/api')[0]
         image_name, image_farmat = obj.image.url.split('.')
         return f'{host_name}{image_name}_{scale}.{image_farmat}'
-    
+
     def get_image_328x261(self, obj):
         return self.get_image_common(obj, '328x261')
-    
+
     def get_image_738x632(self, obj):
         return self.get_image_common(obj, '738x632')
+
 
 class RealEstateSerializer(serializers.ModelSerializer):
     """Сериализатор недвижимости"""
