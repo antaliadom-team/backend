@@ -740,30 +740,26 @@ paths:
           $ref: '#/responses/ValidationError'
       security: []
       parameters:
-        - type: string
-          in: query
-          name: uid
-          description: 'Уникальный идентификатор, полученный из ссылки'
-          required: true
-        - type: string
-          in: query
-          name: token
-          description: Токен из ссылки
-          required: true
-        - type: string
-          in: query
-          required: true
-          name: new_password
-          format: password
-          description: Новый пароль
-          minLength: 1
-        - type: string
-          in: query
-          required: true
-          name: re_new_password
-          format: password
-          description: Повтор нового пароля
-          minLength: 1
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: 'Уникальный идентификатор, полученный из ссылки'
+              token:
+                type: string
+                description: Токен из ссылки
+              new_password:
+                type: string
+                description: Новый пароль
+                format: password
+              re_new_password:
+                type: string
+                description: Повтор нового пароля
+                format: password
+          description: ''
       description: ''
       tags:
         - Пользователи
@@ -978,7 +974,7 @@ definitions:
       - slug
   Image:
     type: object
-    description: Модель изображений объекта
+    description: 'Модель изображений объекта. Поле `image_thumbnails` содержит массив уменьшенных и кропнутых изображений в разных разрешениях, которые используются на сайте.'
     properties:
       id:
         title: ID
@@ -992,6 +988,24 @@ definitions:
         format: uri
         description: URL изображения
         example: 'http://example.org/images/1.jpg'
+        readOnly: true
+      image_thumbnails:
+        type: object
+        description: 'массив уменьшенных и кропнутых изображений в разных разрешениях, которые используются на сайте'
+        x-nullable: true
+        properties:
+          738x632:
+            type: string
+            format: uri
+            example: 'http://example.org/images/1_738x632.jpg'
+            description: URL уменьшенного изображения
+            readOnly: true
+          328x261:
+            type: string
+            format: uri
+            example: 'http://example.org/images/1_328x261.jpg'
+            description: URL уменьшенного изображения
+            readOnly: true
         readOnly: true
   RealEstate:
     type: object
