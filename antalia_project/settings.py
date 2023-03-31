@@ -136,13 +136,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # В файле .env хранятся имя юзера и пароль приложения
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.zeptomail.com'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', default='smtp.zeptomail.com')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_PORT = 587
+EMAIL_PORT = os.environ.get('EMAIL_PORT', default=587)
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_REPLY_TO = 'noreply@telfia.com'
+EMAIL_REPLY_TO = os.environ.get('EMAIL_REPLY_TO', default='noreply@telfia.com')
 DEFAULT_FROM_EMAIL = EMAIL_REPLY_TO
 
 # Celery Broker settings

@@ -14,6 +14,7 @@ from catalog.models import (
     PropertyType,
     RealEstate,
 )
+from core.utils import AdminImageWidget
 
 
 @pytest.fixture
@@ -28,6 +29,21 @@ def image_str():
 @pytest.fixture
 def image_path():
     return '/backend_media/test_path.jpg'
+
+
+@pytest.fixture
+def image_file():
+    # Read the file content from the test image file
+    file_path = os.path.join(os.path.dirname(__file__), "test_image.jpg")
+    with open(file_path, "rb") as f:
+        file_content = f.read()
+
+    # Create a SimpleUploadedFile instance using the file content
+    file = SimpleUploadedFile(
+        "test_image.jpg", file_content, content_type="image/jpeg"
+    )
+    file.url = '/backend_media/test_image.jpg'
+    return file
 
 
 @pytest.fixture
@@ -196,3 +212,8 @@ def team_member1(image_path):
         last_name='Фамилия1',
         photo=image_path,
     )
+
+
+@pytest.fixture
+def widget():
+    return AdminImageWidget()

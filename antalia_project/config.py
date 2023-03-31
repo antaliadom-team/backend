@@ -50,7 +50,10 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'password-reset/{uid}/{token}',
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
+    'PASSWORD_RESET_CONFIRM_EXPIRE_MINUTES': 60,
+    'PASSWORD_RESET_CONFIRM_TOKEN_LENGTH': 64,
     'TOKEN_MODEL': None,
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdmin'],

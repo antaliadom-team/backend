@@ -383,9 +383,7 @@ class Order(models.Model):
         verbose_name_plural = 'Заявки'
 
     def get_rooms(self):
-        return [
-            int(room.strip()) for room in self.rooms.split(',') if room.strip()
-        ]
+        return ', '.join(map(str, self.rooms))
 
     def get_category(self):
         return ',\n'.join(
