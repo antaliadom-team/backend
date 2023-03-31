@@ -90,8 +90,7 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=False,
-        queryset=Category.objects.all()
+        many=False, queryset=Category.objects.all()
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all()
@@ -201,25 +200,24 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализатор изображений"""
-    image_328x261 = serializers.SerializerMethodField()
-    image_738x632 = serializers.SerializerMethodField()
+
+    image_thumbnails = serializers.SerializerMethodField()
 
     class Meta:
         model = Image
-        fields = ('id', 'image', 'image_328x261', 'image_738x632')
+        fields = ('id', 'image', 'image_thumbnails')
 
-    def get_image_common(self, obj, scale):
-        host_name = self.context[
-            'request'
-        ].build_absolute_uri().split('/api')[0]
-        image_name, image_farmat = obj.image.url.split('.')
-        return f'{host_name}{image_name}_{scale}.{image_farmat}'
-
-    def get_image_328x261(self, obj):
-        return self.get_image_common(obj, '328x261')
-
-    def get_image_738x632(self, obj):
-        return self.get_image_common(obj, '738x632')
+    def get_image_thumbnails(self, obj):
+        sizes = getattr(settings, 'PREVIEW_SIZES', None)
+        if not sizes:
+            return {}
+        urls = {}
+        for size in sizes:
+            filename = obj.filename_generator(obj.image.name, size)
+            urls[f'{size[0]}x{size[1]}'] = self.context.get(
+                'request'
+            ).build_absolute_uri(f'{settings.MEDIA_URL}{filename}')
+        return urls
 
 
 class RealEstateSerializer(serializers.ModelSerializer):
