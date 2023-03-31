@@ -89,9 +89,7 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=False,
-        queryset=Category.objects.all()
-
+        many=False, queryset=Category.objects.all()
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all()
@@ -99,7 +97,6 @@ class OrderSerializer(CommonOrderSerializer):
     property_type = serializers.PrimaryKeyRelatedField(
         many=True, queryset=PropertyType.objects.all()
     )
-
     rooms = serializers.ListField(
         child=serializers.IntegerField(
             validators=[
@@ -196,9 +193,23 @@ class FacilitySerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализатор изображений"""
 
+    image_thumbnails = serializers.SerializerMethodField()
+
     class Meta:
         model = Image
-        fields = ('id', 'image')
+        fields = ('id', 'image', 'image_thumbnails')
+
+    def get_image_thumbnails(self, obj):
+        sizes = getattr(settings, 'PREVIEW_SIZES', None)
+        if not sizes:
+            return {}
+        urls = {}
+        for size in sizes:
+            filename = obj.filename_generator(obj.image.name, size)
+            urls[f'{size[0]}x{size[1]}'] = self.context.get(
+                'request'
+            ).build_absolute_uri(f'{settings.MEDIA_URL}{filename}')
+        return urls
 
 
 class RealEstateSerializer(serializers.ModelSerializer):

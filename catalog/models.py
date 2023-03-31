@@ -246,8 +246,8 @@ class Image(models.Model):
     def filename_generator(self, filepath, size):
         """Генерирует имя для каждого размера изображения."""
         width, height = size
-        name, file_format = filepath.split('.')
-        return f'{name}_{width}x{height}.{file_format}'
+        name, extension = os.path.splitext(os.path.basename(filepath))
+        return f'{name}_{width}x{height}{extension}'
 
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
@@ -386,36 +386,21 @@ class Order(models.Model):
         return ', '.join(map(str, self.rooms))
 
     def get_category(self):
-        return (
-            ', '.join(
-                [
-                    i.category.name
-                    for i in OrderCategory.objects.filter(order=self)
-                ]
-            )
-            or settings.NA
+        return ',\n'.join(
+            [i.category.name for i in OrderCategory.objects.filter(order=self)]
         )
 
     def get_location(self):
-        return (
-            ', '.join(
-                [
-                    i.location.name
-                    for i in OrderLocation.objects.filter(order=self)
-                ]
-            )
-            or settings.NA
+        return ',\n'.join(
+            [i.location.name for i in OrderLocation.objects.filter(order=self)]
         )
 
     def get_property_type(self):
-        return (
-            ', '.join(
-                [
-                    i.property_type.name
-                    for i in OrderPropertyType.objects.filter(order=self)
-                ]
-            )
-            or settings.NA
+        return ',\n'.join(
+            [
+                i.property_type.name
+                for i in OrderPropertyType.objects.filter(order=self)
+            ]
         )
 
 
