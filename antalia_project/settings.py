@@ -122,8 +122,12 @@ else:
     # SECURE_SSL_REDIRECT = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    CSRF_COOKIE_SECURE = False  # TODO: Turn on while https
-    SESSION_COOKIE_SECURE = False  # TODO: Turn on while https
+    CSRF_COOKIE_SECURE = (
+        os.environ.get('CSRF_COOKIE_SECURE', default=False) == 'True'
+    )
+    SESSION_COOKIE_SECURE = (
+        os.environ.get('SESSION_COOKIE_SECURE', default=False) == 'True'
+    )
 
     X_FRAME_OPTIONS = 'DENY'
 
