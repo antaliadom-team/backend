@@ -146,5 +146,9 @@ dmypy.json
 .mypy_cache
 
 # папки со статикой и медиа
-media/
+backend_media/
+backend_static/
 
+codecov
+/celerybeat-schedule.db
+/db.sqlite3.bak
