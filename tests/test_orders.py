@@ -65,7 +65,7 @@ class TestOrders(APITestBase):
             'phone': '1234567890',
             'email': 'test@example.com',
             'location': [location.id],
-            'category': [],
+            'category': [3],
             'property_type': [property_type_apartment.id],
             'agreement': True,
             'comment': 'Test comment',
