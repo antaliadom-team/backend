@@ -59,14 +59,14 @@ def real_estate_order(request, object_id=None):
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails.apply_async(
-        kwargs={
-            'data': serializer.data,
-            'user_id': request.user.id or None,
-            'real_estate_id': real_estate.id,
-        },
-        countdown=5,
-    )
+    # send_order_emails.apply_async(
+    #     kwargs={
+    #         'data': serializer.data,
+    #         'user_id': request.user.id or None,
+    #         'real_estate_id': real_estate.id,
+    #     },
+    #     countdown=5,
+    # )
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
