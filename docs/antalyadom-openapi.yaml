@@ -1396,14 +1396,9 @@ definitions:
         format: email
         maxLength: 50
       category:
-        type: array
-        example:
-          - 1
-          - 2
-        description: 'Уникальный идентификатор категории недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
-        items:
-          type: integer
-          x-nullable: true
+        type: integer
+        example: 1
+        description: Уникальный идентификатор категории недвижимости.
       location:
         type: array
         example:
@@ -1444,7 +1439,6 @@ definitions:
       - last_name
       - phone
       - email
-      - category
       - agreement
   OrderObjectCreate:
     title: OrderObjectCreate
