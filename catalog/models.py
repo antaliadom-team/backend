@@ -386,17 +386,17 @@ class Order(models.Model):
         return ', '.join(map(str, self.rooms))
 
     def get_category(self):
-        return ',\n'.join(
+        return ', '.join(
             [i.category.name for i in OrderCategory.objects.filter(order=self)]
         )
 
     def get_location(self):
-        return ',\n'.join(
+        return ', '.join(
             [i.location.name for i in OrderLocation.objects.filter(order=self)]
         )
 
     def get_property_type(self):
-        return ',\n'.join(
+        return ', '.join(
             [
                 i.property_type.name
                 for i in OrderPropertyType.objects.filter(order=self)

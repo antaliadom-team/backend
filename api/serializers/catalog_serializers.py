@@ -84,18 +84,20 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             data['comment'] = ''
         if hasattr(instance, 'rooms') and instance.rooms is not None:
             data['rooms'] = instance.get_rooms()
+        else:
+            data['rooms'] = ''
         return data
 
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=False, queryset=Category.objects.all()
+        many=True, queryset=Category.objects.all(), required=False
     )
     location = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Location.objects.all()
+        many=True, queryset=Location.objects.all(), required=False
     )
     property_type = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=PropertyType.objects.all()
+        many=True, queryset=PropertyType.objects.all(), required=False
     )
     rooms = serializers.ListField(
         child=serializers.IntegerField(
@@ -127,11 +129,19 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def create(self, validated_data):
-        category = validated_data.pop('category')
-        locations = validated_data.pop('location')
-        property_types = validated_data.pop('property_type')
+        categories = None
+        locations = None
+        property_types = None
+        if 'category' in validated_data:
+            categories = validated_data.pop('category')
+        if 'location' in validated_data:
+            locations = validated_data.pop('location')
+        if 'property_type' in validated_data:
+            property_types = validated_data.pop('property_type')
         order = Order.objects.create(**validated_data)
-        OrderCategory.objects.create(order=order, category=category)
+        if categories:
+            for category in categories:
+                OrderCategory.objects.create(order=order, category=category)
         self.bulk_create_for_order(
             objects=locations,
             order=order,
