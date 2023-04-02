@@ -65,6 +65,8 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             data['last_name'] = user.last_name
             data['phone'] = user.phone
             data['email'] = user.email
+        if isinstance(instance, RealEstate):
+            return data
         if (
             hasattr(instance, 'category')
             and instance.get_category() is not None
@@ -91,7 +93,7 @@ class CommonOrderSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Category.objects.all(), required=False
+        many=False, queryset=Category.objects.all(), required=False
     )
     location = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Location.objects.all(), required=False
@@ -129,19 +131,18 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def create(self, validated_data):
-        categories = None
+        category = None
         locations = None
         property_types = None
         if 'category' in validated_data:
-            categories = validated_data.pop('category')
+            category = validated_data.pop('category')
         if 'location' in validated_data:
             locations = validated_data.pop('location')
         if 'property_type' in validated_data:
             property_types = validated_data.pop('property_type')
         order = Order.objects.create(**validated_data)
-        if categories:
-            for category in categories:
-                OrderCategory.objects.create(order=order, category=category)
+        if category:
+            OrderCategory.objects.create(order=order, category=category)
         self.bulk_create_for_order(
             objects=locations,
             order=order,
@@ -157,11 +158,17 @@ class OrderSerializer(CommonOrderSerializer):
         return order
 
 
-class RealEstateOrderSerializer(OrderSerializer):
+class RealEstateOrderSerializer(CommonOrderSerializer):
     category = fields.ReadOnlyField(source='real_estate.category')
+    location = fields.ReadOnlyField(source='real_estate.location')
+    property_type = fields.ReadOnlyField(source='real_estate.property_type')
 
     class Meta(OrderSerializer.Meta):
-        fields = OrderSerializer.Meta.fields
+        fields = OrderSerializer.Meta.fields + (
+            'category',
+            'location',
+            'property_type',
+        )
 
 
 class LocationSerializer(serializers.ModelSerializer):
