@@ -12,6 +12,10 @@ def regex_check_number(number):
         raise ValidationError('Некорректный номер телефона.')
     if match.string.startswith('+'):
         return match.string
+    if match.string.startswith('8'):
+        return f'+7{match.string[1:]}'
+    if match.string.startswith('0'):
+        return f'+90{match.string[1:]}'
     return f'+{match.string}'
 
 
