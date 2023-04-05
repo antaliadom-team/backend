@@ -45,7 +45,8 @@ SIMPLE_JWT = {
 # настройки Djoser
 DJOSER = {
     'LOGIN_FIELD': 'email',
-    'SEND_ACTIVATION_EMAIL': False,
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
     'HIDE_USERS': True,
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
