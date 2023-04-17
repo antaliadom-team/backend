@@ -76,6 +76,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    authentication_classes = []
     lookup_field = 'id'
     search_fields = ('name', 'slug')
     ordering = ('name',)
@@ -87,6 +88,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
@@ -96,6 +98,7 @@ class PropertyTypeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = PropertyType.objects.all()
     serializer_class = PropertyTypeSerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
@@ -105,6 +108,7 @@ class FacilityViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
