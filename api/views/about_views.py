@@ -17,6 +17,7 @@ class StaticPageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = StaticPage.objects.filter(is_active=True)
     serializer_class = StaticPageSerializer
     list_serializer_class = StaticPageListSerializer
+    authentication_classes = []
 
     def list(self, request, *args, **kwargs):
         """Список статических страниц."""
@@ -40,6 +41,7 @@ class StaticPageViewSet(viewsets.ReadOnlyModelViewSet):
 class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение и вывод команды."""
 
+    authentication_classes = []
     queryset = Team.objects.filter(is_active=True)
 
     def list(self, request, *args, **kwargs):
