@@ -45,7 +45,7 @@ def order(request):
         kwargs={'data': serializer.data, 'user_id': request.user.id or None},
         countdown=5,
     )
-    return Response(status=status.HTTP_201_CREATED)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(http_method_names=['POST'])
@@ -59,15 +59,15 @@ def real_estate_order(request, object_id=None):
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    send_order_emails.apply_async(
-        kwargs={
-            'data': serializer.data,
-            'user_id': request.user.id or None,
-            'real_estate_id': real_estate.id,
-        },
-        countdown=5,
-    )
-    return Response(status=status.HTTP_201_CREATED)
+    # send_order_emails.apply_async(
+    #     kwargs={
+    #         'data': serializer.data,
+    #         'user_id': request.user.id or None,
+    #         'real_estate_id': real_estate.id,
+    #     },
+    #     countdown=5,
+    # )
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class LocationViewSet(viewsets.ModelViewSet):

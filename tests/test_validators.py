@@ -20,6 +20,18 @@ class TestValidators:
             validated_number == right_number
         ), f'Ошибка в возвращаемом значении {validated_number} валидатора'
 
+    def test_8_number_validator(self, ):
+        validated_number = regex_check_number('89012345678')
+        assert (
+            validated_number == '+79012345678'
+        ), f'Ошибка в возвращаемом значении {validated_number} валидатора'
+
+    def test_0_number_validator(self, ):
+        validated_number = regex_check_number('05351234567')
+        assert (
+            validated_number == '+905351234567'
+        ), f'Ошибка в возвращаемом значении {validated_number} валидатора'
+
     def test_right_number_without_plus_sign(self):
         right_number = '901234567890'
         assert (

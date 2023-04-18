@@ -246,8 +246,8 @@ class Image(models.Model):
     def filename_generator(self, filepath, size):
         """Генерирует имя для каждого размера изображения."""
         width, height = size
-        name, file_format = filepath.split('.')
-        return f'{name}_{width}x{height}.{file_format}'
+        name, extension = os.path.splitext(os.path.basename(filepath))
+        return f'{name}_{width}x{height}{extension}'
 
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
@@ -315,7 +315,7 @@ class Order(models.Model):
         Category,
         related_name='orders',
         verbose_name='Аренда/Покупка',
-        through='OrderCategory'
+        through='OrderCategory',
     )
     location = models.ManyToManyField(
         Location,
@@ -383,63 +383,51 @@ class Order(models.Model):
         verbose_name_plural = 'Заявки'
 
     def get_rooms(self):
-        return [
-            int(room.strip()) for room in self.rooms.split(',') if room.strip()
-        ]
+        return ', '.join(map(str, self.rooms))
 
     def get_category(self):
-        return ',\n'.join([
-            i.category.name
-            for i in OrderCategory.objects.filter(order=self)
-        ])
+        return ', '.join(
+            [i.category.name for i in OrderCategory.objects.filter(order=self)]
+        )
 
     def get_location(self):
-        return ',\n'.join([
-            i.location.name
-            for i in OrderLocation.objects.filter(order=self)
-        ])
+        return ', '.join(
+            [i.location.name for i in OrderLocation.objects.filter(order=self)]
+        )
 
     def get_property_type(self):
-        return ',\n'.join([
-            i.property_type.name
-            for i in OrderPropertyType.objects.filter(order=self)
-        ])
+        return ', '.join(
+            [
+                i.property_type.name
+                for i in OrderPropertyType.objects.filter(order=self)
+            ]
+        )
 
 
 class OrderCategory(models.Model):
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name='ordercategory'
+        Order, on_delete=models.CASCADE, related_name='ordercategory'
     )
     category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='ordercategory'
+        Category, on_delete=models.CASCADE, related_name='ordercategory'
     )
 
 
 class OrderLocation(models.Model):
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name='orderlocation'
+        Order, on_delete=models.CASCADE, related_name='orderlocation'
     )
     location = models.ForeignKey(
-        Location,
-        on_delete=models.CASCADE,
-        related_name='orderlocation'
+        Location, on_delete=models.CASCADE, related_name='orderlocation'
     )
 
 
 class OrderPropertyType(models.Model):
     order = models.ForeignKey(
-        Order,
-        on_delete=models.CASCADE,
-        related_name='orderpropertytype'
+        Order, on_delete=models.CASCADE, related_name='orderpropertytype'
     )
     property_type = models.ForeignKey(
         PropertyType,
         on_delete=models.CASCADE,
-        related_name='orderpropertytype'
+        related_name='orderpropertytype',
     )

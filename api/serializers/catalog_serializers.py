@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core import validators
 from rest_framework import fields, serializers
 
 from api.validators import regex_check_number, validate_name
@@ -50,24 +51,22 @@ class CommonOrderSerializer(serializers.ModelSerializer):
         )
         model = Order
 
-    def __init__(self, instance=None, data=None, **kwargs):
-        if data and 'context' in kwargs:
-            user = kwargs['context']['request'].user
-            if user.is_authenticated:
-                data['first_name'] = user.first_name
-                data['last_name'] = user.last_name
-                data['phone'] = user.phone
-                data['email'] = user.email
-
-        super().__init__(instance=instance, data=data, **kwargs)
-
-    def validate_agreement(self, value):
+    @staticmethod
+    def validate_agreement(value):
         if not value:
             raise serializers.ValidationError('Вы должны принять соглашение.')
         return value
 
     def to_representation(self, instance):
         data = super().to_representation(instance=instance)
+        user = self.context['request'].user
+        if user.is_authenticated:
+            data['first_name'] = user.first_name
+            data['last_name'] = user.last_name
+            data['phone'] = user.phone
+            data['email'] = user.email
+        if isinstance(instance, RealEstate):
+            return data
         if (
             hasattr(instance, 'category')
             and instance.get_category() is not None
@@ -85,22 +84,31 @@ class CommonOrderSerializer(serializers.ModelSerializer):
             data['property_type'] = instance.get_property_type()
         if hasattr(instance, 'comment') and instance.comment is None:
             data['comment'] = ''
+        if hasattr(instance, 'rooms') and instance.rooms is not None:
+            data['rooms'] = instance.get_rooms()
+        else:
+            data['rooms'] = ''
         return data
 
 
 class OrderSerializer(CommonOrderSerializer):
     category = serializers.PrimaryKeyRelatedField(
-        many=False,
-        queryset=Category.objects.all()
+        many=False, queryset=Category.objects.all(), required=False
     )
     location = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Location.objects.all()
+        many=True, queryset=Location.objects.all(), required=False
     )
     property_type = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=PropertyType.objects.all()
+        many=True, queryset=PropertyType.objects.all(), required=False
     )
-    rooms = serializers.ListSerializer(
-        child=serializers.IntegerField(), required=False
+    rooms = serializers.ListField(
+        child=serializers.IntegerField(
+            validators=[
+                validators.MinValueValidator(1),
+                validators.MaxValueValidator(4),
+            ]
+        ),
+        required=False,
     )
 
     class Meta(CommonOrderSerializer.Meta):
@@ -110,19 +118,6 @@ class OrderSerializer(CommonOrderSerializer):
             'property_type',
             'rooms',
         )
-
-    @staticmethod
-    def validate_rooms(value):
-        for room in value:
-            if not isinstance(room, int):
-                raise serializers.ValidationError(
-                    'Все значения должны быть числами.'
-                )
-            if room > 4:
-                raise serializers.ValidationError(
-                    'Число комнат не может быть больше 4.'
-                )
-        return value
 
     @staticmethod
     def bulk_create_for_order(objects, order, field, model):
@@ -136,11 +131,18 @@ class OrderSerializer(CommonOrderSerializer):
             )
 
     def create(self, validated_data):
-        category = validated_data.pop('category')
-        locations = validated_data.pop('location')
-        property_types = validated_data.pop('property_type')
+        category = None
+        locations = None
+        property_types = None
+        if 'category' in validated_data:
+            category = validated_data.pop('category')
+        if 'location' in validated_data:
+            locations = validated_data.pop('location')
+        if 'property_type' in validated_data:
+            property_types = validated_data.pop('property_type')
         order = Order.objects.create(**validated_data)
-        OrderCategory.objects.create(order=order, category=category)
+        if category:
+            OrderCategory.objects.create(order=order, category=category)
         self.bulk_create_for_order(
             objects=locations,
             order=order,
@@ -156,11 +158,17 @@ class OrderSerializer(CommonOrderSerializer):
         return order
 
 
-class RealEstateOrderSerializer(OrderSerializer):
+class RealEstateOrderSerializer(CommonOrderSerializer):
     category = fields.ReadOnlyField(source='real_estate.category')
+    location = fields.ReadOnlyField(source='real_estate.location')
+    property_type = fields.ReadOnlyField(source='real_estate.property_type')
 
     class Meta(OrderSerializer.Meta):
-        fields = OrderSerializer.Meta.fields
+        fields = OrderSerializer.Meta.fields + (
+            'category',
+            'location',
+            'property_type',
+        )
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -201,25 +209,24 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 class ImageSerializer(serializers.ModelSerializer):
     """Сериализатор изображений"""
-    image_328x261 = serializers.SerializerMethodField()
-    image_738x632 = serializers.SerializerMethodField()
+
+    image_thumbnails = serializers.SerializerMethodField()
 
     class Meta:
         model = Image
-        fields = ('id', 'image', 'image_328x261', 'image_738x632')
+        fields = ('id', 'image', 'image_thumbnails')
 
-    def get_image_common(self, obj, scale):
-        host_name = self.context[
-            'request'
-        ].build_absolute_uri().split('/api')[0]
-        image_name, image_farmat = obj.image.url.split('.')
-        return f'{host_name}{image_name}_{scale}.{image_farmat}'
-
-    def get_image_328x261(self, obj):
-        return self.get_image_common(obj, '328x261')
-
-    def get_image_738x632(self, obj):
-        return self.get_image_common(obj, '738x632')
+    def get_image_thumbnails(self, obj):
+        sizes = getattr(settings, 'PREVIEW_SIZES', None)
+        if not sizes:
+            return {}
+        urls = {}
+        for size in sizes:
+            filename = obj.filename_generator(obj.image.name, size)
+            urls[f'{size[0]}x{size[1]}'] = self.context.get(
+                'request'
+            ).build_absolute_uri(f'{settings.MEDIA_URL}{filename}')
+        return urls
 
 
 class RealEstateSerializer(serializers.ModelSerializer):

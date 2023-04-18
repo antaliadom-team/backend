@@ -687,17 +687,82 @@ paths:
       tags:
         - Пользователи
       responses:
+        '200':
+          description: OK
         '204':
           description: Успешная смена пароля.
-          schema:
-            type: object
-            properties: {}
         '400':
           $ref: '#/responses/ValidationError'
         '401':
           $ref: '#/responses/AuthenticationError'
       summary: Изменение пароля
     parameters: []
+  /api/users/reset_password/:
+    post:
+      summary: Сброс пароля
+      operationId: api_users_reset_password
+      security: []
+      tags:
+        - Пользователи
+      description: ''
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                format: email
+                description: E-mail пользователя
+      responses:
+        '204':
+          description: Успешное создание запроса на сброс пароля
+        '400':
+          description: |-
+            <p>Ошибка в воде email:
+            <code>{"email": ["Введите правильный адрес электронной почты."]}</code>
+            </p>
+            <p>E-mail не найден:
+            <code>["Пользователь с данным адресом электронной почты не существует."]</code>
+            </p>
+          schema:
+            type: object
+            properties: {}
+  /api/users/reset_password_confirm/:
+    post:
+      summary: Подтверждение сброса пароля
+      operationId: api_users_reset_password_confirm
+      responses:
+        '204':
+          description: Пароль успешно изменен
+        '400':
+          $ref: '#/responses/ValidationError'
+      security: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: 'Уникальный идентификатор, полученный из ссылки'
+              token:
+                type: string
+                description: Токен из ссылки
+              new_password:
+                type: string
+                description: Новый пароль
+                format: password
+              re_new_password:
+                type: string
+                description: Повтор нового пароля
+                format: password
+          description: ''
+      description: ''
+      tags:
+        - Пользователи
   '/api/users/{id}/':
     get:
       operationId: Профиль пользователя
@@ -909,7 +974,7 @@ definitions:
       - slug
   Image:
     type: object
-    description: Модель изображений объекта
+    description: 'Модель изображений объекта. Поле `image_thumbnails` содержит массив уменьшенных и кропнутых изображений в разных разрешениях, которые используются на сайте.'
     properties:
       id:
         title: ID
@@ -923,6 +988,24 @@ definitions:
         format: uri
         description: URL изображения
         example: 'http://example.org/images/1.jpg'
+        readOnly: true
+      image_thumbnails:
+        type: object
+        description: 'массив уменьшенных и кропнутых изображений в разных разрешениях, которые используются на сайте'
+        x-nullable: true
+        properties:
+          738x632:
+            type: string
+            format: uri
+            example: 'http://example.org/images/1_738x632.jpg'
+            description: URL уменьшенного изображения
+            readOnly: true
+          328x261:
+            type: string
+            format: uri
+            example: 'http://example.org/images/1_328x261.jpg'
+            description: URL уменьшенного изображения
+            readOnly: true
         readOnly: true
   RealEstate:
     type: object
@@ -1314,17 +1397,36 @@ definitions:
         maxLength: 50
       category:
         type: integer
-        description: Уникальный идентификатор категории недвижимости
+        example: 1
+        description: Уникальный идентификатор категории недвижимости.
       location:
-        type: integer
-        description: Уникальный идентификатор локации
+        type: array
+        example:
+          - 1
+        description: 'Уникальный идентификатор локации. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
+        items:
+          type: integer
+          x-nullable: true
       property_type:
-        description: Уникальный идентификатор типа недвижимости
-        type: integer
+        description: 'Уникальный идентификатор типа недвижимости. `Cписок` из уникальных идентификаторов через запятую. Допускается также пустое значение `[]`'
+        type: array
+        example:
+          - 1
+          - 2
+          - 3
+        items:
+          type: integer
+          x-nullable: true
       rooms:
-        type: string
-        description: 'Количество комнат. Может содержать `integer`, либо `список` значений через запятую. Допускается также пустое значение `""`'
-        example: '1, 2, 3'
+        type: array
+        description: 'Количество комнат. `Cписок` из чисел через запятую. Допускается также пустое значение `[]`'
+        example:
+          - 1
+          - 2
+          - 3
+        items:
+          type: integer
+          x-nullable: true
       comment:
         type: string
         description: Комментарии
@@ -1337,7 +1439,6 @@ definitions:
       - last_name
       - phone
       - email
-      - category
       - agreement
   OrderObjectCreate:
     title: OrderObjectCreate

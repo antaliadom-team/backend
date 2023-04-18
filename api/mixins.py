@@ -10,7 +10,12 @@ class FavoriteMixin:
 
     def add_object(self, request, *args, **kwargs):
         """Добавляет объект"""
-        real_estate = get_object_or_404(RealEstate, id=kwargs['pk'])
+        try:
+            real_estate = get_object_or_404(RealEstate, id=kwargs['pk'])
+        except ValueError:
+            return Response(
+                status=status.HTTP_404_NOT_FOUND,
+            )
         model = kwargs['model']
         user = request.user
         if model.objects.filter(user=user, real_estate=real_estate).exists():
