@@ -117,7 +117,7 @@ class RealEstateAdmin(admin.ModelAdmin):
     inlines = (ImageInline,)
 
     class Media:
-        js = ('admin_period_visibility.js',)
+        js = ('admin/js/admin_period_visibility.js',)
 
     @admin.display(description='Цена')
     def price_with_currency(self, obj):
