@@ -12,6 +12,7 @@ from api.mixins import FavoriteMixin
 from api.pagination import ObjectsLimitPagePagination
 from api.serializers.catalog_serializers import (
     CategorySerializer,
+    ConditionalRealEstateSerializer,
     FacilitySerializer,
     LocationSerializer,
     OrderSerializer,
@@ -59,14 +60,14 @@ def real_estate_order(request, object_id=None):
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    # send_order_emails.apply_async(
-    #     kwargs={
-    #         'data': serializer.data,
-    #         'user_id': request.user.id or None,
-    #         'real_estate_id': real_estate.id,
-    #     },
-    #     countdown=5,
-    # )
+    send_order_emails.apply_async(
+        kwargs={
+            'data': serializer.data,
+            'user_id': request.user.id or None,
+            'real_estate_id': real_estate.id,
+        },
+        countdown=5,
+    )
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -76,6 +77,7 @@ class LocationViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    authentication_classes = []
     lookup_field = 'id'
     search_fields = ('name', 'slug')
     ordering = ('name',)
@@ -87,6 +89,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
@@ -96,6 +99,7 @@ class PropertyTypeViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = PropertyType.objects.all()
     serializer_class = PropertyTypeSerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
@@ -105,6 +109,7 @@ class FacilityViewSet(viewsets.ModelViewSet):
     http_method_names = ('get',)
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
+    authentication_classes = []
     lookup_field = 'id'
 
 
@@ -129,3 +134,10 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
             return self.add_object(request, pk=pk, model=Favorite)
         # Удаление объекта из избранного
         return self.delete_object(request, pk=pk, model=Favorite)
+
+    def get_serializer_class(self):
+        # Использование кастомного сериализатора для модели 'RealEstate'
+        # при действии 'list'
+        if self.action == 'list':
+            return ConditionalRealEstateSerializer
+        return RealEstateSerializer

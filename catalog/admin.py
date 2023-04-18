@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
 
 from catalog.models import (
+    SELL_TYPES,
     Category,
     Facility,
     Favorite,
@@ -17,6 +19,7 @@ from core.utils import AdminImageWidget
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     """Админка заявки."""
+
     list_display = (
         'pk',
         'get_category',
@@ -26,7 +29,7 @@ class OrderAdmin(admin.ModelAdmin):
         'first_name',
         'last_name',
         'phone',
-        'email'
+        'email',
     )
 
 
@@ -34,7 +37,7 @@ class OrderAdmin(admin.ModelAdmin):
 class LocationAdmin(admin.ModelAdmin):
     """Админка локации."""
 
-    list_display = ('pk', 'name',)
+    list_display = ('pk', 'name')
     list_display_links = ('name',)
     search_fields = ('name',)
     prepopulated_fields = {'slug': ('name',)}
@@ -74,8 +77,7 @@ class ImageInline(admin.TabularInline):
     formfield_overrides = {models.ImageField: {'widget': AdminImageWidget}}
     model = Image
     extra = 0
-    # TODO: вынести в настройки, чтобы можно было менять
-    max_num = 6  # Максимальное количество изображений
+    max_num = settings.IMAGE_LIMIT
 
 
 @admin.register(RealEstate)
@@ -114,10 +116,13 @@ class RealEstateAdmin(admin.ModelAdmin):
     readonly_fields = ('date_added',)
     inlines = (ImageInline,)
 
+    class Media:
+        js = ('admin_period_visibility.js',)
+
     @admin.display(description='Цена')
     def price_with_currency(self, obj):
         """Вывод цены с валютой (и периодом в случае аренды)."""
-        if obj.category.name == 'Продажа':
+        if obj.category.name == SELL_TYPES[0][1]:
             return f'{obj.price}{obj.currency}'
         return f'{obj.price}{obj.currency} в {obj.period.lower()}'
 
