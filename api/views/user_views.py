@@ -11,10 +11,6 @@ class UserViewSet(DjoserUsers):
     http_method_names = ('get', 'post', 'put', 'patch', 'head')
 
     # Методы принудительно отключены для соответствия ТЗ
-    #
-
-    def resend_activation(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_404_NOT_FOUND)
 
     def reset_username(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
