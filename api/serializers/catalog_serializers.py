@@ -278,7 +278,7 @@ class ConditionalRealEstateSerializer(RealEstateSerializer):
         # Вызываем метод родительского класса для получения данных
         # сериализатора
         data = super().to_representation(instance)
-        # Удаляем поле 'period' если категория 'Аренда'
-        if instance.category.name == SELL_TYPES[0][1]:
+        # Удаляем поле 'period' если категория 'Продажа'
+        if instance.category.name == SELL_TYPES[1][1]:
             data.pop('period', None)
         return data
