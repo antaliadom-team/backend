@@ -8,16 +8,16 @@ from core.utils import AdminImageWidget
 class TestAdminSite:
     """Тест администраторской части проекта"""
 
-    def test_price_and_period_field_rent(self, object1):
-        assert (
-            RealEstateAdmin.price_with_currency(self, object1)
-            == f'{object1.price}{object1.currency} в {object1.period.lower()}'
-        ), 'Вывод цены, валюты и периода не соответствует ожидаемому'
-
-    def test_price_and_period_field_sell(self, object2):
+    def test_price_and_period_field_rent(self, object2):
         assert (
             RealEstateAdmin.price_with_currency(self, object2)
-            == f'{object2.price}{object2.currency}'
+            == f'{object2.price}{object2.currency} в {object2.period.lower()}'
+        ), 'Вывод цены, валюты и периода не соответствует ожидаемому'
+
+    def test_price_and_period_field_sell(self, object1):
+        assert (
+            RealEstateAdmin.price_with_currency(self, object1)
+            == f'{object1.price}{object1.currency}'
         ), 'Вывод цены, валюты и периода не соответствует ожидаемому'
 
     def test_render_image_widget(self, image_file):

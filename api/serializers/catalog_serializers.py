@@ -4,6 +4,7 @@ from rest_framework import fields, serializers
 
 from api.validators import regex_check_number, validate_name
 from catalog.models import (
+    SELL_TYPES,
     Category,
     Facility,
     Image,
@@ -230,7 +231,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class RealEstateSerializer(serializers.ModelSerializer):
-    """Сериализатор недвижимости"""
+    """Сериализатор объекта недвижимости"""
 
     is_favorited = fields.SerializerMethodField(default=False)
     facilities = FacilitySerializer(source='facility', many=True)
@@ -268,3 +269,16 @@ class RealEstateSerializer(serializers.ModelSerializer):
             user.is_authenticated
             and user.favorites.filter(real_estate=obj).exists()
         )
+
+
+class ConditionalRealEstateSerializer(RealEstateSerializer):
+    """Сериализатор недвижимости с условием вывода поля 'period'"""
+
+    def to_representation(self, instance):
+        # Вызываем метод родительского класса для получения данных
+        # сериализатора
+        data = super().to_representation(instance)
+        # Удаляем поле 'period' если категория 'Аренда'
+        if instance.category.name == SELL_TYPES[0][1]:
+            data.pop('period', None)
+        return data

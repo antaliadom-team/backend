@@ -132,7 +132,7 @@ class TestAPI(APITestBase):
             response.data['name'] == property_type_apartment.name
         ), 'Название типа не совпадает'
 
-    def test_get_real_estates_list(self, client, object1, facility1):
+    def test_get_real_estate_sell_list(self, client, object1, facility1):
         """Test get real estates"""
         response = client.get(self.urls['real_estate_list'])
         self.assert_status_code(200, response)
@@ -142,7 +142,6 @@ class TestAPI(APITestBase):
             'id': object1.id,
             'title': object1.title,
             'price': object1.price,
-            'period': object1.period,
             'currency': object1.currency,
             'location': object1.location.id,
             'category': object1.category.id,
@@ -152,6 +151,40 @@ class TestAPI(APITestBase):
             'rooms': object1.rooms,
             'floor': object1.floor,
             'total_floors': object1.total_floors,
+            'is_favorited': False,
+            'images': [],
+        }
+        self.assert_fields(
+            expected_fields.keys(),
+            response.data['results'],
+            url=self.urls['real_estate_list'],
+        )
+        for key, value in expected_fields.items():
+            assert response.data['results'][0][key] == value, (
+                f'Значение поля {key} не совпадает, ожидалось {value}, '
+                f'получено {response.data["results"][0][key]}'
+            )
+
+    def test_get_real_estate_rent_list(self, client, object2, facility1):
+        """Test get real estates"""
+        response = client.get(self.urls['real_estate_list'])
+        self.assert_status_code(200, response)
+        assert response.data['count'] == 1, 'Количество объектов не совпадает'
+        assert 'results' in response.data, 'Нет ключа results'
+        expected_fields = {
+            'id': object2.id,
+            'title': object2.title,
+            'price': object2.price,
+            'currency': object2.currency,
+            'period': object2.period,
+            'location': object2.location.id,
+            'category': object2.category.id,
+            'property_type': object2.property_type.id,
+            'description': object2.description,
+            'area': object2.area,
+            'rooms': object2.rooms,
+            'floor': object2.floor,
+            'total_floors': object2.total_floors,
             'is_favorited': False,
             'images': [],
         }
