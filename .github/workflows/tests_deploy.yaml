@@ -15,6 +15,10 @@ jobs:
   tests:
     name: Pytests with coverage
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: [ "3.8", "3.9", "3.10", "3.11" ]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -72,10 +76,10 @@ jobs:
           key: ${{ secrets.DEV_KEY }}
           port: ${{ secrets.DEV_PORT }}
           script: |
-            cd ./infra
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker pull ${{ secrets.DOCKER_HUB_NAME }}/antalyadom-backend:latest
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose stop
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm -f backend
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose rm -f celery
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker volume rm infra_project_value
-            echo ${{ secrets.DEV_PASSWORD }} | sudo -S docker-compose up -d --build
+            cd ./antalyadom
+            docker pull ${{ secrets.DOCKER_HUB_NAME }}/antalyadom-backend:latest
+            docker-compose stop
+            docker-compose rm -f backend
+            docker-compose rm -f celery
+            docker volume rm infra_project_value
+            docker-compose up -d --build
