@@ -1,6 +1,7 @@
-FROM python:3.11-slim
+FROM python:3.11-slim-buster
 WORKDIR /app
 COPY . .
+RUN apt-get update && apt-get -y install libpq-dev gcc
 RUN python -m pip install --upgrade pip
 RUN pip install -r req-prod.txt --no-cache-dir
 
