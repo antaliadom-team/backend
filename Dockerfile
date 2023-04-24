@@ -1,9 +1,12 @@
 FROM python:3.11-slim-buster
+
 WORKDIR /app
 COPY . .
 
+RUN apt-get update && apt-get -y install libpq-dev gcc
 RUN python -m pip install --upgrade pip
 RUN pip install -r req-prod.txt --no-cache-dir
+
 
 CMD ["gunicorn", "antalia_project.wsgi:application", "--bind", "0:8000"]
 CMD celery -A antalia_project worker -l info -B
