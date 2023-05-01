@@ -137,7 +137,7 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
 
     def get_serializer_class(self):
         # Использование кастомного сериализатора для модели 'RealEstate'
-        # при действии 'list'
-        if self.action == 'list':
+        # при действиях 'list' и 'retrieve'
+        if self.action in ('list', 'retrieve'):
             return ConditionalRealEstateSerializer
         return RealEstateSerializer
