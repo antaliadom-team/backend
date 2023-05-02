@@ -259,7 +259,6 @@ class RealEstateSerializer(serializers.ModelSerializer):
             'images',
             'is_favorited',
         )
-    
 
     def get_is_favorited(self, obj):
         """Дает избранное."""
