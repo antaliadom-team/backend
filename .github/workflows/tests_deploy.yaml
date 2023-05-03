@@ -81,5 +81,5 @@ jobs:
             docker-compose stop
             docker-compose rm -f backend
             docker-compose rm -f celery
-            docker volume rm infra_project_value
+            docker volume rm antalyadom_project_value
             docker-compose up -d --build
