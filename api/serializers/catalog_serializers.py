@@ -273,8 +273,6 @@ class RealEstateSerializer(serializers.ModelSerializer):
 
 class ConditionalRealEstateSerializer(RealEstateSerializer):
     """Сериализатор недвижимости с условием вывода поля 'period'"""
-    # class Meta(RealEstateSerializer.Meta):
-    #     fields = RealEstateSerializer.Meta.fields.remove('period')
 
     def to_representation(self, instance):
         # Вызываем метод родительского класса для получения данных
