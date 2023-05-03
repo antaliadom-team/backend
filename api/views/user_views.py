@@ -13,12 +13,6 @@ class UserViewSet(DjoserUsers):
     # Методы принудительно отключены для соответствия ТЗ
     #
 
-    def activation(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def resend_activation(self, request, *args, **kwargs):
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
     def reset_username(self, request, *args, **kwargs):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
