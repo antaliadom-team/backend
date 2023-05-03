@@ -34,8 +34,6 @@ class TestURLs(APITestBase):
     @pytest.mark.parametrize(
         'disabled_endpoints',
         [
-            'resend_activation/',
-            'activation/',
             'reset_username/',
             'set_username/',
             'reset_username_confirm/',
