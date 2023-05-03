@@ -58,6 +58,7 @@ class User(AbstractUser):
         choices=ROLE_CHOICE,
         default='seller',
     )
+    is_active = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
