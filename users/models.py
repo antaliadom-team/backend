@@ -1,4 +1,3 @@
-from typing import Iterable, Optional
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinLengthValidator
@@ -71,7 +70,7 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ('-id',)
-    
+
     def save(self):
         if self.is_superuser:
             self.is_active = True
