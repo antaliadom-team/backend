@@ -71,10 +71,10 @@ class User(AbstractUser):
         verbose_name_plural = 'Пользователи'
         ordering = ('-id',)
 
-    def save(self):
+    def save(self, *args, **kwargs):
         if self.is_superuser:
             self.is_active = True
-        return super().save()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.get_full_name()} ({self.email})'
