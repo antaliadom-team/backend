@@ -11,6 +11,7 @@ class AdminUser(UserAdmin):
     """Админка для пользователей"""
 
     ordering = ('email',)
+    search_fields = ('email', 'first_name', 'last_name', 'phone')
     list_display = ('email', 'first_name', 'last_name', 'phone', 'is_staff')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),

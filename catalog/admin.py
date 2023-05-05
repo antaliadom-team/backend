@@ -22,15 +22,56 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_display = (
         'pk',
-        'get_category',
-        'get_location',
-        'get_property_type',
-        'rooms',
+        'get_rooms',
         'first_name',
         'last_name',
         'phone',
         'email',
+        'date_added',
+        'review_date',
+        'is_reviewed',
     )
+    fields = (
+        'get_rooms',
+        'get_location',
+        'get_category',
+        'get_property_type',
+        ('first_name', 'last_name'),
+        'phone',
+        'email',
+        'date_added',
+        'review_date',
+        'is_reviewed',
+    )
+    search_fields = ('phone', 'email', 'first_name', 'last_name')
+    list_filter = ('is_reviewed', 'date_added', 'review_date')
+    readonly_fields = (
+        'get_rooms',
+        'get_location',
+        'get_category',
+        'get_property_type',
+        'first_name',
+        'last_name',
+        'phone',
+        'email',
+        'date_added',
+    )
+
+    @admin.display(description='Количество комнат')
+    def get_rooms(self, obj):
+        return obj.rooms
+
+    @admin.display(description='Локация')
+    def get_location(self, obj):
+        return obj.location.name or 'Не указано'
+
+    @admin.display(description='Категория')
+    def get_category(self, obj):
+        return obj.category.name or 'Не указано'
+
+    @admin.display(description='Тип недвижимости')
+    def get_property_type(self, obj):
+        return obj.property_type.name or 'Не указано'
 
 
 @admin.register(Location)
