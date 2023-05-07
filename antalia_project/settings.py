@@ -8,6 +8,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from antalia_project.config import *
 from antalia_project.constants import *
 
+load_dotenv()
 DEBUG = os.getenv('DEBUG', default=False) == 'True'
 
 sentry_sdk.init(
@@ -22,8 +23,6 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,
 )
-
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
