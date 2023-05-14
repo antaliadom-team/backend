@@ -9,11 +9,11 @@ from catalog.models import RealEstate
 User = get_user_model()
 
 
-def format_real_estate_message(real_estate):
+def format_real_estate_message(real_estate, object_url):
     """Форматирует сообщение для объекта недвижимости"""
     return (
         f'Заявка по объекту недвижимости #{real_estate.id} - '
-        f'{real_estate.title} <link>'
+        f'{real_estate.title} Ссылка на объект: {object_url}'
     )
 
 
@@ -37,9 +37,14 @@ def send_order_emails(data, user_id=None, *args, **kwargs):
         data['phone'] = user.phone
     # Если это заявка на объект, то формируем дополнительное сообщение
     if 'real_estate_id' in kwargs:
+        real_estate = RealEstate.objects.get(id=kwargs['real_estate_id'])
         real_estate_message = format_real_estate_message(
-            RealEstate.objects.get(id=kwargs['real_estate_id'])
+            real_estate, kwargs['object_url']
         )
+        data['category'] = real_estate.category.name
+        data['location'] = real_estate.location.name
+        data['property_type'] = real_estate.property_type.name
+        data['rooms'] = real_estate.rooms
     else:
         real_estate_message = ''
     # Формирование сообщений
