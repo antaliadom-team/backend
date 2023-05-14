@@ -22,27 +22,22 @@ real_estate_counter = Counter(
 )
 
 
-def save_metrics(metric_name):
+def save_metrics(func):
     """Сохранение метрик. Декоратор для функций APIView"""
 
-    def decorator(func):
-        def wrapper(request, *args, **kwargs):
-            orders_requests_total.labels(
-                endpoint=request.get_full_path(),
-                method=request.method,
-                user=request.user,
-            ).inc()
-            result = func(request, *args, **kwargs)
-            if result:
-                orders_create_last_status.labels(user=request.user).state(
-                    'success'
-                )
-            else:
-                orders_create_last_status.labels(user=request.user).state(
-                    'error'
-                )
-            return result
+    def wrapper(request, *args, **kwargs):
+        orders_requests_total.labels(
+            endpoint=request.get_full_path(),
+            method=request.method,
+            user=request.user,
+        ).inc()
+        result = func(request, *args, **kwargs)
+        if result:
+            orders_create_last_status.labels(user=request.user).state(
+                'success'
+            )
+        else:
+            orders_create_last_status.labels(user=request.user).state('error')
+        return result
 
-        return wrapper
-
-    return decorator
+    return wrapper
