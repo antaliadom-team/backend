@@ -1,9 +1,15 @@
-from prometheus_client import Counter
+from prometheus_client import Counter, Enum
 
 orders_requests_total = Counter(
     name='orders_requests_total',
     documentation='Total number of orders.',
     labelnames=['endpoint', 'method', 'user'],
+)
+orders_create_last_status = Enum(
+    name='orders_create_last_status',
+    documentation='Status of last order create endpoint call.',
+    labelnames=['user'],
+    states=['success', 'error'],
 )
 registered_users_counter = Counter(
     'registered_users_total', 'Total number of registered users'
@@ -21,16 +27,20 @@ def save_metrics(metric_name):
 
     def decorator(func):
         def wrapper(request, *args, **kwargs):
-            metric = globals().get(metric_name)
-            if metric is None:
-                raise ValueError(f"Metric '{metric_name}' does not exist.")
+            orders_requests_total.labels(
+                endpoint=request.get_full_path(),
+                method=request.method,
+                user=request.user,
+            ).inc()
             result = func(request, *args, **kwargs)
             if result:
-                metric.labels(
-                    endpoint=request.get_full_path(),
-                    method=request.method,
-                    user=request.user,
-                ).inc()
+                orders_create_last_status.labels(user=request.user).state(
+                    'success'
+                )
+            else:
+                orders_create_last_status.labels(user=request.user).state(
+                    'error'
+                )
             return result
 
         return wrapper
