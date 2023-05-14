@@ -36,7 +36,7 @@ User = get_user_model()
 
 @api_view(http_method_names=['POST'])
 @permission_classes([permissions.AllowAny])
-@save_metrics('orders_requests_total')
+@save_metrics
 def order(request):
     """Заявка общая"""
     serializer = OrderSerializer(
@@ -53,7 +53,7 @@ def order(request):
 
 @api_view(http_method_names=['POST'])
 @permission_classes([permissions.AllowAny])
-@save_metrics('orders_requests_total')
+@save_metrics
 def real_estate_order(request, object_id=None):
     """Заявка на конкретный объект недвижимости"""
     real_estate = get_object_or_404(RealEstate, pk=object_id)
