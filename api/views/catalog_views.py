@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -60,11 +62,15 @@ def real_estate_order(request, object_id=None):
     )
     serializer.is_valid(raise_exception=True)
     serializer.save()
+
+    object_url = urlparse(request.build_absolute_uri())
+
     send_order_emails.apply_async(
         kwargs={
             'data': serializer.data,
             'user_id': request.user.id or None,
             'real_estate_id': real_estate.id,
+            'object_url': f'{object_url.scheme}://{object_url.netloc}/object/{real_estate.id}/',  # noqa
         },
         countdown=5,
     )
