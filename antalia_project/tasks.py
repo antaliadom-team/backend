@@ -12,8 +12,8 @@ User = get_user_model()
 def format_real_estate_message(real_estate, object_url):
     """Форматирует сообщение для объекта недвижимости"""
     return (
-        f'Заявка по объекту недвижимости #{real_estate.id} - '
-        f'{real_estate.title} Ссылка на объект: {object_url}'
+        f'\n\nЗаявка по объекту недвижимости #{real_estate.id}'
+        f'{real_estate.title}\n\nСсылка на объект: {object_url}'
     )
 
 

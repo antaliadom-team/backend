@@ -58,10 +58,18 @@ def real_estate_order(request, object_id=None):
     """Заявка на конкретный объект недвижимости"""
     real_estate = get_object_or_404(RealEstate, pk=object_id)
     serializer = RealEstateOrderSerializer(
-        real_estate, data=request.data, context={'request': request}
+        data=request.data, context={'request': request}
     )
     serializer.is_valid(raise_exception=True)
-    serializer.save()
+    serializer.save(
+        real_estate=real_estate,
+        # Lists as a universal solution for both types of orders
+        # (common and real estate)
+        rooms=[real_estate.rooms],
+        category=[real_estate.category],
+        property_type=[real_estate.property_type],
+        location=[real_estate.location],
+    )
 
     object_url = urlparse(request.build_absolute_uri())
 
@@ -70,7 +78,9 @@ def real_estate_order(request, object_id=None):
             'data': serializer.data,
             'user_id': request.user.id or None,
             'real_estate_id': real_estate.id,
-            'object_url': f'{object_url.scheme}://{object_url.netloc}/object/{real_estate.id}/',  # noqa
+            'object_url': (
+                f'{object_url.scheme}://{object_url.netloc}/object/{real_estate.id}/',  # noqa
+            ),
         },
         countdown=5,
     )
