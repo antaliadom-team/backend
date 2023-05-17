@@ -163,12 +163,14 @@ class RealEstateOrderSerializer(CommonOrderSerializer):
     category = fields.ReadOnlyField(source='real_estate.category')
     location = fields.ReadOnlyField(source='real_estate.location')
     property_type = fields.ReadOnlyField(source='real_estate.property_type')
+    rooms = fields.ReadOnlyField(source='real_estate.rooms')
 
     class Meta(OrderSerializer.Meta):
         fields = OrderSerializer.Meta.fields + (
             'category',
             'location',
             'property_type',
+            'rooms',
         )
 
 
