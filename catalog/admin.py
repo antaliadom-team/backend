@@ -35,7 +35,6 @@ class OrderAdmin(admin.ModelAdmin):
         'date_added',
         'review_date',
         'is_reviewed',
-        
     )
     fields = (
         'get_real_estate',
@@ -64,6 +63,7 @@ class OrderAdmin(admin.ModelAdmin):
         'email',
         'date_added',
     )
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -72,7 +72,6 @@ class OrderAdmin(admin.ModelAdmin):
 
     @admin.display(description='Объект недвижимости')
     def get_real_estate(self, obj):
-        
         if obj.real_estate:
             return format_html(
                 '<a href="/object/{0}">{1}</a>',
