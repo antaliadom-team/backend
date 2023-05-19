@@ -135,7 +135,7 @@ else:
         os.environ.get('SESSION_COOKIE_SECURE', default=False) == 'True'
     )
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
-        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.JSONRenderer'
     ]
 
     X_FRAME_OPTIONS = 'DENY'
@@ -165,3 +165,11 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_RESULT_BACKEND = os.getenv(
     'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
 )
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': CELERY_BROKER_URL,  # Redis server location
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    }
+}
