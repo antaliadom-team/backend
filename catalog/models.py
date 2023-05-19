@@ -239,14 +239,19 @@ class Image(models.Model):
         """Генерирует изображения в требуемых размерах."""
         with PillowImage.open(infile) as im:
             im.thumbnail(image_size)
-            ImageOps.fit(
-                im, image_size, PillowImage.Resampling.LANCZOS, 0.5
-            ).save(outfile, quality=95)
+            if im.mode in ('RGBA', 'P'):
+                ImageOps.fit(
+                    im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+                ).convert('RGB').save(outfile, quality=95)
+            else:
+                ImageOps.fit(
+                        im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+                    ).save(outfile, quality=95)
 
     def filename_generator(self, filepath, size):
         """Генерирует имя для каждого размера изображения."""
         width, height = size
-        name, extension = os.path.splitext(os.path.basename(filepath))
+        name, extension = os.path.splitext(filepath)
         return f'{name}_{width}x{height}{extension}'
 
     def save(self, *args, **kwargs):
