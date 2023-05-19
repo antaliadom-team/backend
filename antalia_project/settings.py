@@ -50,13 +50,6 @@ INSTALLED_APPS = [
     'django_cleanup',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += [
-        'django_extensions',  # shell_plus --ipython
-        'drf_yasg',
-        'debug_toolbar',
-    ]
-
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -69,14 +62,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
-if DEBUG:
-    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
-
-if DEBUG:
-    import socket  # only if you haven't already imported this
-
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-    INTERNAL_IPS = [ip[: ip.rfind('.')] + '.1' for ip in ips] + ['127.0.0.1']
 
 ROOT_URLCONF = 'antalia_project.urls'
 
@@ -123,6 +108,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
 
 if DEBUG:
+    import socket
+
+    INSTALLED_APPS += [
+        'django_extensions',  # shell_plus --ipython
+        'drf_yasg',
+        'debug_toolbar',
+    ]
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind('.')] + '.1' for ip in ips] + ['127.0.0.1']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     CORS_ORIGIN_ALLOW_ALL = True
 else:
     CORS_ORIGIN_ALLOW_ALL = False
@@ -139,6 +134,9 @@ else:
     SESSION_COOKIE_SECURE = (
         os.environ.get('SESSION_COOKIE_SECURE', default=False) == 'True'
     )
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
+        'rest_framework.renderers.JSONRenderer',
+    ]
 
     X_FRAME_OPTIONS = 'DENY'
 
@@ -167,9 +165,3 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_RESULT_BACKEND = os.getenv(
     'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
 )
-
-if not DEBUG:
-    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ]
