@@ -168,7 +168,7 @@ CELERY_RESULT_BACKEND = os.getenv(
 
 CACHES = {
     'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
+        'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
         'LOCATION': CELERY_BROKER_URL,  # Redis server location
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     }
