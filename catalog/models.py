@@ -257,7 +257,8 @@ class Image(models.Model):
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
         if (
-            Image.objects.filter(real_estate=self.real_estate).count()
+            self.pk is None
+            and Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
