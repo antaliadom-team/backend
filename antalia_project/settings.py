@@ -50,9 +50,6 @@ INSTALLED_APPS = [
     'django_cleanup',
 ]
 
-if DEBUG:
-    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
-
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -111,6 +108,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
 
 if DEBUG:
+    import socket
+
+    INSTALLED_APPS += [
+        'django_extensions',  # shell_plus --ipython
+        'drf_yasg',
+        'debug_toolbar',
+    ]
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind('.')] + '.1' for ip in ips] + ['127.0.0.1']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     CORS_ORIGIN_ALLOW_ALL = True
 else:
     CORS_ORIGIN_ALLOW_ALL = False
@@ -127,6 +134,9 @@ else:
     SESSION_COOKIE_SECURE = (
         os.environ.get('SESSION_COOKIE_SECURE', default=False) == 'True'
     )
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
+        'rest_framework.renderers.JSONRenderer',
+    ]
 
     X_FRAME_OPTIONS = 'DENY'
 

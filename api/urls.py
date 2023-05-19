@@ -25,7 +25,7 @@ class CustomDefaultRouter(routers.DefaultRouter):
     APIRootView = CustomAPIRootView
 
 
-router = CustomDefaultRouter()
+router = routers.DefaultRouter()
 router.register('users', UserViewSet, basename='users')
 router.register('objects/locations', LocationViewSet, basename='locations')
 router.register('objects/categories', CategoryViewSet, basename='categories')
