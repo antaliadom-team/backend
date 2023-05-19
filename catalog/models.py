@@ -245,8 +245,8 @@ class Image(models.Model):
                 ).convert('RGB').save(outfile, quality=95)
             else:
                 ImageOps.fit(
-                        im, image_size, PillowImage.Resampling.LANCZOS, 0.5
-                    ).save(outfile, quality=95)
+                    im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+                ).save(outfile, quality=95)
 
     def filename_generator(self, filepath, size):
         """Генерирует имя для каждого размера изображения."""
