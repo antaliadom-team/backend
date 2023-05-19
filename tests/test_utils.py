@@ -1,7 +1,12 @@
+from django.conf import settings
 from django.core import mail
 
+import pytest
 
-class TestTasksUtils:
+from tests.common import APITestBase
+
+
+class TestTasksUtils(APITestBase):
     """Тесты для celery tasks and core.utils"""
 
     def test_send_common_order_emails_anon(self, admin, object1):
@@ -69,3 +74,17 @@ class TestTasksUtils:
         assert len(mail.outbox) == 2
         assert mail.outbox[0].subject == 'Подтверждение заявки.'
         assert mail.outbox[1].subject == 'Поступила новая заявка.'
+
+    @pytest.mark.django_db
+    def test_cached_data(self, client, locmem_cache):
+        response1 = client.get(self.urls['location_list'])
+        assert response1.status_code == 200
+        # Make the second request to the same endpoint
+        response2 = client.get(self.urls['location_list'])
+        assert response2.status_code == 200
+        # Assert that the second response was served from the cache
+        assert (
+            response2.headers['cache-control']
+            == f'max-age={settings.CACHE_TIMEOUT}'
+        )
+        assert response1.content == response2.content

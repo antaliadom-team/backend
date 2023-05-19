@@ -1,7 +1,10 @@
 from urllib.parse import urlparse
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -98,6 +101,14 @@ class LocationViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'slug')
     ordering = ('name',)
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """Категория"""
@@ -107,6 +118,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     authentication_classes = []
     lookup_field = 'id'
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
 
 class PropertyTypeViewSet(viewsets.ModelViewSet):
@@ -118,6 +137,14 @@ class PropertyTypeViewSet(viewsets.ModelViewSet):
     authentication_classes = []
     lookup_field = 'id'
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
 class FacilityViewSet(viewsets.ModelViewSet):
     """Удобства"""
@@ -127,6 +154,14 @@ class FacilityViewSet(viewsets.ModelViewSet):
     serializer_class = FacilitySerializer
     authentication_classes = []
     lookup_field = 'id'
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
 
 class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
@@ -144,6 +179,14 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     pagination_class = ObjectsLimitPagePagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RealEstateFilter
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT_REAL_ESTATE))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT_REAL_ESTATE))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
     @action(
         methods=('post', 'delete'),
