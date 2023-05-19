@@ -51,7 +51,11 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
-    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
+    INSTALLED_APPS += [
+        'django_extensions',  # shell_plus --ipython
+        'drf_yasg',
+        'debug_toolbar',
+    ]
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
@@ -65,6 +69,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
+if DEBUG:
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
+
+if DEBUG:
+    import socket  # only if you haven't already imported this
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind('.')] + '.1' for ip in ips] + ['127.0.0.1']
 
 ROOT_URLCONF = 'antalia_project.urls'
 
@@ -155,3 +167,9 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_RESULT_BACKEND = os.getenv(
     'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
 )
+
+if not DEBUG:
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]

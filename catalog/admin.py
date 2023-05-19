@@ -64,6 +64,15 @@ class OrderAdmin(admin.ModelAdmin):
         'date_added',
     )
 
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related(
+            'real_estate',
+            'real_estate__location',
+            'real_estate__category',
+            'real_estate__property_type',
+        )
+
     def has_add_permission(self, request, obj=None):
         return False
 
@@ -76,7 +85,7 @@ class OrderAdmin(admin.ModelAdmin):
             return format_html(
                 '<a href="/object/{0}">{1}</a>',
                 obj.real_estate.pk,
-                obj.real_estate
+                obj.real_estate,
             )
         return 'Любой'
 
@@ -191,6 +200,10 @@ class RealEstateAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('admin/js/admin_period_visibility.js',)
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('location', 'category', 'property_type')
 
     @admin.display(description='Цена')
     def price_with_currency(self, obj):
