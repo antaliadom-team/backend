@@ -133,7 +133,13 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     """Каталог недвижимости"""
 
     http_method_names = ('get', 'post', 'delete')
-    queryset = RealEstate.objects.all()
+    queryset = (
+        RealEstate.objects.select_related(
+            'category', 'property_type', 'location'
+        )
+        .prefetch_related('images', 'facility')
+        .all()
+    )
     serializer_class = RealEstateSerializer
     pagination_class = ObjectsLimitPagePagination
     filter_backends = (DjangoFilterBackend,)
