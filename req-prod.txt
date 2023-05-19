@@ -15,3 +15,4 @@ redis>=4
 hiredis
 sentry-sdk
 django-prometheus
+django-redis
