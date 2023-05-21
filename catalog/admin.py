@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
+from django.core.management import call_command
 from django.db import models
 from django.utils.html import format_html
 
@@ -197,6 +198,7 @@ class RealEstateAdmin(admin.ModelAdmin):
     list_filter = ('status', 'location', 'property_type')  # 'owner'
     readonly_fields = ('date_added',)
     inlines = (ImageInline,)
+    actions = ['regenerate_previews']
 
     class Media:
         js = ('admin/js/admin_period_visibility.js',)
@@ -211,6 +213,11 @@ class RealEstateAdmin(admin.ModelAdmin):
         if obj.category.name == SELL_TYPES[0][1]:
             return f'{obj.price}{obj.currency}'
         return f'{obj.price}{obj.currency} в {obj.period.lower()}'
+
+    def regenerate_previews(self, request, queryset):
+        call_command('recreate_previews')
+
+    regenerate_previews.short_description = 'Пересоздать превью фотографий'
 
 
 @admin.register(Favorite)

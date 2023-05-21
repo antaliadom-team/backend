@@ -235,7 +235,8 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
-    def thumbnail_generator(self, infile, outfile, image_size):
+    @staticmethod
+    def thumbnail_generator(infile, outfile, image_size):
         """Генерирует изображения в требуемых размерах."""
         with PillowImage.open(infile) as im:
             im.thumbnail(image_size)
@@ -248,7 +249,8 @@ class Image(models.Model):
                     im, image_size, PillowImage.Resampling.LANCZOS, 0.5
                 ).save(outfile, quality=95)
 
-    def filename_generator(self, filepath, size):
+    @staticmethod
+    def filename_generator(filepath, size):
         """Генерирует имя для каждого размера изображения."""
         width, height = size
         name, extension = os.path.splitext(filepath)
