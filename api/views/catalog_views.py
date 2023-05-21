@@ -180,14 +180,6 @@ class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RealEstateFilter
 
-    @method_decorator(cache_page(settings.CACHE_TIMEOUT_REAL_ESTATE))
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-    @method_decorator(cache_page(settings.CACHE_TIMEOUT_REAL_ESTATE))
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
-
     @action(
         methods=('post', 'delete'),
         detail=True,
