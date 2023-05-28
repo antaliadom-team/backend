@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -172,4 +173,17 @@ CACHES = {
         'LOCATION': CELERY_BROKER_URL,  # Redis server location
         'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
     }
+}
+
+# настройки simple-jwt
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(
+        minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES', default=5))
+    ),
+    'REFRESH_TOKEN_LIFETIME': timedelta(
+        minutes=int(os.getenv('REFRESH_TOKEN_LIFETIME_MINUTES', default=360))
+    ),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }

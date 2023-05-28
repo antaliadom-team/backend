@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 # настройки валидации паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -28,15 +26,6 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
-}
-
-# настройки simple-jwt
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 # настройки Djoser
