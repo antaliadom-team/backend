@@ -58,6 +58,7 @@ class User(AbstractUser):
         choices=ROLE_CHOICE,
         default='seller',
     )
+    is_active = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -69,6 +70,11 @@ class User(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ('-id',)
+
+    def save(self, *args, **kwargs):
+        if self.is_superuser:
+            self.is_active = True
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.get_full_name()} ({self.email})'

@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 
@@ -19,12 +22,14 @@ class StaticPageViewSet(viewsets.ReadOnlyModelViewSet):
     list_serializer_class = StaticPageListSerializer
     authentication_classes = []
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
     def list(self, request, *args, **kwargs):
         """Список статических страниц."""
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.list_serializer_class(queryset, many=True)
         return Response(serializer.data)
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
     def retrieve(self, request, *args, **kwargs):
         """Получение статической страницы."""
         try:
@@ -44,12 +49,14 @@ class TeamViewSet(viewsets.ReadOnlyModelViewSet):
     authentication_classes = []
     queryset = Team.objects.filter(is_active=True)
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
     def list(self, request, *args, **kwargs):
         """Список команды."""
         queryset = self.filter_queryset(self.get_queryset())
         serializer = TeamSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
     def retrieve(self, request, *args, **kwargs):
         """Получение члена команды."""
         try:

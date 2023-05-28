@@ -1,3 +1,4 @@
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 from antalia_project.config import *
 from antalia_project.constants import *
 
+load_dotenv()
 DEBUG = os.getenv('DEBUG', default=False) == 'True'
 
 sentry_sdk.init(
@@ -22,8 +24,6 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True,
 )
-
-load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,9 +50,6 @@ INSTALLED_APPS = [
     'core',
     'django_cleanup',
 ]
-
-if DEBUG:
-    INSTALLED_APPS += ['django_extensions', 'drf_yasg']  # shell_plus --ipython
 
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
@@ -112,6 +109,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'backend_static'
 
 if DEBUG:
+    import socket
+
+    INSTALLED_APPS += [
+        'django_extensions',  # shell_plus --ipython
+        'drf_yasg',
+        'debug_toolbar',
+    ]
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind('.')] + '.1' for ip in ips] + ['127.0.0.1']
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
     CORS_ORIGIN_ALLOW_ALL = True
 else:
     CORS_ORIGIN_ALLOW_ALL = False
@@ -128,6 +135,9 @@ else:
     SESSION_COOKIE_SECURE = (
         os.environ.get('SESSION_COOKIE_SECURE', default=False) == 'True'
     )
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [  # noqa: F405
+        'rest_framework.renderers.JSONRenderer'
+    ]
 
     X_FRAME_OPTIONS = 'DENY'
 
@@ -141,8 +151,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # В файле .env хранятся имя юзера и пароль приложения
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', default='smtp.zeptomail.com')
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 EMAIL_PORT = os.environ.get('EMAIL_PORT', default=587)
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
@@ -156,3 +166,24 @@ CELERY_BROKER_URL = os.getenv(
 CELERY_RESULT_BACKEND = os.getenv(
     'CELERY_RESULT_BACKEND', default='redis://localhost:6379/0'
 )
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_prometheus.cache.backends.redis.RedisCache',
+        'LOCATION': CELERY_BROKER_URL,  # Redis server location
+        'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+    }
+}
+
+# настройки simple-jwt
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(
+        minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES', default=5))
+    ),
+    'REFRESH_TOKEN_LIFETIME': timedelta(
+        minutes=int(os.getenv('REFRESH_TOKEN_LIFETIME_MINUTES', default=360))
+    ),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+}

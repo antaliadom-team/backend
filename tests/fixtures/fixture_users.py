@@ -1,5 +1,6 @@
-import pytest
 from django.contrib.auth import get_user_model
+
+import pytest
 
 
 @pytest.fixture
@@ -9,6 +10,7 @@ def user(django_user_model):
         last_name='Testerson',
         email='test.user@fake.mail',
         password='12345Qq',
+        is_active=True,
     )
 
 
@@ -19,6 +21,7 @@ def another_user(django_user_model):
         last_name='last_name',
         email='another.test.user@fake.mail',
         password='12345Qq',
+        is_active=True,
     )
 
 
@@ -31,6 +34,7 @@ def admin(django_user_model):
         password='12345Qq',
         is_superuser=True,
         is_staff=True,
+        is_active=True,
     )
 
 
@@ -43,6 +47,7 @@ def admin2(django_user_model):
         password='12345Qq',
         is_superuser=True,
         is_staff=True,
+        is_active=True,
     )
 
 
@@ -101,6 +106,7 @@ def some_users(request):
             username=f'test_user_{i}',
             email=f'test.user{i}@fake.mail',
             password='123456Qq',
+            is_active=True,
         )
         for i in range(request.param)
     ]

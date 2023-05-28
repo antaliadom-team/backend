@@ -235,24 +235,32 @@ class Image(models.Model):
         verbose_name_plural = 'Фотографии'
         ordering = ('-id',)
 
-    def thumbnail_generator(self, infile, outfile, image_size):
+    @staticmethod
+    def thumbnail_generator(infile, outfile, image_size):
         """Генерирует изображения в требуемых размерах."""
         with PillowImage.open(infile) as im:
             im.thumbnail(image_size)
-            ImageOps.fit(
-                im, image_size, PillowImage.Resampling.LANCZOS, 0.5
-            ).save(outfile, quality=95)
+            if im.mode in ('RGBA', 'P'):
+                ImageOps.fit(
+                    im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+                ).convert('RGB').save(outfile, quality=95)
+            else:
+                ImageOps.fit(
+                    im, image_size, PillowImage.Resampling.LANCZOS, 0.5
+                ).save(outfile, quality=95)
 
-    def filename_generator(self, filepath, size):
+    @staticmethod
+    def filename_generator(filepath, size):
         """Генерирует имя для каждого размера изображения."""
         width, height = size
-        name, extension = os.path.splitext(os.path.basename(filepath))
+        name, extension = os.path.splitext(filepath)
         return f'{name}_{width}x{height}{extension}'
 
     def save(self, *args, **kwargs):
         """Сохраняет дополнительно изображения в требуемых размерах."""
         if (
-            Image.objects.filter(real_estate=self.real_estate).count()
+            self.pk is None
+            and Image.objects.filter(real_estate=self.real_estate).count()
             >= settings.IMAGE_LIMIT
         ):
             return  # Не сохраняем, если уже 6 фото
@@ -355,7 +363,9 @@ class Order(models.Model):
         null=True,
     )
     agreement = models.BooleanField(verbose_name='Согласие', default=False)
-    date_added = models.DateTimeField(auto_now_add=True)
+    date_added = models.DateTimeField(
+        auto_now_add=True, verbose_name='Дата заявки'
+    )
     user = models.ForeignKey(
         User,
         blank=True,
@@ -377,6 +387,10 @@ class Order(models.Model):
         verbose_name='Подтверждение', default=False
     )
     is_sent = models.BooleanField(verbose_name='Отправлено', default=False)
+    is_reviewed = models.BooleanField(verbose_name='Ответ', default=False)
+    review_date = models.DateField(
+        verbose_name='Дата ответа', blank=True, null=True
+    )
 
     class Meta:
         verbose_name = 'Заявка'
@@ -402,6 +416,9 @@ class Order(models.Model):
                 for i in OrderPropertyType.objects.filter(order=self)
             ]
         )
+
+    def __str__(self):
+        return f'Заявка от {self.first_name} {self.last_name}'
 
 
 class OrderCategory(models.Model):

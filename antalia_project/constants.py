@@ -57,3 +57,7 @@ ROOMS_LIMIT = 4
 
 # Список размеров в пикселях создаваемых превью для фотографий объекта [(hor, vert), ...]
 PREVIEW_SIZES = ((738, 632), (328, 261))
+
+# Caching
+CACHE_TIMEOUT = 3600
+CACHE_TIMEOUT_REAL_ESTATE = 60

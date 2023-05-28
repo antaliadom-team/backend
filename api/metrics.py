@@ -11,6 +11,15 @@ orders_create_last_status = Enum(
     labelnames=['user'],
     states=['success', 'error'],
 )
+registered_users_counter = Counter(
+    'registered_users_total', 'Total number of registered users'
+)
+activated_users_counter = Counter(
+    'activated_users_total', 'Total number of activated users'
+)
+real_estate_counter = Counter(
+    'real_estate_total', 'Total number of real estate'
+)
 
 
 def save_metrics(func):

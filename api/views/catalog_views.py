@@ -1,5 +1,10 @@
+from urllib.parse import urlparse
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -56,15 +61,29 @@ def real_estate_order(request, object_id=None):
     """Заявка на конкретный объект недвижимости"""
     real_estate = get_object_or_404(RealEstate, pk=object_id)
     serializer = RealEstateOrderSerializer(
-        real_estate, data=request.data, context={'request': request}
+        data=request.data, context={'request': request}
     )
     serializer.is_valid(raise_exception=True)
-    serializer.save()
+    serializer.save(
+        real_estate=real_estate,
+        # Lists as a universal solution for both types of orders
+        # (common and real estate)
+        rooms=[real_estate.rooms],
+        category=[real_estate.category],
+        property_type=[real_estate.property_type],
+        location=[real_estate.location],
+    )
+
+    object_url = urlparse(request.build_absolute_uri())
+
     send_order_emails.apply_async(
         kwargs={
             'data': serializer.data,
             'user_id': request.user.id or None,
             'real_estate_id': real_estate.id,
+            'object_url': (
+                f'{object_url.scheme}://{object_url.netloc}/object/{real_estate.id}/',  # noqa
+            ),
         },
         countdown=5,
     )
@@ -82,6 +101,14 @@ class LocationViewSet(viewsets.ModelViewSet):
     search_fields = ('name', 'slug')
     ordering = ('name',)
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """Категория"""
@@ -91,6 +118,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     authentication_classes = []
     lookup_field = 'id'
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
 
 class PropertyTypeViewSet(viewsets.ModelViewSet):
@@ -102,6 +137,14 @@ class PropertyTypeViewSet(viewsets.ModelViewSet):
     authentication_classes = []
     lookup_field = 'id'
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
 class FacilityViewSet(viewsets.ModelViewSet):
     """Удобства"""
@@ -112,12 +155,26 @@ class FacilityViewSet(viewsets.ModelViewSet):
     authentication_classes = []
     lookup_field = 'id'
 
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(settings.CACHE_TIMEOUT))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
 class RealEstateViewSet(viewsets.ModelViewSet, FavoriteMixin):
     """Каталог недвижимости"""
 
     http_method_names = ('get', 'post', 'delete')
-    queryset = RealEstate.objects.all()
+    queryset = (
+        RealEstate.objects.select_related(
+            'category', 'property_type', 'location'
+        )
+        .prefetch_related('images', 'facility')
+        .all()
+    )
     serializer_class = RealEstateSerializer
     pagination_class = ObjectsLimitPagePagination
     filter_backends = (DjangoFilterBackend,)
